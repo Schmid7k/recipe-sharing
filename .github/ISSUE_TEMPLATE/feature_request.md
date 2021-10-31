@@ -7,8 +7,9 @@ assignees: ''
 
 ---
 
-- **Target area (frontend/backend/database):**
-- **Target component:** e.g. Navigation bar
-- **Type of change (functional/visual/quality of life):** 
+<!--- Replace  "<" and ">" --->
+- **Target area (frontend/backend/database):** <Area>
+- **Target component:** <Component e.g. navigation bar>
+- **Type of change (functional/visual/quality of life):** <Change>
 - **Description:**  
-    Describe the requested change as detailed as possible.
+    <Describe the requested change as detailed as possible.>
