@@ -7,7 +7,7 @@ assignees: ''
 
 ---
 
-<!--- Replace  "<" and ">" --->
+<!--- Replace "< ... >" with your changes --->
 - **Target area (frontend/backend/database):** <Area>
 - **Target component:** <Component e.g. navigation bar>
 - **Type of change (functional/visual/quality of life):** <Change>
