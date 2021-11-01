@@ -4,7 +4,7 @@ const NavigationBar = () => {
   return (
     <Fragment>
       <nav class="navbar navbar-expand-md navbar-custom">
-        <a class="navbar-brand" href="/">
+        <a class="navbar-brand handwritten-text" href="/">
           Recipe Sharing
         </a>
         <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
