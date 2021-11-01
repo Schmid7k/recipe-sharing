@@ -37,15 +37,3 @@
   }
 }
 
-/*
-Custom colours for our navbar background and navbar items
-*/
-.navbar-custom {
-  background-color: rgb(255, 145, 0);
-}
-
-.navbar-custom .navbar-brand,
-.navbar-custom .navbar-text,
-.navbar-custom .nav-link {
-  color: white;
-}

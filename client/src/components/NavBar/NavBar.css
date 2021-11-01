@@ -1,0 +1,76 @@
+.navbar-custom {
+    background-color: #DF7861;
+    padding: 0.5rem 1rem;
+    font-weight: bold;
+}
+
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(255,255,255, 1)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 8h24M4 16h24M4 24h24'/%3E%3C/svg%3E");
+}
+
+.navbar-toggler:focus {
+    box-shadow: 0 0 0 0.1rem #ECB390;
+}
+  
+.navbar-custom .navbar-brand,
+.navbar-custom .navbar-text,
+.navbar-custom .nav-link {
+    color: white;
+}
+
+.nav-item, .nav-icon {
+    margin: 0px 0.5rem;
+}
+
+.nav-item.active {
+    -webkit-box-shadow: 0rem -0.1rem #FFFFFF inset;
+    -moz-box-shadow: 0rem -0.1rem #FFFFFF inset;
+    box-shadow: 0rem -0.1rem #FFFFFF inset;
+}
+
+.nav-item:hover {
+    -webkit-box-shadow: 0rem -0.1rem #FFFFFF inset;
+    -moz-box-shadow: 0rem -0.1rem #FFFFFF inset;
+    box-shadow: 0rem -0.1rem #FFFFFF inset;
+}
+
+.input-group {
+    align-items: flex-start;
+}
+
+.search-bar {
+    border-color: #ECB390;
+}
+
+.btn-search {
+    background-color: #ECDFC8;
+    border-color: #ECB390;
+    padding: 0.375rem;
+}
+
+.btn-search #search-icon {
+    width: 1.4em;
+    height: 1.4em;
+}
+
+.navbar .float-end {
+    max-width: 20%;
+}
+
+#user-info {
+    display: flex;
+    overflow: hidden;
+}
+
+#user-icon {
+    width: 2.3em;
+    height: 2.3em;
+    border-radius: 50%;
+    margin: 0rem 0.5rem;
+}
+
+#user-info a {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
