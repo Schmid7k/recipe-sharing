@@ -4,9 +4,9 @@ import cakes from "../images/snowskin_mooncakes.jpg";
 const Grid = () => {
   return (
     <Fragment>
-      <div class="row mt-2">
-        <div class="col-md-2">
-          <div class="thumbnail">
+      <div className="row mt-2">
+        <div className="col-md-2">
+          <div className="thumbnail">
             <a href={cakes}>
               <img
                 src={cakes}
@@ -14,13 +14,13 @@ const Grid = () => {
                 style={{ width: 100 + "%" }}
               />
             </a>
-            <div class="caption text-center">
+            <div className="caption text-center">
               <p>Snowskin Mooncakes</p>
             </div>
           </div>
         </div>
-        <div class="col-md-2">
-          <div class="thumbnail">
+        <div className="col-md-2">
+          <div className="thumbnail">
             <a href={cakes}>
               <img
                 src={cakes}
@@ -28,13 +28,13 @@ const Grid = () => {
                 style={{ width: 100 + "%" }}
               />
             </a>
-            <div class="caption text-center">
+            <div className="caption text-center">
               <p>Snowskin Mooncakes</p>
             </div>
           </div>
         </div>
-        <div class="col-md-2">
-          <div class="thumbnail">
+        <div className="col-md-2">
+          <div className="thumbnail">
             <a href={cakes}>
               <img
                 src={cakes}
@@ -42,13 +42,13 @@ const Grid = () => {
                 style={{ width: 100 + "%" }}
               />
             </a>
-            <div class="caption text-center">
+            <div className="caption text-center">
               <p>Snowskin Mooncakes</p>
             </div>
           </div>
         </div>
-        <div class="col-md-2">
-          <div class="thumbnail">
+        <div className="col-md-2">
+          <div className="thumbnail">
             <a href={cakes}>
               <img
                 src={cakes}
@@ -56,13 +56,13 @@ const Grid = () => {
                 style={{ width: 100 + "%" }}
               />
             </a>
-            <div class="caption text-center">
+            <div className="caption text-center">
               <p>Snowskin Mooncakes</p>
             </div>
           </div>
         </div>
-        <div class="col-md-2">
-          <div class="thumbnail">
+        <div className="col-md-2">
+          <div className="thumbnail">
             <a href={cakes}>
               <img
                 src={cakes}
@@ -70,13 +70,13 @@ const Grid = () => {
                 style={{ width: 100 + "%" }}
               />
             </a>
-            <div class="caption text-center">
+            <div className="caption text-center">
               <p>Snowskin Mooncakes</p>
             </div>
           </div>
         </div>
-        <div class="col-md-2">
-          <div class="thumbnail">
+        <div className="col-md-2">
+          <div className="thumbnail">
             <a href={cakes}>
               <img
                 src={cakes}
@@ -84,13 +84,13 @@ const Grid = () => {
                 style={{ width: 100 + "%" }}
               />
             </a>
-            <div class="caption text-center">
+            <div className="caption text-center">
               <p>Snowskin Mooncakes</p>
             </div>
           </div>
         </div>
-        <div class="col-md-2">
-          <div class="thumbnail">
+        <div className="col-md-2">
+          <div className="thumbnail">
             <a href={cakes}>
               <img
                 src={cakes}
@@ -98,13 +98,13 @@ const Grid = () => {
                 style={{ width: 100 + "%" }}
               />
             </a>
-            <div class="caption text-center">
+            <div className="caption text-center">
               <p>Snowskin Mooncakes</p>
             </div>
           </div>
         </div>
-        <div class="col-md-2">
-          <div class="thumbnail">
+        <div className="col-md-2">
+          <div className="thumbnail">
             <a href={cakes}>
               <img
                 src={cakes}
@@ -112,13 +112,13 @@ const Grid = () => {
                 style={{ width: 100 + "%" }}
               />
             </a>
-            <div class="caption text-center">
+            <div className="caption text-center">
               <p>Snowskin Mooncakes</p>
             </div>
           </div>
         </div>
-        <div class="col-md-2">
-          <div class="thumbnail">
+        <div className="col-md-2">
+          <div className="thumbnail">
             <a href={cakes}>
               <img
                 src={cakes}
@@ -126,13 +126,13 @@ const Grid = () => {
                 style={{ width: 100 + "%" }}
               />
             </a>
-            <div class="caption text-center">
+            <div className="caption text-center">
               <p>Snowskin Mooncakes</p>
             </div>
           </div>
         </div>
-        <div class="col-md-2">
-          <div class="thumbnail">
+        <div className="col-md-2">
+          <div className="thumbnail">
             <a href={cakes}>
               <img
                 src={cakes}
@@ -140,13 +140,13 @@ const Grid = () => {
                 style={{ width: 100 + "%" }}
               />
             </a>
-            <div class="caption text-center">
+            <div className="caption text-center">
               <p>Snowskin Mooncakes</p>
             </div>
           </div>
         </div>
-        <div class="col-md-2">
-          <div class="thumbnail">
+        <div className="col-md-2">
+          <div className="thumbnail">
             <a href={cakes}>
               <img
                 src={cakes}
@@ -154,13 +154,13 @@ const Grid = () => {
                 style={{ width: 100 + "%" }}
               />
             </a>
-            <div class="caption text-center">
+            <div className="caption text-center">
               <p>Snowskin Mooncakes</p>
             </div>
           </div>
         </div>
-        <div class="col-md-2">
-          <div class="thumbnail">
+        <div className="col-md-2">
+          <div className="thumbnail">
             <a href={cakes}>
               <img
                 src={cakes}
@@ -168,7 +168,7 @@ const Grid = () => {
                 style={{ width: 100 + "%" }}
               />
             </a>
-            <div class="caption text-center">
+            <div className="caption text-center">
               <p>Snowskin Mooncakes</p>
             </div>
           </div>

@@ -102,7 +102,7 @@ const NavUserInfo = ({ loggedIn }) => {
   )
 }
 
-NavItem.propTypes = {
+NavUserInfo.propTypes = {
   loggedIn: PropTypes.bool.isRequired,
 }
 
