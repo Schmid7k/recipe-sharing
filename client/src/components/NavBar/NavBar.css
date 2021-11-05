@@ -2,6 +2,7 @@
     background-color: #DF7861;
     padding: 0.5rem 1rem;
     font-weight: bold;
+    max-width: 100%;
 }
 
 .navbar-flex {
@@ -49,6 +50,7 @@
 
 .nav-item {
     margin: 0px 0.5rem;
+    cursor: pointer;
 }
 
 .nav-item.active, #username-link.active {

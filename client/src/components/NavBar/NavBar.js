@@ -50,12 +50,27 @@ NavItem.propTypes = {
   source: PropTypes.node.isRequired,
 }
 
+const FilterToggler = ({ text, active, source }) => {
+  return (
+    <Fragment>
+      <li className={`nav-item nav-icon-item ${active === true ? "active" : ""}`}>
+        <div className="d-md-none" data-bs-toggle="collapse" data-bs-target="#filtering-menu" aria-expanded="false" aria-controls="filtering-menu">
+          <img className="nav-icon" src={source} alt={`${text} icon`} />
+        </div>
+        <div className="nav-link d-none d-md-block" data-bs-toggle="collapse" data-bs-target="#filtering-menu" aria-expanded="false" aria-controls="filtering-menu">
+          {text}
+        </div>
+      </li>
+    </Fragment>
+  )
+}
+
 const NavItems = () => {
   return (
     <Fragment>
       <ul className="navbar-nav mr-auto">
         <NavItem text="Home" href="/" active={true} source={homeSvg} />
-        <NavItem text="Filter" href="/" active={false} source={filterSvg} />
+        <FilterToggler text="Filter" active={false} source={filterSvg} />
         <NavItem text="Add a recipe" href="/" active={false} source={recipeSvg} />
       </ul>
     </Fragment>
@@ -119,7 +134,7 @@ NavUserInfo.propTypes = {
 const NavigationBar = () => {
   return (
     <Fragment>
-      <nav className="navbar navbar-expand-sm navbar-custom">
+      <nav className="navbar fixed-top navbar-expand-sm navbar-custom">
         <NavBrand />
         <div className="navbar-nav-items">
           <NavItems />
