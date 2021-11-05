@@ -3,14 +3,14 @@ import "./App.css";
 
 //components
 import NavigationBar from "./components/NavBar/NavBar";
-import Grid from "./components/Grid";
+import ContentGrid from "./components/ContentGrid/ContentGrid";
 
 function App() {
   return (
     <Fragment>
       <NavigationBar />
       <div className="container">
-        <Grid />
+        <ContentGrid />
       </div>
     </Fragment>
   );

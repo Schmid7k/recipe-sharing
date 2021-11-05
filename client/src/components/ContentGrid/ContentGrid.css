@@ -1,0 +1,9 @@
+.content-grid-container{
+    /* TEMP: should probably move this elsewhere depending on how we handle this component*/
+    margin-top: 50px; 
+
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    grid-gap: 15px;
+    justify-content: center;
+}
