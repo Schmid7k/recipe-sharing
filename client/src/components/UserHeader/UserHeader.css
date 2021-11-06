@@ -1,0 +1,49 @@
+.user-info-container {
+    width: 50%;
+    min-width: 23rem;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    padding: 1.0rem;
+}
+
+.user-info-container .user-icon {
+    width: 7rem;
+    height: 7rem;
+    border-radius: 50%;
+    margin-right: 1.0rem;
+}
+
+.user-info-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.user-info-text h5 {
+    font-weight: bold;
+}
+.user-button-container .btn-custom {
+    background-color: transparent;
+    color: #DF7861;
+    border-color: #DF7861;
+    font-weight: bold;
+}
+
+.user-button-container .btn-custom.active {
+    background-color: #DF7861;
+    color: #FFFFFF;
+    border-color: #DF7861;
+}
+
+.user-button-container .btn-custom:focus {
+    box-shadow: 0 0 0 0.25rem rgba(223, 120, 97, 0.5);
+}
+
+.user-button-container .btn-custom:hover {
+    background-color: #DF7861;
+    color: #FFFFFF;
+    border-color: #DF7861;
+}

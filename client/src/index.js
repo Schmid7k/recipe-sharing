@@ -2,6 +2,11 @@ import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
+import Login from "./pages/Login";
+import Registration from "./pages/Registration";
+import About from "./pages/About";
+import User from "./pages/User";
+import AddRecipe from "./pages/AddRecipe";
 
 import {
   BrowserRouter as Router,
@@ -19,9 +24,25 @@ ReactDOM.render(
           <App />
         </Route>
 
-        {/* <Route path="/about">
+        <Route exact path="/login">
+          <Login />
+        </Route>
+
+        <Route exact path="/registration">
+          <Registration />
+        </Route>
+
+        <Route path="/about">
           <About />
-        </Route>  */}
+        </Route>
+
+        <Route path="/user">
+          <User />
+        </Route>
+
+        <Route path="/addrecipe">
+          <AddRecipe />
+        </Route>
 
         <Redirect to='/' />
 

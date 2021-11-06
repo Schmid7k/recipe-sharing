@@ -1,9 +1,14 @@
+html {
+  overflow-x: hidden;
+}
+
 body {
   margin: 0;
   background-color: #FCF8E8;
   font-family: 'Atkinson Hyperlegible', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
 code {

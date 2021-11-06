@@ -56,7 +56,7 @@ const NavItems = () => {
       <ul className="navbar-nav mr-auto">
         <NavItem text="Home" href="/" active={true} source={homeSvg} />
         <NavItem text="Filter" href="/" active={false} source={filterSvg} />
-        <NavItem text="Add a recipe" href="/" active={false} source={recipeSvg} />
+        <NavItem text="Add a recipe" href="/addrecipe" active={false} source={recipeSvg} />
       </ul>
     </Fragment>
   )
@@ -88,10 +88,10 @@ const NavUserInfo = ({ loggedIn }) => {
     <Fragment>
       <ul className="navbar-nav mr-auto">
         <li id="user-info">
-          <a href="/">
+          <a href="/user">
             <img id="user-icon" src={dummyIcon} alt="User icon" />
           </a>
-          <a id="username-link" className="nav-link d-none d-md-block" href="/">
+          <a id="username-link" className="nav-link d-none d-md-block" href="/user">
             <span className="navbar-text">Username</span>
           </a>
         </li>
@@ -103,7 +103,7 @@ const NavUserInfo = ({ loggedIn }) => {
     <Fragment>
       <ul className="navbar-nav mr-auto">
         <li className="nav-item">
-          <a className="nav-link" href="/">
+          <a className="nav-link" href="/login">
             <span className="navbar-text">Login</span>
           </a>
         </li>
