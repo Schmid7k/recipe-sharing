@@ -3,7 +3,7 @@ CREATE DATABASE recipesharing;
 CREATE TABLE users (
     UserID SERIAL PRIMARY KEY,
     Username VARCHAR(32) UNIQUE NOT NULL,
-    Pass VARCHAR(32) NOT NULL
+    Pass VARCHAR(128) NOT NULL
 );
 
 CREATE TABLE recipes (
