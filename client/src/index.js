@@ -7,6 +7,7 @@ import Registration from "./pages/Registration";
 import About from "./pages/About";
 import User from "./pages/User";
 import AddRecipe from "./pages/AddRecipe";
+import Recipe from "./pages/Recipe";
 
 import {
   BrowserRouter as Router,
@@ -42,6 +43,10 @@ ReactDOM.render(
 
         <Route path="/addrecipe">
           <AddRecipe />
+        </Route>
+
+        <Route path="/recipes/:id">
+          <Recipe />
         </Route>
 
         <Redirect to='/' />
