@@ -8,24 +8,99 @@ const { application } = require("express");
 const crypt = require("bcrypt");
 const fs = require("fs");
 
-function addInstructions(instructions) {
-  //TODO: Implement adding of instructions to database table
+// Helper function that save instructions to the instruction database
+
+async function saveInstructions(instructions, recipeID) {
+  instructions.forEach(async (instruction, index) => {
+    try {
+      await pool.query(
+        "INSERT INTO recipe_instructions (RecipeID, Step, Instruction, Instruction_Image) VALUES($1, $2, $3, $4) RETURNING *",
+        [recipeID, index + 1, instruction, ""]
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  });
 }
 
-function addGroups(groups) {
-  //TODO: Implement adding of groups to database table
+// Helper function that checks if recipe tags are not yet part of the database and adds them
+
+async function saveTags(tags, recipeID) {
+  tags.forEach(async (tag) => {
+    try {
+      const checkTag = await pool.query("SELECT * FROM tags WHERE Name = $1", [
+        tag,
+      ]);
+
+      if (checkTag.rows && checkTag.rows.length == 0) {
+        await pool.query("INSERT INTO tags (Name) VALUES($1) RETURNING *", [
+          tag,
+        ]);
+      }
+
+      await pool.query(
+        "INSERT INTO recipe_tags (RecipeID, Name) VALUES($1, $2) RETURNING *",
+        [recipeID, tag]
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  });
 }
 
-function addCategory(category) {
-  //TODO: Implement adding of category to database table
+// Helper function that adds categories related to a recipe to the database
+
+async function saveCategories(category, recipeID) {
+  try {
+    await pool.query(
+      "INSERT INTO recipe_categories (RecipeID, Name) VALUES($1, $2) RETURNING *",
+      [recipeID, category]
+    );
+  } catch (error) {
+    console.error(error);
+  }
 }
 
-function addIngredients(ingredients) {
-  //TODO: Implement adding of ingredients to database table
+// Helper function that checks if recipe ingredients are not yet part of the database and adds them
+
+async function saveIngredients(ingredients, amounts, recipeID) {
+  ingredients.forEach(async (ingredient, index) => {
+    try {
+      const checkIngredient = await pool.query(
+        "SELECT * FROM ingredients WHERE Name = $1",
+        [ingredient]
+      );
+
+      if (checkIngredient.rows && checkIngredient.rows.length == 0) {
+        await pool.query(
+          "INSERT INTO ingredients (Name) VALUES($1) RETURNING *",
+          [ingredient]
+        );
+      }
+
+      await pool.query(
+        "INSERT INTO recipe_ingredients (Amount, RecipeID, Name) VALUES($1, $2, $3) RETURNING *",
+        [amounts[index], recipeID, ingredient]
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  });
 }
 
-function addTags(tags) {
-  //TODO: Implement adding of tags to database table
+// Helper function that adds recipe groups to the database
+
+async function saveGroups(groups, recipeID) {
+  groups.forEach(async (group) => {
+    try {
+      await pool.query(
+        "INSERT INTO ingredient_groups (RecipeID, Name) VALUES($1, $2) RETURNING *",
+        [recipeID, group]
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  });
 }
 
 // middleware
@@ -60,6 +135,7 @@ app.post("/recipes", main.single("main"), async (req, res) => {
       title,
       category,
       ingredients,
+      amounts,
       groups,
       instructions,
       addInstructions,
@@ -74,6 +150,13 @@ app.post("/recipes", main.single("main"), async (req, res) => {
       "INSERT INTO recipes (UserID, MainImage, Title, AdditionalInstructions) VALUES($1, $2, $3, $4) RETURNING *",
       [userID, main.path, title, addInstructions]
     );
+    const recipeID = newRecipe.rows[0].recipeid;
+
+    await saveInstructions(instructions, recipeID);
+    await saveTags(tags, recipeID);
+    await saveCategories(category, recipeID);
+    await saveIngredients(ingredients, amounts, recipeID);
+    await saveGroups(groups, recipeID);
 
     res.status(201).json(newRecipe.rows[0]);
   } catch (err) {
