@@ -1,10 +1,12 @@
 const express = require("express");
 const multer = require("multer");
+const main = multer({ dest: "images/main/" });
 const app = express();
 const cors = require("cors");
 const pool = require("./db");
 const { application } = require("express");
 const crypt = require("bcrypt");
+const fs = require("fs");
 
 function addInstructions(instructions) {
   //TODO: Implement adding of instructions to database table
@@ -28,8 +30,6 @@ function addTags(tags) {
 
 // middleware
 app.use(cors());
-app.use(express.json());
-app.use(multer().single());
 
 // Routes
 
@@ -40,12 +40,12 @@ app.post("/register", async (req, res) => {
     const { username, password } = req.body; // Get the username and password from the request body
     const salt = await crypt.genSalt(); // Generate a random salt for every new password
     const hash = await crypt.hash(password, salt); // Hash the password with the generated salt
-    const newUser = await pool.query(
+    await pool.query(
       "INSERT INTO users (Username, Pass) VALUES($1, $2) RETURNING *",
       [username, hash]
     ); // Add the new user to the database
 
-    res.json("Successfully created user account!");
+    res.status(201).json("Successfully created user account!");
   } catch (error) {
     console.error(error.message);
   }
@@ -53,30 +53,29 @@ app.post("/register", async (req, res) => {
 
 // POST; Upload a new recipe
 
-app.post("/recipes", async (req, res) => {
+app.post("/recipes", main.single("main"), async (req, res) => {
   try {
-    const {
+    const main = req.file; // retrieve the main image from the request
+    var {
       title,
       category,
-      image,
       ingredients,
       groups,
       instructions,
       addInstructions,
       tags,
-    } = req.body;
-    const userID = 1; // FIXME: For development purposes the current originator of every recipe will be the user with userID 1;
+    } = req.body; // retrieve the text form content
+
+    if (!addInstructions) addInstructions = ""; // In case addInstructions is null set it to empty string
+
+    const userID = 1; // FIXME: For development purposes the current originator of every recipe will be the user with userID 1
+
     const newRecipe = await pool.query(
       "INSERT INTO recipes (UserID, MainImage, Title, AdditionalInstructions) VALUES($1, $2, $3, $4) RETURNING *",
-      [userID, image, title, addInstructions]
+      [userID, main.path, title, addInstructions]
     );
-    addInstructions(instructions);
-    addGroups(groups);
-    addCategory(category);
-    addIngredients(ingredients);
-    addTags(tags);
 
-    res.json(newRecipe.rows[0]);
+    res.status(201).json(newRecipe.rows[0]);
   } catch (err) {
     console.error(err.message);
   }
@@ -86,8 +85,10 @@ app.post("/recipes", async (req, res) => {
 
 app.get("/recipes", async (req, res) => {
   try {
-    const allRecipes = await pool.query("SELECT * from recipes");
-    res.json(allRecipes.rows);
+    const allRecipes = await pool.query(
+      "SELECT * from recipes ORDER BY RecipeID DESC"
+    );
+    res.status(200).json(allRecipes.rows);
   } catch (err) {
     console.error(err.message);
   }
@@ -97,9 +98,16 @@ app.get("/recipes", async (req, res) => {
 
 app.get("/recipes/:id", async (req, res) => {
   try {
-    console.log("Not yet implemented!");
+    const { id } = req.params; // Get the URL parameter
+    const recipe = await pool.query(
+      "SELECT * from recipes WHERE RecipeID = $1",
+      [id]
+    );
+
+    res.status(200).json(recipe.rows[0]);
   } catch (err) {
     console.error(err.message);
+    res.status(404).json("Unable to find recipe");
   }
 });
 
@@ -117,15 +125,20 @@ app.put("/recipes/:id", async (req, res) => {
 
 app.delete("/recipes/:id", async (req, res) => {
   try {
-    const { id } = req.params;
-    const deleteRecipe = await pool.query(
-      "DELETE FROM recipes where RecipeID = $1",
+    const { id } = req.params; // Get the URL parameter
+    const recipe = await pool.query(
+      "SELECT * FROM recipes WHERE RecipeID = $1",
       [id]
-    );
+    ); // Retrieve the recipe from the database
 
-    res.json("Recipe successfully deleted!");
+    fs.unlinkSync(String(recipe.rows[0].mainimage)); // Delete the main image related to the database
+
+    await pool.query("DELETE FROM recipes WHERE RecipeID = $1", [id]); // Delete the database entry
+
+    res.status(200).json("Recipe successfully deleted!");
   } catch (error) {
     console.error(err.message);
+    res.status(404).json("Unable to find recipe");
   }
 });
 
