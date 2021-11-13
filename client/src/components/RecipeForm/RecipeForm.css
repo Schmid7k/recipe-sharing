@@ -1,0 +1,99 @@
+.recipe-form-container {
+    width: 50%;
+    min-width: 20rem;
+    margin: 0 auto;
+}
+
+.recipe-form-container h5, .recipe-form-container h6 {
+    font-weight: bold;
+}
+
+.recipe-form-container .btn-custom {
+    background-color: #DF7861;
+    border-color: #DF7861;
+    font-weight: bold;
+}
+
+.recipe-form-container .btn-secondary-custom {
+    background-color: #ECDFC8;
+    border-color: #ECDFC8;
+    font-weight: bold;
+    padding: 0.375rem 2.0rem;
+}
+
+.recipe-form-container .form-select option:disabled {
+    color: crimson;
+}
+
+.recipe-form-container .btn-custom:focus, .recipe-form-container input:focus, 
+.recipe-form-container .form-select:focus, .recipe-form-container .form-control:focus {
+    box-shadow: 0 0 0 0.25rem rgba(223, 120, 97, 0.5);
+    border-color: #DF7861;
+}
+
+.recipe-form-container .btn-secondary-custom:focus, .recipe-form-container .btn-close-custom:focus {
+    box-shadow: 0 0 0 0.25rem rgba(71, 67, 60, 0.5);
+    border-color: #ECDFC8;
+}
+
+.recipe-form-container .recipe-element {
+    margin: 1rem;
+}
+
+.image-uploader-container {
+    background-color: #ECDFC8;
+    border-radius: 5px;
+    padding: 1.0rem;
+}
+
+.list-ingredient-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.list-ingredient-name {
+    flex-basis: 80%;
+    text-align: left;
+}
+
+.list-ingredient-amount {
+    flex-basis: 20%;
+    text-align: right;
+}
+
+.list-button {
+    font-weight: bold;
+    background-color: #ECDFC8;
+    cursor: pointer;
+}
+
+.ingredient-subgroup {
+    margin: 1.0rem 0rem;
+}
+
+.btn-close-custom {
+    width: 0.5rem;
+    height: 0.5rem;
+    background: #ECDFC8 url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ECB390'%3e%3cpath d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 -0.707 1.707a1 1 0 010-1.414z'/%3e%3c/svg%3e") center/1em auto no-repeat
+}
+
+.list-instructions-step {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0.5rem 0rem;
+}
+
+.instructions-step-start, .instructions-step-end {
+    width: 5%;
+    font-weight: bold;
+}
+
+.list-instructions-step ul {
+    width: 90%;
+}
+
+.list-instructions-step:first-of-type .instructions-step-end button {
+    display: none;
+}

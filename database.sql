@@ -1,71 +1,66 @@
 CREATE DATABASE recipesharing;
 
-CREATE TABLE Users (
+CREATE TABLE users (
     UserID SERIAL PRIMARY KEY,
     Username VARCHAR(32) UNIQUE NOT NULL,
-    Pass VARCHAR(32) NOT NULL
+    Pass VARCHAR(128) NOT NULL
 );
 
-CREATE TABLE Recipes (
+CREATE TABLE recipes (
     RecipeID SERIAL PRIMARY KEY,
-    UserID int,
+    UserID integer REFERENCES users ON DELETE SET NULL,
     MainImage VARCHAR(1024),
-    Title VARCHAR(128) NOT NULL,
-    AdditionalInstructions VARCHAR(1024),
-    CONSTRAINT fk_user
-        FOREIGN KEY(UserID)
-            REFERENCES Users(UserID)
-            ON DELETE SET NULL
+    Title VARCHAR(64) NOT NULL,
+    AdditionalInstructions VARCHAR(1024)
 );
 
-/*
-Currently here
-*/
-CREATE TABLE Recipe_Ingredients (
-    Amount VARCHAR(128),
-    Unit VARCHAR(128),
-    RecipeID int NOT NULL FOREIGN KEY REFERENCES Recipes(RecipeID) ON DELETE CASCADE,
-    IngredientID int NOT NULL FOREIGN KEY REFERENCES Ingredients(IngredientID) ON DELETE CASCADE,
-    PRIMARY KEY CLUSTERED ( RecipeID, IngredientID )
+CREATE TABLE ingredients (
+    ingredientsID SERIAL PRIMARY KEY,
+    Name VARCHAR(128) UNIQUE
 );
 
-CREATE TABLE Ingredients (
-    IngredientID int NOT NULL IDENTITY PRIMARY KEY,
-    Name VARCHAR(256)
+CREATE TABLE recipe_ingredients (
+    Amount VARCHAR(64),
+    ingredientsID integer REFERENCES ingredients ON DELETE CASCADE,
+    RecipeID integer,
+    groupID integer,
+    PRIMARY KEY ( ingredientsID, RecipeID, groupID ),
+    FOREIGN KEY (RecipeID, groupID) REFERENCES ingredient_groups(RecipeID, groupID) ON DELETE CASCADE
 );
 
-CREATE TABLE Recipe_Categories (
-    RecipeID int NOT NULL FOREIGN KEY REFERENCES Recipes(RecipeID) ON DELETE CASCADE,
-    CategoryID int NOT NULL FOREIGN KEY REFERENCES Categories(CategoryID) ON DELETE CASCADE,
-    PRIMARY KEY CLUSTERED ( RecipeID, CategoryID )
+CREATE TABLE categories (
+    categoryID SERIAL PRIMARY KEY,
+    Name VARCHAR(128) UNIQUE
 );
 
-CREATE TABLE Categories (
-    CategoryID int NOT NULL IDENTITY PRIMARY KEY,
-    Name VARCHAR(256)
+CREATE TABLE recipe_categories (
+    RecipeID integer REFERENCES recipes ON DELETE CASCADE,
+    categoryID integer REFERENCES categories ON DELETE CASCADE,
+    PRIMARY KEY ( RecipeID, categoryID )
 );
 
-CREATE TABLE Recipe_Tags (
-    RecipeID int NOT NULL FOREIGN KEY REFERENCES Recipes(RecipeID) ON DELETE CASCADE,
-    TagID int NOT NULL FOREIGN KEY REFERENCES Tags(TagID) ON DELETE CASCADE,
-    PRIMARY KEY CLUSTERED ( RecipeID, TagID )
+CREATE TABLE tags (
+    tagID SERIAL PRIMARY KEY,
+    Name VARCHAR(32) UNIQUE
 );
 
-CREATE TABLE Tags (
-    TagID int NOT NULL IDENTITY PRIMARY KEY,
-    Name VARCHAR(256)
+CREATE TABLE recipe_tags (
+    RecipeID integer REFERENCES recipes ON DELETE CASCADE,
+    tagID integer REFERENCES tags ON DELETE CASCADE,
+    PRIMARY KEY ( RecipeID, tagID )
 );
 
-CREATE TABLE Recipe_Instructions (
-    RecipeID int NOT NULL FOREIGN KEY REFERENCES Recipes(RecipeID) ON DELETE CASCADE,
-    Step int NOT NULL,
+CREATE TABLE recipe_instructions (
+    RecipeID integer REFERENCES recipes ON DELETE CASCADE,
+    Step integer NOT NULL,
     Instruction VARCHAR(1024),
     Instruction_Image VARCHAR(1024),
-    PRIMARY KEY (RecipeID)
+    PRIMARY KEY ( RecipeID, Step )
 );
 
-CREATE TABLE Ingredient_Groups (
-    RecipeID int NOT NULL FOREIGN KEY REFERENCES Recipes(RecipeID) ON DELETE CASCADE,
-    Name VARCHAR(512),
-    PRIMARY KEY (RecipeID)
-)
+CREATE TABLE ingredient_groups (
+    groupID SERIAL,
+    RecipeID integer REFERENCES recipes ON DELETE CASCADE,
+    Name VARCHAR(64),
+    PRIMARY KEY ( RecipeID, groupID )
+);
