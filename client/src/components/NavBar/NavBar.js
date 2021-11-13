@@ -54,10 +54,10 @@ const FilterToggler = ({ text, active, source }) => {
   return (
     <Fragment>
       <li className={`nav-item nav-icon-item ${active === true ? "active" : ""}`}>
-        <div className="d-md-none" data-bs-toggle="collapse" data-bs-target="#filtering-menu" aria-expanded="false" aria-controls="filtering-menu">
+        <div className="d-md-none" data-bs-toggle="collapse" data-bs-target="#filtering-menu" aria-expanded="false" aria-controls="filtering-menu" id='filter-button-icon'>
           <img className="nav-icon" src={source} alt={`${text} icon`} />
         </div>
-        <div className="nav-link d-none d-md-block" data-bs-toggle="collapse" data-bs-target="#filtering-menu" aria-expanded="false" aria-controls="filtering-menu">
+        <div className="nav-link d-none d-md-block" data-bs-toggle="collapse" data-bs-target="#filtering-menu" aria-expanded="false" aria-controls="filtering-menu" id='filter-button'>
           {text}
         </div>
       </li>
@@ -77,6 +77,7 @@ const NavItems = () => {
   )
 }
 
+// TODO: maybe hitting search on the search page should not redirect
 const SearchForm = () => {
   return (
     <Fragment>
@@ -134,7 +135,7 @@ NavUserInfo.propTypes = {
 const NavigationBar = () => {
   return (
     <Fragment>
-      <nav className="navbar fixed-top navbar-expand-sm navbar-custom">
+      <nav className="navbar fixed-top navbar-expand-sm navbar-custom" id="main-navbar">
         <NavBrand />
         <div className="navbar-nav-items">
           <NavItems />

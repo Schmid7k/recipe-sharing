@@ -5,6 +5,7 @@ import "./App.css";
 import NavigationBar from "./components/NavBar/NavBar";
 import FilteringMenu from "./components/FilterMenu/FilterMenu";
 import ContentGrid from "./components/ContentGrid/ContentGrid";
+import ContentSearch from "./components/ContentSearch/ContentSearch";
 
 function App() {
   return (
@@ -17,10 +18,8 @@ function App() {
       {/* 1. Changed container to container-fluid to remove extra padding that affected filtering menu placement
           2. Added top padding for .container-fluid in index.css to account for fixed navbar
           3. Added .container-flex (css in index.css) so that filtering menu is shown next to the grid */}
-      <div className="container-fluid container-flex">
-        <FilteringMenu />
-        <ContentGrid />
-      </div>
+      <ContentSearch />
+
     </Fragment>
   );
 }

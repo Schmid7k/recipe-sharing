@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 
 import "./ContentGridCard.css";
 
-const ContentGridCard = ({title, img}) => {
+const ContentGridCard = ({title, img, cardCallback}) => {
     return (
        <Fragment>
-            <div className="content-grid-card-container">
+            <div className="content-grid-card-container" onClick={() => cardCallback()}>
                 <img className="content-grid-card-img" src={img}/>
                 <div className="content-grid-card-title">{title}</div>
             </div>
