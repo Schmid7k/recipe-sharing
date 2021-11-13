@@ -1,0 +1,32 @@
+{
+  "title": "Snowskin Mooncakes",
+  "category": "Snacks",
+  "groups": {
+    "Default": [
+      {
+        "ingredient": "Sugar",
+        "amount": "200g"
+      },
+      {
+        "ingredient": "Water",
+        "amount": "50ml"
+      },
+      {
+        "ingredient": "Cinnamon sticks",
+        "amount": "2pcs"
+      }
+    ],
+    "Toppings": [
+      {
+        "ingredient": "Chocolate chunks",
+        "amount": "50g"
+      }
+    ]
+  },
+  "instructions": {
+    "1": "Preheat oven to 200°C",
+    "2": "Pour sugar and water into bowl"
+  },
+  "addInstructions": "Prepare them with love!",
+  "tags": ["sweet", "cake", "special"]
+}

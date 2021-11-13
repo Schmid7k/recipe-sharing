@@ -15,34 +15,39 @@ CREATE TABLE recipes (
 );
 
 CREATE TABLE ingredients (
-    Name VARCHAR(128) PRIMARY KEY
+    ingredientsID SERIAL PRIMARY KEY,
+    Name VARCHAR(128) UNIQUE
 );
 
 CREATE TABLE recipe_ingredients (
     Amount VARCHAR(64),
-    RecipeID integer REFERENCES recipes ON DELETE CASCADE,
-    Name VARCHAR(128) REFERENCES ingredients ON DELETE CASCADE,
-    PRIMARY KEY ( RecipeID, Name )
+    ingredientsID integer REFERENCES ingredients ON DELETE CASCADE,
+    RecipeID integer,
+    groupID integer,
+    PRIMARY KEY ( ingredientsID, RecipeID, groupID ),
+    FOREIGN KEY (RecipeID, groupID) REFERENCES ingredient_groups(RecipeID, groupID) ON DELETE CASCADE
 );
 
 CREATE TABLE categories (
-    Name VARCHAR(128) PRIMARY KEY
+    categoryID SERIAL PRIMARY KEY,
+    Name VARCHAR(128) UNIQUE
 );
 
 CREATE TABLE recipe_categories (
     RecipeID integer REFERENCES recipes ON DELETE CASCADE,
-    Name VARCHAR(128) REFERENCES categories ON DELETE CASCADE,
-    PRIMARY KEY ( RecipeID, Name )
+    categoryID integer REFERENCES categories ON DELETE CASCADE,
+    PRIMARY KEY ( RecipeID, categoryID )
 );
 
 CREATE TABLE tags (
-    Name VARCHAR(32) PRIMARY KEY
+    tagID SERIAL PRIMARY KEY,
+    Name VARCHAR(32) UNIQUE
 );
 
 CREATE TABLE recipe_tags (
     RecipeID integer REFERENCES recipes ON DELETE CASCADE,
-    Name VARCHAR(32) REFERENCES tags ON DELETE CASCADE,
-    PRIMARY KEY ( RecipeID, Name )
+    tagID integer REFERENCES tags ON DELETE CASCADE,
+    PRIMARY KEY ( RecipeID, tagID )
 );
 
 CREATE TABLE recipe_instructions (
@@ -50,11 +55,12 @@ CREATE TABLE recipe_instructions (
     Step integer NOT NULL,
     Instruction VARCHAR(1024),
     Instruction_Image VARCHAR(1024),
-    PRIMARY KEY (RecipeID, Step)
+    PRIMARY KEY ( RecipeID, Step )
 );
 
 CREATE TABLE ingredient_groups (
+    groupID SERIAL,
     RecipeID integer REFERENCES recipes ON DELETE CASCADE,
     Name VARCHAR(64),
-    PRIMARY KEY (RecipeID, Name)
+    PRIMARY KEY ( RecipeID, groupID )
 );
