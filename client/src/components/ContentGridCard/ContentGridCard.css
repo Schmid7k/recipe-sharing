@@ -1,6 +1,7 @@
-/* .content-grid-card-container {
-  
-} */
+.content-grid-card-container:hover {
+  cursor: pointer;
+  /* TODO: maybe add some nice hover effects */
+}
 
 .content-grid-card-img {
     border-radius: 15px;

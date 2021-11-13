@@ -1,5 +1,6 @@
 html {
-  overflow-x: hidden;
+  /* overflow-x: hidden; */
+  /* overflow-y: hidden; */
 }
 
 body {
@@ -20,4 +21,12 @@ code {
 .handwritten-text {
   font-family: 'Dancing Script', cursive;
   font-weight: bold;
+}
+
+.container-fluid {
+  padding: 3.5rem 0rem 0rem 0rem;
+}
+
+.container-flex {
+  display: flex;
 }

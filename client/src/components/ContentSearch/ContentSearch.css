@@ -1,0 +1,11 @@
+.content-search-grid-container {
+    position: relative;
+    padding: 50px;
+    overflow-y: hidden;
+}
+
+@media only screen and (max-width: 850px) {
+    .content-search-grid-container {
+        padding: 50px 30px 50px 30px;
+    }
+  }
