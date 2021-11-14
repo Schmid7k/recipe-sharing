@@ -44,7 +44,7 @@ const ImageUploader = () => {
     );
 };
 
-const Ingredient = ({ name, amount, unit }) => {
+const Ingredient = ({ name, amount }) => {
     return (
     <Fragment>
             <li className="list-group-item list-ingredient-container">
@@ -52,8 +52,9 @@ const Ingredient = ({ name, amount, unit }) => {
                     {name}
                 </div>
                 <div className="list-ingredient-amount float-end">
-                    {amount} {unit}
+                    {amount}
                 </div>
+                <button type="button" className="btn-close btn-close-custom" aria-label="Close"></button>
             </li>
       </Fragment>
     );
@@ -62,20 +63,113 @@ const Ingredient = ({ name, amount, unit }) => {
 Ingredient.propTypes = {
     name: PropTypes.string.isRequired,
     amount: PropTypes.string.isRequired,
-    unit: PropTypes.string.isRequired,
 };
 
-const IngredientList = () => {
+class AddIngredientInput extends React.Component {
+  constructor() {
+    super();
+
+    this.state = {
+      name: "",
+      amount: ""
+    }
+
+    this.handleNameChange = this.handleNameChange.bind(this);
+    this.handleAmountChange = this.handleAmountChange.bind(this);
+    this.addIngredient = this.addIngredient.bind(this);
+  }
+
+  handleNameChange(e) {
+    let newState = {...this.state}
+    newState.name = e.target.value;
+    this.setState(newState);
+  }
+
+  handleAmountChange(e) {
+    let newState = {...this.state}
+    newState.amount = e.target.value;
+    this.setState(newState);
+  }
+
+  addIngredient(e) {
+    e.preventDefault();
+    this.props.addIngredient(e, this.state.name, this.state.amount);
+  }
+
+  render() {
     return (
       <Fragment>
-            <ul className="list-group">
-                <Ingredient name="Ingredient 1" amount="100" unit="g"/>
-                <Ingredient name="Ingredient 2" amount="200" unit="ml"/>
-                <Ingredient name="Ingredient 3" amount="2" unit="pcs"/>
-                <li className="list-group-item list-button">+ Add a new ingredient</li>
-            </ul>
+        <div className="add-ingredient-input-container">
+          <div className="form-group list-ingredient-container">
+            <div className="add-ingredient-name">
+              Name:
+              <input type="text" className="form-control" id="ingredientNameInput" placeholder="Enter the name of the ingredient" onChange={this.handleNameChange} />
+            </div>
+            <div className="add-ingredient-amount">
+              Amount:
+              <input type="text" className="form-control" id="ingredientAmountInput" placeholder="Enter the amount" onChange={this.handleAmountChange} />
+            </div>
+          </div>
+          <div onClick={this.addIngredient}>+ Add the above ingredient</div>
+        </div>
       </Fragment>
     );
+  }
+};
+
+class IngredientList extends React.Component {
+  constructor() {
+    super();
+
+    this.state = {
+      ingredients: [],
+      showIngredientInput: false
+    }
+
+    this.addIngredient = this.addIngredient.bind(this);
+    this.toggleIngredientInput = this.toggleIngredientInput.bind(this);
+  }
+
+  componentDidMount() {
+    let ingredients = [];
+    ingredients.push( { name: "flour", amount: "100 g" }, { name: "milk", amount: "200 ml" }, { name: "potato", amount: "2 pcs" } );
+
+    this.setState({
+      ingredients: ingredients
+    });
+  }
+
+  toggleIngredientInput() {
+    let newState = {...this.state}
+    newState.showIngredientInput = !newState.showIngredientInput;
+    this.setState(newState);
+  }
+
+  addIngredient(e, ingredientName, ingredientAmount) {
+    e.preventDefault();
+    this.toggleIngredientInput();
+    let ingredients = [...this.state.ingredients];
+    ingredients.push( { name: ingredientName, amount: ingredientAmount } );
+
+    this.setState({
+      ingredients: ingredients
+    });
+    
+  }
+
+  render() {
+    return (
+      <Fragment>
+        <ul className="list-group">
+          {this.state.ingredients.map((ingredient, idx) => <Ingredient name={ingredient.name} amount={ingredient.amount} key={idx} />)}
+          <li className="list-group-item list-button">
+          { this.state.showIngredientInput ? <AddIngredientInput addIngredient={this.addIngredient} /> : null }
+          { !this.state.showIngredientInput ? <div onClick={this.toggleIngredientInput}>+ Add a new ingredient</div> : null }
+          </li>
+        </ul>
+      </Fragment>
+    );
+  }  
 };
 
 const IngredientSubgroup = ({ name }) => {
@@ -93,31 +187,81 @@ IngredientSubgroup.propTypes = {
     name: PropTypes.string.isRequired,
 };
 
-const IngredientInput = () => {
+class IngredientInput extends React.Component {
+  constructor() {
+    super();
+
+    this.state = {
+      subgroups: []
+    }
+
+    this.addIngredientSubgroup = this.addIngredientSubgroup.bind(this);
+  }
+
+  componentDidMount() {
+    let subgroups = [];
+    subgroups.push( { name: "Subgroup name" } );
+
+    this.setState({
+      subgroups: subgroups
+    });
+  }
+
+  addIngredientSubgroup(e) {
+    e.preventDefault();
+    let subgroups = [...this.state.subgroups];
+    // TODO: add subgroup naming input
+    subgroups.push( { name: "Some subgroup name" } );
+
+    this.setState({
+      subgroups: subgroups
+    });
+  }
+
+  // TODO: add subgroup removal functionality
+
+  render() {
     return (
       <Fragment>
-            <div className="recipe-element">
-                <h5>Ingredients</h5>
-                <IngredientList />
-                <IngredientSubgroup name="Subgroup name" />
-                <button className="btn btn-secondary-custom mt-1">+ Add a new ingredient group</button>
-            </div>
+        <div className="recipe-element">
+          <h5>Ingredients</h5>
+          <IngredientList />
+          {this.state.subgroups.map((subgroup, idx) => <IngredientSubgroup name={subgroup.name} key={idx} />)}
+          <button className="btn btn-secondary-custom mt-1" onClick={this.addIngredientSubgroup}>+ Add a new ingredient group</button>
+        </div>
       </Fragment>
     );
+  }
 };
 
-const InstructionsStep = ({ number, description }) => {
+class InstructionsStep extends React.Component {
+  constructor() {
+    super();
+    this.handleInstructionChange = this.handleInstructionChange.bind(this);
+  }
+
+  handleInstructionChange(e) {
+    e.preventDefault();
+    this.props.handleInstructionChange(e, this.props.number - 1);
+  }
+
+  render() {
     return (
       <Fragment>
-            <div className="list-instructions-step">
-                <div className="instructions-step-start">{number}.</div>
-                <ul className="list-group"><li className="list-group-item">{description}</li></ul>
-                <div className="instructions-step-end">
-                    <button type="button" className="btn-close btn-close-custom" aria-label="Close"></button>
-                </div>
-            </div>
+        <div className="list-instructions-step">
+          <div className="instructions-step-start">{this.props.number}.</div>
+          <textarea className="form-control" rows="1" placeholder="Enter the description for this step..." defaultValue={this.props.description} onChange={this.handleInstructionChange}></textarea>
+          <div className="instructions-step-end">
+            <button type="button" className="btn-close btn-close-custom" aria-label="Close" onClick={this.props.deleteInstructionStep} ></button>
+          </div>
+        </div>
+        <div className="form-group">
+          Step {this.props.number} image<br />
+          <input type="file" className="form-control-file" id="instructionImageFileInput" />
+        </div>
       </Fragment>
     );
+  } 
 };
 
 InstructionsStep.propTypes = {
@@ -125,18 +269,69 @@ InstructionsStep.propTypes = {
     description: PropTypes.string.isRequired,
 };
 
-const InstructionsInput = () => {
+class InstructionsInput extends React.Component {
+  constructor() {
+    super();
+    
+    this.state = {
+      steps: []
+    }
+
+    this.addInstructionStep = this.addInstructionStep.bind(this);
+    this.handleInstructionChange = this.handleInstructionChange.bind(this);
+    this.deleteInstructionStep = this.deleteInstructionStep.bind(this);
+  }
+
+  componentDidMount() {
+    let steps = [];
+    steps.push( { description: "" } );
+
+    this.setState({
+      steps: steps
+    });
+  }
+
+  addInstructionStep(e) {
+    e.preventDefault();
+    let steps = [...this.state.steps];
+    steps.push( { description: "" } );
+
+    this.setState({
+      steps: steps
+    });
+  }
+
+  handleInstructionChange(e, idx) {
+    let steps = [...this.state.steps];
+    steps[idx].description = e.target.value;
+
+    this.setState({
+      steps: steps
+    });
+  }
+
+  deleteInstructionStep(idx) {
+    let steps = [...this.state.steps];
+    steps.splice(idx, 1);
+
+    this.setState({
+      steps: steps
+    });
+  }
+  
+
+  render() {
     return (
       <Fragment>
-            <div className="recipe-element">
-                <h5>Instructons</h5>
-                <InstructionsStep number="1" description="First step description." />
-                <InstructionsStep number="2" description="Second step description." />
-                <InstructionsStep number="3" description="Third step description." />
-                <button className="btn btn-secondary-custom mt-1">+ Add a new step</button>
-            </div>
+        <div className="recipe-element">
+          <h5>Instructons</h5>
+          {this.state.steps.map(step => <InstructionsStep number={String(this.state.steps.indexOf(step) + 1)} description={step.description} key={this.state.steps.indexOf(step)} handleInstructionChange={this.handleInstructionChange} deleteInstructionStep={() => this.deleteInstructionStep(this.state.steps.indexOf(step))} />)}
+          <button className="btn btn-secondary-custom mt-2" onClick={this.addInstructionStep} >+ Add a new step</button>
+        </div>
       </Fragment>
     );
+  }
+    
 };
 
 const AdditionalInstructionsInput = () => {
@@ -161,24 +356,32 @@ const TagInput = () => {
     );
 };
 
-const RecipeForm = () => {
-  return (
-    <Fragment>
-      <div className="recipe-form-container text-center">
-        <h1>Add a new recipe</h1>
-        <form>
-            <NameInput />
-            <CategorySelection />
-            <ImageUploader />
-            <IngredientInput />
-            <InstructionsInput />
-            <AdditionalInstructionsInput />
-            <TagInput />
-            <button type="submit" className="btn btn-primary btn-custom mt-3">Submit recipe</button>
-        </form>
-      </div>
-    </Fragment>
-  );
+class RecipeForm extends React.Component {
+  constructor() {
+    super();
+
+    this.state = {}
+  }
+
+  render() {
+    return (
+      <Fragment>
+        <div className="recipe-form-container text-center">
+          <h1>Add a new recipe</h1>
+          <form>
+              <NameInput />
+              <CategorySelection />
+              <ImageUploader />
+              <IngredientInput />
+              <InstructionsInput />
+              <AdditionalInstructionsInput />
+              <TagInput />
+              <button type="submit" className="btn btn-primary btn-custom mt-3">Submit recipe</button>
+          </form>
+        </div>
+      </Fragment>
+    );
+  }
 };
 
 export default RecipeForm;

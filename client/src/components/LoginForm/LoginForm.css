@@ -16,11 +16,6 @@ h1, .login-container h5 {
     font-weight: bold;
 }
 
-.login-container .btn-custom:focus, .login-container input:focus {
-    box-shadow: 0 0 0 0.25rem rgba(223, 120, 97, 0.5);
-    border-color: #DF7861;
-}
-
 .login-tip {
     margin-top: 1rem;
 }
