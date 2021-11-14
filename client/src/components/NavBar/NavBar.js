@@ -70,7 +70,8 @@ const NavItems = () => {
     <Fragment>
       <ul className="navbar-nav mr-auto">
         <NavItem text="Home" href="/" active={true} source={homeSvg} />
-        <NavItem text="Filter" href="/" active={false} source={filterSvg} />
+        <FilterToggler text="Filter" href="/" active={false} source={filterSvg} />
+        {/* <NavItem text="Filter" href="/" active={false} source={filterSvg} /> */}
         <NavItem text="Add a recipe" href="/addrecipe" active={false} source={recipeSvg} />
       </ul>
     </Fragment>
