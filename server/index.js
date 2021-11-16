@@ -36,6 +36,7 @@ app.post("/register", async (req, res) => {
     res.status(201).json("Successfully created user account!");
   } catch (error) {
     console.error(error.message);
+    res.status(500).send("Something went wrong!");
   }
 });
 

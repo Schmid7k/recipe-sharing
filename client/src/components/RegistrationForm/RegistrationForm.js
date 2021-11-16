@@ -1,4 +1,5 @@
 import React, { Fragment } from "react";
+import { Redirect } from "react-router-dom";
 import "./RegistrationForm.css";
 
 const usernameValidation = (value) => {
@@ -43,7 +44,8 @@ class RegistrationForm extends React.Component {
         this.state = {
             username: "",
             password: "",
-            errors: []
+            errors: [],
+            redirect: false
         }
 
         this.handleInputChange = this.handleInputChange.bind(this);
@@ -59,6 +61,7 @@ class RegistrationForm extends React.Component {
     handleSubmit(e) {
         e.preventDefault();
 
+        let redirect = false;
         let errors = [];
         let usernameVal = usernameValidation(this.state.username);
         let passwordVal = passwordValidation(this.state.password);
@@ -79,21 +82,29 @@ class RegistrationForm extends React.Component {
                 },
                 body: JSON.stringify(user),
             })
-            .then(response => response.json())
+            .then(response => { 
+                if (response.ok) { 
+                    return response.json();
+                }
+                throw new Error('Something went wrong...');
+            })
             .then(user => {
                 console.log('Success:', user);
+                redirect = true;
+                this.setState({ redirect: redirect })
             })
             .catch((error) => {
-                console.error('Error:', error);
+                console.error(error);
+                errors.push("Can't create an account with these credentials")
+                this.setState({ errors: errors })
             });
         }
-
-        
     }
 
     render() {
         return (
             <Fragment>
+                {this.state.redirect ? <Redirect push to="/login?regRedirect=true" /> : null}
                 <div className="registration-container">
                     <form onSubmit={this.handleSubmit}>
                         <h1>Register</h1>
