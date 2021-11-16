@@ -62,7 +62,7 @@
     cursor: pointer;
 }
 
-.ingredient-subgroup {
+.ingredient-group {
     margin: 1.0rem 0rem;
 }
 
@@ -101,4 +101,12 @@
 .add-ingredient-input-container .add-ingredient-amount {
     width: 30%;
     margin: 0rem 0.2rem;
+}
+
+.add-subgroup-container {
+    width: fit-content;
+    margin: 0 auto;
+    background-color: #ECDFC8;
+    padding: 0.5rem;
+    border-radius: 5px;
 }
