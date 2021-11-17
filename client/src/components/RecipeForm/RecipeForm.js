@@ -3,6 +3,23 @@ import PropTypes from 'prop-types';
 import "./RecipeForm.css";
 
 /**
+ * Component for displaying a red error box.
+ * @param {Array} errors  List of errors to display 
+ * @returns A ul element inside a div that contains Bootstrap's styled .list-group-item-danger li elements.
+ */
+const ErrorAlert = ({ errors }) => {
+  return (
+      <Fragment>
+          <div className="m-2" role="alert" style={{ fontWeight: "bold" }}>
+              <ul className="list-group">
+                  {errors.map( (error, idx) => <li className="list-group-item list-group-item-danger" key={idx}>{error}</li>)}
+              </ul>
+          </div>
+      </Fragment>
+  );
+}
+
+/**
  * Component for displaying a header with the text 'Name of the dish' and an input field.
  * 
  * When the input field content is changed, handleInputChange(e) is called. The input field 
@@ -25,7 +42,8 @@ class NameInput extends React.Component {
       <Fragment>
         <div className="form-group recipe-element">
           <label htmlFor="recipeNameInput"><h5>Name of the dish</h5></label>
-          <input type="text" className="form-control" id="recipeNameInput" placeholder="Enter the name of the dish..." name="title" onChange={this.handleInputChange} />
+          <input  type="text" className="form-control" id="recipeNameInput" placeholder="Enter the name of the dish..." 
+                  name="title" onChange={this.handleInputChange} required />
         </div>
       </Fragment>
     );
@@ -34,6 +52,9 @@ class NameInput extends React.Component {
 
 /**
  * Component for displaying a header with the text 'Category' and a select dropdown menu.
+ * The select menu's text is conditionally styled to be gray (matching other bootstrap input field 
+ * placeholder texts) when the component's state has '' as the value for 'selected' and
+ * is otherwise black when something has been chosen.
  * 
  * When the select drowndown's selected option is changed, handleInputChange(e) is called. 
  * The select name (='category') and the selected option's value are passed up to the 
@@ -43,10 +64,15 @@ class NameInput extends React.Component {
   constructor() {
     super();
 
+    this.state = {
+      selected: ""
+    }
+
     this.handleInputChange = this.handleInputChange.bind(this);
   }
 
   handleInputChange(e) {
+    this.setState({ selected: e.target.value});
     this.props.handleInputChange(e.target.name, e.target.value);
   }
 
@@ -55,12 +81,14 @@ class NameInput extends React.Component {
       <Fragment>
         <div className="recipe-element">
           <h5><label htmlFor="categories-select">Category</label></h5>
-          <select name="category" id="categories-select" className="form-select" defaultValue="placeholder" onChange={this.handleInputChange}>
-            <option value="placeholder" disabled hidden>Select a category</option>
+          <select name="category" id="categories-select" className="form-select" defaultValue="" 
+                  style={{ color: this.state.selected === "" ? "#6C757D": "#000000"}} 
+                  onChange={this.handleInputChange} required>
+            <option value="" disabled hidden>Select a category</option>
             <option value="Appetizers">Appetizers</option>
-            <option value="MainDishes">Main Dishes</option>
+            <option value="Main Dishes">Main Dishes</option>
             <option value="Snacks">Snacks</option>
-            <option value="Sidedishes">Side Dishes</option>
+            <option value="Side Dishes">Side Dishes</option>
             <option value="Desserts">Desserts</option>
           </select>
         </div>
@@ -71,19 +99,38 @@ class NameInput extends React.Component {
 
 /**
  * Component for showing a header with the text 'Image of the dish' and a file uploader.
- * TODO: Implement passing the uploaded file to RecipeForm to be stored
+ * It stores the current uploaded file in its state and passes the new file to the main
+ * RecipeForm component ('image' attribute in RecipeForm) when it's changed.
  */
-const ImageUploader = () => {
-  return (
-    <Fragment>
-      <div className="recipe-element">
-        <h5>Image of the dish</h5>
-        <div className="form-group image-uploader-container">
-          <input type="file" className="form-control-file" id="dishImageFileInput" />
+class ImageUploader extends React.Component {
+  constructor() {
+    super();
+
+    this.state = {
+      file: null
+    }
+
+    this.handleFileChange = this.handleFileChange.bind(this);
+  }
+
+  handleFileChange(e) {
+    this.setState({ file: e.target.files[0]})
+    this.props.handleInputChange("image", e.target.files[0]);
+  }
+
+  render() {
+    return (
+      <Fragment>
+        <div className="recipe-element">
+          <h5>Image of the dish</h5>
+          <div className="form-group image-uploader-container">
+            <input  type="file" className="form-control-file" id="dishImageFileInput" 
+                    onChange={this.handleFileChange} required />
+          </div>
         </div>
-      </div>
-    </Fragment>
-  );
+      </Fragment>
+    );
+  }
 };
 
 /**
@@ -113,6 +160,8 @@ Ingredient.propTypes = {
 
 /**
  * Component for showing ingredient adding interface.
+ * handleInputChange() is in charge of storing input field values in the component's state.
+ * addIngredient() passes the name and amount values to the parent component to be validated there.
  */
 class AddIngredientInput extends React.Component {
   constructor() {
@@ -145,11 +194,13 @@ class AddIngredientInput extends React.Component {
           <div className="form-group list-ingredient-container">
             <div className="add-ingredient-name">
               Name:
-              <input type="text" className="form-control" id="ingredientNameInput" placeholder="Enter the name of the ingredient" name="name" onChange={this.handleInputChange} />
+              <input  type="text" className="form-control" id="ingredientNameInput" placeholder="Enter the name of the ingredient" 
+                      name="name" onChange={this.handleInputChange} />
             </div>
             <div className="add-ingredient-amount">
               Amount:
-              <input type="text" className="form-control" id="ingredientAmountInput" placeholder="Enter the amount" name="amount" onChange={this.handleInputChange} />
+              <input  type="text" className="form-control" id="ingredientAmountInput" placeholder="Enter the amount" 
+                      name="amount" onChange={this.handleInputChange} />
             </div>
           </div>
           <div onClick={this.addIngredient}>+ Add the above ingredient</div>
@@ -161,6 +212,21 @@ class AddIngredientInput extends React.Component {
 
 /**
  * Component for showing a list of ingredients.
+ * 
+ * toggleIngredientInput() is in charge of toggling between '+ Add a new ingredient' button
+ * and showing AddIngredientInput component (the ingredient input for name and amount and 
+ * '+ Add the above ingredient').
+ * 
+ * addIngredient() validates the input received from the AddIngredientInput child component.
+ * It checks that:
+ * (1) name cannot be empty
+ * (2) amount cannot be empty
+ * (3) name cannot be a duplicate of any ingredients included in the same ingredient group
+ * If all these requirements are met, it toggles the ingredient input, saves the new ingredient
+ * and passes it to the parent component. If there are errors, the ingredient is not saved and
+ * the errors are shown using the ErrorAlert component.
+ * 
+ * deleteIngredient() deletes an ingredient and passes this information along to parent components.
  */
 class IngredientList extends React.Component {
   constructor() {
@@ -168,7 +234,8 @@ class IngredientList extends React.Component {
 
     this.state = {
       ingredients: [],
-      showIngredientInput: false
+      showIngredientInput: false,
+      errors: []
     }
 
     this.addIngredient = this.addIngredient.bind(this);
@@ -190,15 +257,33 @@ class IngredientList extends React.Component {
 
   addIngredient(e, ingredientName, ingredientAmount) {
     e.preventDefault();
-    this.toggleIngredientInput();
-    let ingredients = [...this.state.ingredients];
-    ingredients.push( { ingredient: ingredientName, amount: ingredientAmount } );
+    let name = ingredientName.trim();
+    let amount = ingredientAmount.trim();
+    let errors = [];
 
-    this.setState({
-      ingredients: ingredients
-    });
+    if (name.length < 1) {
+      errors.push("Ingredient name can't be empty");
+    }
+    if (this.state.ingredients.map(ingredient => ingredient.ingredient).includes(name)) {
+      errors.push("Ingredient can't be a duplicate of an ingredient already included in this same ingredient group");
+    }
+    if (amount.length < 1) {
+      errors.push("Ingredient amount can't be empty");
+    }
 
-    this.props.handleIngredientChange(ingredients);
+    if (errors.length === 0) {
+      this.toggleIngredientInput();
+      let ingredients = [...this.state.ingredients];
+      ingredients.push( { ingredient: ingredientName, amount: ingredientAmount } );
+
+      this.setState({
+        ingredients: ingredients
+      });
+
+      this.props.handleIngredientChange(ingredients);
+    }
+
+    this.setState({ errors: errors});
   }
 
   deleteIngredient(idx) {
@@ -215,16 +300,15 @@ class IngredientList extends React.Component {
     return (
       <Fragment>
         <ul className="list-group ingredient-group">
-          
           {this.state.ingredients.map((ingredient, idx) => 
               <Ingredient name={ingredient.ingredient} 
                           amount={ingredient.amount} 
-                          key={idx} 
+                          key={`${ingredient.ingredient}-ingredient`} 
                           deleteIngredient={() => this.deleteIngredient(this.state.ingredients.indexOf(ingredient))} 
               />
             )}
-          
           <li className="list-group-item list-button">
+            { this.state.errors.length > 0 ? <ErrorAlert errors={this.state.errors} /> : null}
             { this.state.showIngredientInput ? <AddIngredientInput addIngredient={this.addIngredient} /> : null }
             { !this.state.showIngredientInput ? <div onClick={this.toggleIngredientInput}>+ Add a new ingredient</div> : null }
           </li>
@@ -286,6 +370,22 @@ IngredientSubgroup.propTypes = {
 
 /**
  * Component for showing multiple ingredient lists (default, subgroups) together.
+ * It stores the ingredients for default ingredient group in its state. For subgroups
+ * it stores an array of subgroups. The subgroups in the array have the format:
+ * subgroup[i] = {name: 'Subgroup name', ingredients: []}
+ * The component also stores the value inserted into the text field for inputting a new
+ * subgroup name in its state as well as an array of errors related to that input field.
+ * 
+ * When the value for the subgroup name input field is changed, handleInputChange() is called.
+ * When a user submits a new subgroup name, addIngredientSubgroup() is called and it briefly
+ * validates that the input meets the following requirements:
+ * (1) input can't be empty (subgroup must have a name)
+ * (2) input can't be a duplicate of existing subgroup name (no subgroup duplicates allowed for a single recipe)
+ * When a user wants to delete a subgroup and presses the 'X' button, deleteIngredientSubgroup() is called.
+ * 
+ * handleIngredientChange() and handleSubgroupChange() store ingredient changes from child components
+ * this component and passes them up to parent component. handleIngredientChange() handles ingredient
+ * changes in the default ingredient group and handleSubgroupChange() handles the changes in subgroups.
  */
 class IngredientInput extends React.Component {
   constructor() {
@@ -294,7 +394,8 @@ class IngredientInput extends React.Component {
     this.state = {
       default: [],
       subgroups: [],
-      newGroupName: "Subgroup name"
+      newGroupName: "",
+      errors: []
     }
 
     this.addIngredientSubgroup = this.addIngredientSubgroup.bind(this);
@@ -312,11 +413,25 @@ class IngredientInput extends React.Component {
 
   addIngredientSubgroup(e) {
     e.preventDefault();
-    let subgroups = [...this.state.subgroups];
-    subgroups.push( { name: this.state.newGroupName, ingredients: [] } );
-    this.setState({
-      subgroups: subgroups
-    });
+
+    let name = this.state.newGroupName.trim();
+    let errors = []
+    if (name.length < 1) {
+      errors.push("Subgroup name can't be empty")
+    } else if (this.state.subgroups.map(subgroup => subgroup.name).includes(name)) {
+      errors.push("Subgroup name can't be a duplicate")
+    }
+
+    if (errors.length === 0) {
+      let subgroups = [...this.state.subgroups];
+      subgroups.push( { name: name, ingredients: [] } );
+      this.setState({
+        subgroups: subgroups,
+        newGroupName: ""
+      });
+    }
+
+    this.setState({ errors: errors })
   }
 
   deleteIngredientSubgroup(idx) {
@@ -354,7 +469,6 @@ class IngredientInput extends React.Component {
     let ingredientsObj = {
       Default: this.state.default
     }
-
     subgroups.forEach( subgroup => ingredientsObj = { ...ingredientsObj, [subgroup.name]: subgroup.ingredients });
     this.props.handleInputChange("groups", ingredientsObj)
   }
@@ -364,15 +478,18 @@ class IngredientInput extends React.Component {
       <Fragment>
         <div className="recipe-element">
           <h5>Ingredients</h5>
-          <IngredientList key="default" initialIngredients={this.state.default} handleIngredientChange={this.handleIngredientChange} />
+          <IngredientList key="default" initialIngredients={this.state.default} 
+                          handleIngredientChange={this.handleIngredientChange} />
           {this.state.subgroups.map((subgroup, idx) => 
-              <IngredientSubgroup name={subgroup.name} key={`${subgroup.name}-${idx}`} idx={idx}
+              <IngredientSubgroup name={subgroup.name} key={`${subgroup.name}-group`} idx={idx}
                                   initialIngredients={subgroup.ingredients}
                                   handleSubgroupChange={this.handleSubgroupChange} 
                                   deleteIngredientSubgroup={() => this.deleteIngredientSubgroup(idx)} />
             )}
           <div className="add-subgroup-container">
-            <input type="text" className="form-control" id="groupNameInput" placeholder="Name for a new ingredient group" name="newGroupName" onChange={this.handleInputChange} />
+            {this.state.errors.length > 0 ? <ErrorAlert errors={this.state.errors} /> : null}
+            <input  type="text" className="form-control" id="groupNameInput" placeholder="Name for a new ingredient group" 
+                    name="newGroupName" value={this.state.newGroupName} onChange={this.handleInputChange} />
             <button className="btn btn-secondary-custom mt-1" onClick={this.addIngredientSubgroup}>+ Add a new ingredient group</button>
           </div>
         </div>
@@ -396,7 +513,13 @@ class IngredientInput extends React.Component {
 class InstructionsStep extends React.Component {
   constructor() {
     super();
+
+    this.state = {
+      file: null
+    }
+
     this.handleInstructionChange = this.handleInstructionChange.bind(this);
+    this.handleFileChange = this.handleFileChange.bind(this);
   }
 
   handleInstructionChange(e) {
@@ -404,19 +527,27 @@ class InstructionsStep extends React.Component {
     this.props.handleInstructionChange(e, this.props.number - 1);
   }
 
+  handleFileChange(e) {
+    this.setState({ file: e.target.files[0] });
+    this.props.handleImageChange(this.props.number, e.target.files[0])
+  }
+
   render() {
     return (
       <Fragment>
         <div className="list-instructions-step">
           <div className="instructions-step-start">{this.props.number}.</div>
-          <textarea className="form-control" rows="1" placeholder="Enter the description for this step..." value={this.props.description} onChange={this.handleInstructionChange}></textarea>
+          <textarea className="form-control" rows="1" placeholder="Enter the description for this step..." 
+                    value={this.props.description} onChange={this.handleInstructionChange} 
+                    required={this.props.number === "1"} ></textarea>
           <div className="instructions-step-end">
-            <button type="button" className="btn-close btn-close-custom" aria-label="Close" onClick={this.props.deleteInstructionStep} ></button>
+            <button type="button" className="btn-close btn-close-custom" aria-label="Close" 
+                    onClick={this.props.deleteInstructionStep} ></button>
           </div>
         </div>
         <div className="form-group">
-          Step {this.props.number} image<br />
-          <input type="file" className="form-control-file" id="instructionImageFileInput" />
+          Step {this.props.number} image (optional)<br />
+          <input type="file" className="form-control-file" id="instructionImageFileInput" onChange={this.handleFileChange} />
         </div>
       </Fragment>
     );
@@ -432,7 +563,11 @@ InstructionsStep.propTypes = {
  * Component for displaying a header with the text 'Instructions' and a list of instructions.
  * Each instruction step is shown using the InstructionsStep component defined above.
  * 
- * The component stores a list of current step descriptions inputted in its own state.
+ * The component stores a list of current step descriptions inputted in its own state. In addition
+ * to that it also keeps track of how many steps have been added by incrementing the index variable
+ * in its state. This is then used for step keys and is there to make sure they are all unique and
+ * constant for the steps to prevent problems with React rerendering due to key changes when some 
+ * instructions are deleted.
  * 
  * When the user presses the button '+ Add a new step' to add an additional instruction step,
  * addInstructionStep(e) is called. The function stores an additional step with an empty description
@@ -458,30 +593,34 @@ class InstructionsInput extends React.Component {
     super();
     
     this.state = {
-      steps: []
+      steps: [],
+      index: 0
     }
 
     this.addInstructionStep = this.addInstructionStep.bind(this);
     this.handleInstructionChange = this.handleInstructionChange.bind(this);
     this.deleteInstructionStep = this.deleteInstructionStep.bind(this);
+    this.handleImageChange = this.handleImageChange.bind(this);
   }
 
   componentDidMount() {
     let steps = [];
-    steps.push( { description: "" } );
+    steps.push( { description: "", idx: this.state.index } );
 
     this.setState({
-      steps: steps
+      steps: steps,
+      index: this.state.index + 1
     });
   }
 
   addInstructionStep(e) {
     e.preventDefault();
     let steps = [...this.state.steps];
-    steps.push( { description: "" } );
+    steps.push( { description: "", idx: this.state.index } );
 
     this.setState({
-      steps: steps
+      steps: steps,
+      index: this.state.index + 1
     });
   }
 
@@ -504,9 +643,13 @@ class InstructionsInput extends React.Component {
     this.setState({
       steps: steps
     });
+
     let stepObj = steps.reduce((obj, step) => ({...obj, [steps.indexOf(step) + 1]: step.description}), {});
     this.props.handleInputChange("instructions", stepObj);
-    this.forceUpdate()
+  }
+
+  handleImageChange(step, file) {
+    this.props.handleStepImageChange(step, file);
   }
 
   render() {
@@ -514,7 +657,12 @@ class InstructionsInput extends React.Component {
       <Fragment>
         <div className="recipe-element">
           <h5>Instructons</h5>
-          {this.state.steps.map(step => <InstructionsStep number={String(this.state.steps.indexOf(step) + 1)} description={step.description} key={this.state.steps.indexOf(step)} handleInstructionChange={this.handleInstructionChange} deleteInstructionStep={() => this.deleteInstructionStep(this.state.steps.indexOf(step))} />)}
+          {this.state.steps.map(step => 
+            <InstructionsStep number={String(this.state.steps.indexOf(step) + 1)} description={step.description} 
+                              key={step.idx} handleInstructionChange={this.handleInstructionChange}
+                              handleImageChange={this.handleImageChange} 
+                              deleteInstructionStep={() => this.deleteInstructionStep(this.state.steps.indexOf(step))} />
+          )}
           <button className="btn btn-secondary-custom mt-2" onClick={this.addInstructionStep} >+ Add a new step</button>
         </div>
       </Fragment>
@@ -545,7 +693,9 @@ class AdditionalInstructionsInput extends React.Component {
       <Fragment>
         <div className="form-group recipe-element">
           <label htmlFor="additionalInstructionsInput"><h5>Additional Instructions</h5></label>
-          <textarea className="form-control" id="additionalInstructionsInput" rows="2" placeholder="Enter any additional instructions for preparing the dish here..." name="addInstructions" onChange={this.handleInputChange}></textarea>
+          <textarea className="form-control" id="additionalInstructionsInput" rows="2" 
+                    placeholder="Enter any additional instructions for preparing the dish here..." 
+                    name="addInstructions" onChange={this.handleInputChange}></textarea>
         </div>
       </Fragment>
     );
@@ -581,7 +731,9 @@ class TagInput extends React.Component {
       <Fragment>
         <div className="form-group recipe-element">
           <label htmlFor="recipeTagInput"><h5>Tags</h5></label>
-          <input type="text" className="form-control" id="recipeTagInput" placeholder="Enter the tags of the dish separated by ';' ..." name="tags" onChange={this.handleInputChange}/>
+          <input  type="text" className="form-control" id="recipeTagInput" 
+                  placeholder="Enter the tags of the dish separated by ';' ..." name="tags" 
+                  onChange={this.handleInputChange} required />
         </div>
       </Fragment>
     );
@@ -589,7 +741,12 @@ class TagInput extends React.Component {
 };
 
 /**
- * Component for the recipe adding form itself.
+ * Component for the recipe adding form itself. 
+ * Stores the recipe information in its state.
+ * 
+ * handleInputChange() is called by child components to update the state values based on the input field
+ * values of the child components. handleStepImageChange() is used to pass instruction step images back
+ * to the RecipeForm component and to store them there.
  */
 class RecipeForm extends React.Component {
   constructor() {
@@ -603,10 +760,13 @@ class RecipeForm extends React.Component {
       },
       instructions: {},
       addInstructions: "",
-      tags: []
+      tags: [],
+      image: null,
+      stepImages: {}
     }
 
     this.handleInputChange = this.handleInputChange.bind(this);
+    this.handleStepImageChange = this.handleStepImageChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
@@ -616,13 +776,13 @@ class RecipeForm extends React.Component {
     });
   };
 
+  handleStepImageChange(step, image) {
+    let currentImages = { ...this.state.stepImages, [step]: image };
+    this.setState({ stepImages: currentImages })
+  }
+
   handleSubmit(e) {
-    // TODO: Handle possible malicious content in the inputs in the child components
-    // TODO: Add validation to the input in the child components (require input, prevent duplicate subgroups)
-    // TODO: Come up with better keys instead of using indexing to prevent problems
-    // TODO: Proper comments/documentation for some of the components
     // TODO: Formulate the POST request and verify everything is working
-    // TODO: Implement image uploading and storing
     e.preventDefault();
     console.log(this.state);
 
@@ -653,9 +813,9 @@ class RecipeForm extends React.Component {
           <form onSubmit={this.handleSubmit}>
               <NameInput handleInputChange={this.handleInputChange} />
               <CategorySelection handleInputChange={this.handleInputChange} />
-              <ImageUploader />
+              <ImageUploader handleInputChange={this.handleInputChange} />
               <IngredientInput handleInputChange={this.handleInputChange} />
-              <InstructionsInput handleInputChange={this.handleInputChange} />
+              <InstructionsInput handleInputChange={this.handleInputChange} handleStepImageChange={this.handleStepImageChange} />
               <AdditionalInstructionsInput handleInputChange={this.handleInputChange} />
               <TagInput handleInputChange={this.handleInputChange} />
               <button type="submit" className="btn btn-primary btn-custom mt-3">Submit recipe</button>

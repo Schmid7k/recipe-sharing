@@ -110,3 +110,7 @@
     padding: 0.5rem;
     border-radius: 5px;
 }
+
+.form-select option {
+    color: #000000;
+}
