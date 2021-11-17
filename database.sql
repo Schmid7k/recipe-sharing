@@ -14,20 +14,6 @@ CREATE TABLE recipes (
     AdditionalInstructions VARCHAR(1024)
 );
 
-CREATE TABLE ingredients (
-    ingredientsID SERIAL PRIMARY KEY,
-    Name VARCHAR(128) UNIQUE
-);
-
-CREATE TABLE recipe_ingredients (
-    Amount VARCHAR(64),
-    ingredientsID integer REFERENCES ingredients ON DELETE CASCADE,
-    RecipeID integer,
-    groupID integer,
-    PRIMARY KEY ( ingredientsID, RecipeID, groupID ),
-    FOREIGN KEY (RecipeID, groupID) REFERENCES ingredient_groups(RecipeID, groupID) ON DELETE CASCADE
-);
-
 CREATE TABLE categories (
     categoryID SERIAL PRIMARY KEY,
     Name VARCHAR(128) UNIQUE
@@ -63,4 +49,18 @@ CREATE TABLE ingredient_groups (
     RecipeID integer REFERENCES recipes ON DELETE CASCADE,
     Name VARCHAR(64),
     PRIMARY KEY ( RecipeID, groupID )
+);
+
+CREATE TABLE ingredients (
+    ingredientsID SERIAL PRIMARY KEY,
+    Name VARCHAR(128) UNIQUE
+);
+
+CREATE TABLE recipe_ingredients (
+    Amount VARCHAR(64),
+    ingredientsID integer REFERENCES ingredients ON DELETE CASCADE,
+    RecipeID integer,
+    groupID integer,
+    PRIMARY KEY ( ingredientsID, RecipeID, groupID ),
+    FOREIGN KEY (RecipeID, groupID) REFERENCES ingredient_groups(RecipeID, groupID) ON DELETE CASCADE
 );
