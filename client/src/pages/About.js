@@ -8,11 +8,36 @@ const About = () => {
     <Fragment>
       <NavigationBar />
       <div className="container-fluid">
-        <div className="container pt-3">
+        <div className="container pt-3" style={{width: "60%", minWidth: "22rem" }}>
             <h1 className="text-center">About</h1>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc ut sapien vel nisl fermentum malesuada. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer tempor turpis ac ipsum dictum luctus. In hac habitasse platea dictumst. Nullam ut neque maximus, porttitor metus a, ullamcorper ipsum. Cras a arcu rhoncus, cursus tortor vel, iaculis felis. Duis tristique mauris sapien, ut commodo eros vehicula quis. Vivamus vitae neque a sem efficitur volutpat. Donec suscipit justo vitae tristique consequat. Quisque dapibus massa a pretium porttitor. Morbi non metus vehicula arcu convallis pharetra nec et sapien. Etiam a dapibus ex. Vivamus scelerisque, lorem quis mollis rutrum, dui tellus ultricies nisi, vel efficitur felis sem sed diam. Curabitur mollis lectus quis massa fermentum rhoncus. Vivamus magna purus, viverra quis luctus eget, blandit nec augue.</p>
-            <p>Donec vulputate velit et ante interdum elementum. Sed porta feugiat hendrerit. Duis orci nibh, vulputate eget odio nec, dignissim accumsan magna. Duis ac dapibus arcu. Nunc iaculis varius nulla nec congue. Praesent in venenatis nunc, sed lobortis elit. Aenean pharetra, quam ut sollicitudin mattis, nulla neque faucibus dui, quis hendrerit ipsum elit sed enim. In sem mi, lobortis a ornare ut, ullamcorper nec ante. Donec tempor nec orci eget faucibus. Ut dignissim elit ut purus porttitor lacinia. Aenean id eleifend lorem. Vivamus imperdiet libero eget nisl tempus faucibus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. In tincidunt quam at egestas pellentesque.</p>
-            <p>Suspendisse eget consectetur velit. Duis porta sit amet mi ac auctor. Quisque at arcu ullamcorper, porttitor turpis pulvinar, vestibulum nisi. Nullam a finibus justo. Suspendisse finibus leo rutrum, ultrices turpis nec, rutrum sem. Proin luctus elit sit amet elit tincidunt finibus. Integer malesuada semper nibh, ac maximus justo bibendum nec. Nullam eget maximus eros. Sed nec nulla quis mauris porta efficitur quis ut dolor. Nullam at neque lorem. Maecenas felis nisi, aliquam in enim ac, rutrum sagittis dolor.</p>
+            <div style={{textAlign: "justify"}}>
+              <h5 className="text-center" style={{fontWeight: "bold"}}>What is recipe sharing?</h5>
+              <p>Our web service aims to be a streamlined and easy-to-use recipe sharing and discovery platform where people 
+                can share their recipes with each other. Anyone can browse and search for recipes posted on the web service. 
+                We also offer filters for things like included and excluded recipes to facilitate finding recipes that are just 
+                perfect for your allergies and/or pantry situation.
+              </p>
+              <p>Our design philosophy for creating this website was to create a web service with large pictues showcasing the
+                creations of our users matched with warm colors and accessible fonts to make it easier for all kinds of people 
+                to use. We hope you enjoy using our web service as much as we enjoyed creating it!
+              </p>
+            </div>
+            <div style={{textAlign: "justify"}}>
+              <h5 className="text-center" style={{fontWeight: "bold"}}>Do I need to register for an account? What more can I do with an account?</h5>
+              <p>Adding new recipes to the web service is limited to registered users only. If you only want to look at the
+                recipes posted by other people, you don't need to feel pressure to register! However, registered users can also 
+                bookmark and rate recipes and easily access those recipes later from their account page if they so wish.
+              </p>
+            </div>
+            <div style={{textAlign: "justify"}}>
+              <h5 className="text-center" style={{fontWeight: "bold"}}>How do I get started?</h5>
+              <p>You can start searching for recipes by first either entering a search term into the search bar or start by 
+                going to the home page and browsing. Both your search results and all the recipes shown on the home page can be
+                filtered by opening up the filtering menu on those pages. Just press the 'Filter' button or icon on the navigation 
+                bar when you're on those pages and voilà! If you want to close the filtering menu, just press the filtering button
+                or icon again and it's gone &#8212; your filtering results will still be there.
+              </p>
+            </div>
         </div>
       </div>
     </Fragment>
