@@ -22,6 +22,9 @@ const ErrorAlert = ({ errors }) => {
 /**
  * Component for displaying a header with the text 'Name of the dish' and an input field.
  * 
+ * @param {Function}  this.props.handleInputChange  Function that passes input changes to RecipeForm
+ * @param {Array} this.props.errors Array of errors related to name input
+ * 
  * When the input field content is changed, handleInputChange(e) is called. The input field 
  * name (='title') and its value are passed up to the RecipeForm component to be stored 
  * in its state.
@@ -30,11 +33,19 @@ class NameInput extends React.Component {
   constructor() {
     super();
 
+    this.state = {
+      errors: []
+    }
+
     this.handleInputChange = this.handleInputChange.bind(this);
   }
 
+  componentDidMount() {
+    this.setState({ errors: this.props.errors })
+  }
+
   handleInputChange(e) {
-    this.props.handleInputChange(e.target.name, e.target.value);
+    this.props.handleInputChange(e.target.name, e.target.value.trim());
   }
 
   render() {
@@ -42,6 +53,7 @@ class NameInput extends React.Component {
       <Fragment>
         <div className="form-group recipe-element">
           <label htmlFor="recipeNameInput"><h5>Name of the dish</h5></label>
+          {this.props.errors.length > 0 ? <ErrorAlert errors={this.props.errors} />: null}
           <input  type="text" className="form-control" id="recipeNameInput" placeholder="Enter the name of the dish..." 
                   name="title" onChange={this.handleInputChange} required />
         </div>
@@ -56,6 +68,9 @@ class NameInput extends React.Component {
  * placeholder texts) when the component's state has '' as the value for 'selected' and
  * is otherwise black when something has been chosen.
  * 
+ * @param {Function}  this.props.handleInputChange  Function that passes selection changes to RecipeForm
+ * @param {Array} this.props.errors Array of errors related to category selection
+ * 
  * When the select drowndown's selected option is changed, handleInputChange(e) is called. 
  * The select name (='category') and the selected option's value are passed up to the 
  * RecipeForm component to be stored in its state.
@@ -65,10 +80,15 @@ class NameInput extends React.Component {
     super();
 
     this.state = {
-      selected: ""
+      selected: "",
+      errors: []
     }
 
     this.handleInputChange = this.handleInputChange.bind(this);
+  }
+
+  componentDidMount() {
+    this.setState({ errors: this.props.errors })
   }
 
   handleInputChange(e) {
@@ -81,6 +101,7 @@ class NameInput extends React.Component {
       <Fragment>
         <div className="recipe-element">
           <h5><label htmlFor="categories-select">Category</label></h5>
+          {this.props.errors.length > 0 ? <ErrorAlert errors={this.props.errors} />: null}
           <select name="category" id="categories-select" className="form-select" defaultValue="" 
                   style={{ color: this.state.selected === "" ? "#6C757D": "#000000"}} 
                   onChange={this.handleInputChange} required>
@@ -101,16 +122,23 @@ class NameInput extends React.Component {
  * Component for showing a header with the text 'Image of the dish' and a file uploader.
  * It stores the current uploaded file in its state and passes the new file to the main
  * RecipeForm component ('image' attribute in RecipeForm) when it's changed.
+ * @param {Function}  this.props.handleInputChange  Function that passes input changes to RecipeForm
+ * @param {Array} this.props.errors Array of image upload related errors
  */
 class ImageUploader extends React.Component {
   constructor() {
     super();
 
     this.state = {
-      file: null
+      file: null,
+      errors: []
     }
 
     this.handleFileChange = this.handleFileChange.bind(this);
+  }
+
+  componentDidMount() {
+    this.setState({ errors: this.props.errors })
   }
 
   handleFileChange(e) {
@@ -123,6 +151,7 @@ class ImageUploader extends React.Component {
       <Fragment>
         <div className="recipe-element">
           <h5>Image of the dish</h5>
+          {this.props.errors.length > 0 ? <ErrorAlert errors={this.props.errors} />: null}
           <div className="form-group image-uploader-container">
             <input  type="file" className="form-control-file" id="dishImageFileInput" 
                     onChange={this.handleFileChange} required />
@@ -429,6 +458,12 @@ class IngredientInput extends React.Component {
         subgroups: subgroups,
         newGroupName: ""
       });
+
+      let ingredientsObj = {
+        Default: this.state.default
+      }
+      subgroups.forEach( subgroup => ingredientsObj = { ...ingredientsObj, [subgroup.name]: subgroup.ingredients });
+      this.props.handleInputChange("groups", ingredientsObj);
     }
 
     this.setState({ errors: errors })
@@ -441,6 +476,12 @@ class IngredientInput extends React.Component {
     this.setState({
       subgroups: subgroups
     });
+
+    let ingredientsObj = {
+      Default: this.state.default
+    }
+    subgroups.forEach( subgroup => ingredientsObj = { ...ingredientsObj, [subgroup.name]: subgroup.ingredients });
+    this.props.handleInputChange("groups", ingredientsObj);
   }
 
   handleIngredientChange(ingredients) {
@@ -452,7 +493,7 @@ class IngredientInput extends React.Component {
       Default: ingredients
     }
     this.state.subgroups.forEach( subgroup => ingredientsObj = { ...ingredientsObj, [subgroup.name]: subgroup.ingredients });
-    this.props.handleInputChange("groups", ingredientsObj)
+    this.props.handleInputChange("groups", ingredientsObj);
   }
 
   handleSubgroupChange(group, idx, ingredients) {
@@ -470,7 +511,7 @@ class IngredientInput extends React.Component {
       Default: this.state.default
     }
     subgroups.forEach( subgroup => ingredientsObj = { ...ingredientsObj, [subgroup.name]: subgroup.ingredients });
-    this.props.handleInputChange("groups", ingredientsObj)
+    this.props.handleInputChange("groups", ingredientsObj);
   }
 
   render() {
@@ -478,6 +519,7 @@ class IngredientInput extends React.Component {
       <Fragment>
         <div className="recipe-element">
           <h5>Ingredients</h5>
+          {this.props.errors.length > 0 ? <ErrorAlert errors={this.props.errors} /> : null}
           <IngredientList key="default" initialIngredients={this.state.default} 
                           handleIngredientChange={this.handleIngredientChange} />
           {this.state.subgroups.map((subgroup, idx) => 
@@ -538,11 +580,11 @@ class InstructionsStep extends React.Component {
         <div className="list-instructions-step">
           <div className="instructions-step-start">{this.props.number}.</div>
           <textarea className="form-control" rows="1" placeholder="Enter the description for this step..." 
-                    value={this.props.description} onChange={this.handleInstructionChange} 
-                    required={this.props.number === "1"} ></textarea>
+                    onChange={this.handleInstructionChange} required={this.props.number === "1"} ></textarea>
           <div className="instructions-step-end">
             <button type="button" className="btn-close btn-close-custom" aria-label="Close" 
-                    onClick={this.props.deleteInstructionStep} ></button>
+                    onClick={this.props.deleteInstructionStep} 
+                    style={{display: this.props.number === "1" ? "none" : "initial"}} ></button>
           </div>
         </div>
         <div className="form-group">
@@ -562,6 +604,8 @@ InstructionsStep.propTypes = {
 /**
  * Component for displaying a header with the text 'Instructions' and a list of instructions.
  * Each instruction step is shown using the InstructionsStep component defined above.
+ * 
+ * @param {Array} this.props.errors Array of errors related to instruction steps
  * 
  * The component stores a list of current step descriptions inputted in its own state. In addition
  * to that it also keeps track of how many steps have been added by incrementing the index variable
@@ -594,7 +638,8 @@ class InstructionsInput extends React.Component {
     
     this.state = {
       steps: [],
-      index: 0
+      index: 0,
+      errors: []
     }
 
     this.addInstructionStep = this.addInstructionStep.bind(this);
@@ -609,7 +654,8 @@ class InstructionsInput extends React.Component {
 
     this.setState({
       steps: steps,
-      index: this.state.index + 1
+      index: this.state.index + 1,
+      errors: this.props.errors
     });
   }
 
@@ -626,7 +672,7 @@ class InstructionsInput extends React.Component {
 
   handleInstructionChange(e, idx) {
     let steps = [...this.state.steps];
-    steps[idx].description = e.target.value;
+    steps[idx].description = e.target.value.trim();
 
     this.setState({
       steps: steps
@@ -657,6 +703,7 @@ class InstructionsInput extends React.Component {
       <Fragment>
         <div className="recipe-element">
           <h5>Instructons</h5>
+          {this.props.errors.length > 0 ? <ErrorAlert errors={this.props.errors} />: null}
           {this.state.steps.map(step => 
             <InstructionsStep number={String(this.state.steps.indexOf(step) + 1)} description={step.description} 
                               key={step.idx} handleInstructionChange={this.handleInstructionChange}
@@ -685,7 +732,7 @@ class AdditionalInstructionsInput extends React.Component {
   }
 
   handleInputChange(e) {
-    this.props.handleInputChange(e.target.name, e.target.value);
+    this.props.handleInputChange(e.target.name, e.target.value.trim());
   }
 
   render() {
@@ -705,6 +752,9 @@ class AdditionalInstructionsInput extends React.Component {
 /**
  * Component for displaying a header with the text 'Tags' and an input field.
  * 
+ * @param {Function}  this.props.handleInputChange  Function to pass up state changes to RecipeForm
+ * @param {Array} this.props.errors Array listing possible errors arisen in last validation done during submit
+ * 
  * When the input field content is changed, handleInputChange(e) is called.
  * The component parses the tags by splitting the input field content at ';'s. 
  * If the split tags contain content after trimming trailing whitespaces, they 
@@ -715,7 +765,15 @@ class TagInput extends React.Component {
   constructor() {
     super();
 
+    this.state = {
+      errors: []
+    }
+
     this.handleInputChange = this.handleInputChange.bind(this);
+  }
+
+  componentDidMount() {
+    this.setState({ errors: this.props.errors })
   }
 
   handleInputChange(e) {
@@ -731,6 +789,7 @@ class TagInput extends React.Component {
       <Fragment>
         <div className="form-group recipe-element">
           <label htmlFor="recipeTagInput"><h5>Tags</h5></label>
+          {this.props.errors.length > 0 ? <ErrorAlert errors={this.props.errors} /> : null}
           <input  type="text" className="form-control" id="recipeTagInput" 
                   placeholder="Enter the tags of the dish separated by ';' ..." name="tags" 
                   onChange={this.handleInputChange} required />
@@ -762,7 +821,15 @@ class RecipeForm extends React.Component {
       addInstructions: "",
       tags: [],
       image: null,
-      stepImages: {}
+      stepImages: {},
+      errors: {
+        nameErrors: [],
+        categoryErrors: [],
+        imageErrors: [],
+        ingredientErrors: [],
+        instructionErrors: [],
+        tagErrors: []
+      }
     }
 
     this.handleInputChange = this.handleInputChange.bind(this);
@@ -786,23 +853,96 @@ class RecipeForm extends React.Component {
     e.preventDefault();
     console.log(this.state);
 
-    const data = this.state;
-    console.log(data);
-    /*        
-    fetch('http://localhost:5000/recipes', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Success:', data);
-    })
-    .catch((error) => {
-        console.error('Error:', error);
-    });*/
+    let dataValidates = true;
+
+    // validate name
+    let nameErrors = [];
+    if (this.state.title.length < 1) {
+      dataValidates = false;
+      nameErrors.push("Name can't be empty");
+    }
+
+    // validate category
+    let categoryErrors = [];
+    if (this.state.category === "") {
+      dataValidates = false;
+      categoryErrors.push("A category must be chosen");
+    }
+
+    // validate image
+    let imageErrors = [];
+    if (!this.state.image) {
+      dataValidates = false;
+      imageErrors.push("An image must be added");
+    }
+
+    // validate ingredients
+    let ingredientErrors = [];
+    if (Object.keys(this.state.groups).every(groupKey => this.state.groups[groupKey].length < 1)) {
+      dataValidates = false;
+      ingredientErrors.push("The recipe must contain at least one ingredient");
+    }
+    if (Object.keys(this.state.groups)
+              .filter(groupKey => groupKey !== "Default")
+              .some(groupKey => this.state.groups[groupKey].length < 1)) {
+      dataValidates = false;
+      ingredientErrors.push("Subgroups can't be empty");
+    }
+
+    // validate instructions
+    let instructionErrors = [];
+    if (this.state.instructions.length < 1 || !this.state.instructions['1']) {
+      dataValidates = false;
+      instructionErrors.push("The instructions must contain at least one step");
+    }
+    if (this.state.instructions['1'] && this.state.instructions['1'].length < 1) {
+      dataValidates = false;
+      instructionErrors.push("The first instruction step can't be empty");
+    }
+    if (Object.values(this.state.instructions).includes("") || Object.values(this.state.instructions).includes(undefined)) {
+      dataValidates = false;
+      instructionErrors.push("The instructions can't include empty instructions");
+    }
+
+    // validate tags
+    let tagErrors = [];
+    if (this.state.tags.length < 1) {
+      dataValidates = false;
+      tagErrors.push("Tags can't be empty");
+    }
+
+    let errors = {
+      nameErrors: nameErrors,
+      categoryErrors: categoryErrors,
+      imageErrors: imageErrors,
+      ingredientErrors: ingredientErrors,
+      instructionErrors: instructionErrors,
+      tagErrors: tagErrors
+    }
+
+    this.setState({ errors: errors });
+
+    if (dataValidates) {
+      console.log("Data validates, can be submitted");
+      const data = this.state;
+      console.log(data);
+
+      /*        
+      fetch('http://localhost:5000/recipes', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+      })
+      .then(response => response.json())
+      .then(data => {
+          console.log('Success:', data);
+      })
+      .catch((error) => {
+          console.error('Error:', error);
+      });*/
+    }
   }
 
   render() {
@@ -811,13 +951,20 @@ class RecipeForm extends React.Component {
         <div className="recipe-form-container text-center">
           <h1>Add a new recipe</h1>
           <form onSubmit={this.handleSubmit}>
-              <NameInput handleInputChange={this.handleInputChange} />
-              <CategorySelection handleInputChange={this.handleInputChange} />
-              <ImageUploader handleInputChange={this.handleInputChange} />
-              <IngredientInput handleInputChange={this.handleInputChange} />
-              <InstructionsInput handleInputChange={this.handleInputChange} handleStepImageChange={this.handleStepImageChange} />
+              <NameInput handleInputChange={this.handleInputChange} errors={this.state.errors.nameErrors} />
+              <CategorySelection handleInputChange={this.handleInputChange} errors={this.state.errors.categoryErrors} />
+              <ImageUploader handleInputChange={this.handleInputChange} errors={this.state.errors.imageErrors} />
+              <IngredientInput handleInputChange={this.handleInputChange} errors={this.state.errors.ingredientErrors} />
+              <InstructionsInput  handleInputChange={this.handleInputChange} handleStepImageChange={this.handleStepImageChange}
+                                  errors={this.state.errors.instructionErrors} />
               <AdditionalInstructionsInput handleInputChange={this.handleInputChange} />
-              <TagInput handleInputChange={this.handleInputChange} />
+              <TagInput handleInputChange={this.handleInputChange} errors={this.state.errors.tagErrors} />
+              {Object.keys(this.state.errors).some(errorCategory => this.state.errors[errorCategory].length > 0) ? 
+              <ErrorAlert errors={["Can't submit form due to failed requirements:"].concat(this.state.errors.nameErrors, 
+                                  this.state.errors.categoryErrors, this.state.errors.imageErrors, 
+                                  this.state.errors.ingredientErrors, this.state.errors.instructionErrors, 
+                                  this.state.errors.tagErrors)} /> 
+              : null}
               <button type="submit" className="btn btn-primary btn-custom mt-3">Submit recipe</button>
           </form>
         </div>

@@ -89,10 +89,6 @@
     width: 90%;
 }
 
-.list-instructions-step:first-of-type .instructions-step-end button {
-    display: none;
-}
-
 .add-ingredient-input-container .add-ingredient-name {
     width: 70%;
     margin: 0rem 0.2rem;
