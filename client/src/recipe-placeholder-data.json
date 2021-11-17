@@ -8,104 +8,72 @@
             "bookmarks": 7,
             "stars": 5,
             "additionalInstructions": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sollicitudin aliquam efficitur. Vestibulum fermentum sem in ante auctor, nec eleifend dui finibus. Aenean sed urna pretium, mollis orci in, posuere ex. Morbi pellentesque dui at orci suscipit fringilla. Aliquam bibendum bibendum euismod. Morbi non ex felis. Nullam pellentesque dui non aliquet ultrices. Vivamus eget consequat mi. Suspendisse suscipit ultrices urna sagittis interdum. Curabitur interdum, mi quis consectetur tristique, mi massa placerat lectus, et venenatis diam nunc vel quam.",
-            "tags": [
+            "tags": [ "Tag 1", "Tag 2", "Tag 3", "Tag 4", "Tag 5", "Tag 6", "Tag 7", "Tag 8" ],
+            "ingredients": [
                 {
-                    "name": "Tag 1"
+                    "name": "Default",
+                    "ingredients": [
+                        {
+                            "name": "Ingredient 1",
+                            "amount": "100 g"
+                        },
+                        {
+                            "name": "Ingredient 2",
+                            "amount": "6 dl"
+                        },
+                        {
+                            "name": "Ingredient 3",
+                            "amount": "3 Tbsp"
+                        }
+                    ]
                 },
                 {
-                    "name": "Tag 2"
+                    "name": "Filling",
+                    "ingredients": [
+                        {
+                            "name": "Filling ingredient 1",
+                            "amount": "300 g"
+                        },
+                        {
+                            "name": "Filling ingredient 2",
+                            "amount": "2 dl"
+                        },
+                        {
+                            "name": "Filling ingredient 3",
+                            "amount": "1/2 Tbsp"
+                        }
+                    ]
                 },
                 {
-                    "name": "Tag 3"
-                },
-                {
-                    "name": "Tag 4"
-                },
-                {
-                    "name": "Tag 5"
-                },
-                {
-                    "name": "Tag 6"
-                },
-                {
-                    "name": "Tag 7"
-                },
-                {
-                    "name": "Tag 8"
+                    "name": "Custard",
+                    "ingredients": [
+                        {
+                            "name": "Custard ingredient 1",
+                            "amount": "50 g"
+                        },
+                        {
+                            "name": "Custard ingredient 2",
+                            "amount": "500 ml"
+                        }
+                    ]
                 }
             ],
-            "ingredients": {
-                "defaultIngredients": [
-                    {
-                        "name": "Ingredient 1",
-                        "amount": "100",
-                        "unit": "g"
-                    },
-                    {
-                        "name": "Ingredient 2",
-                        "amount": "6",
-                        "unit": "dl"
-                    },
-                    {
-                        "name": "Ingredient 3",
-                        "amount": "3",
-                        "unit": "Tbsp"
-                    }
-                ],
-                "subgroups": [
-                    {
-                        "name": "Filling",
-                        "groupIngredients": [
-                            {
-                                "name": "Filling ingredient 1",
-                                "amount": "300",
-                                "unit": "g"
-                            },
-                            {
-                                "name": "Filling ingredient 2",
-                                "amount": "2",
-                                "unit": "dl"
-                            },
-                            {
-                                "name": "Filling ingredient 3",
-                                "amount": "1/2",
-                                "unit": "Tbsp"
-                            }
-                        ]
-                    },
-                    {
-                        "name": "Custard",
-                        "groupIngredients": [
-                            {
-                                "name": "Custard ingredient 1",
-                                "amount": "50",
-                                "unit": "g"
-                            },
-                            {
-                                "name": "Custard ingredient 2",
-                                "amount": "500",
-                                "unit": "ml"
-                            }
-                        ]
-                    }
-                ]
-            },
             "instructions": [
                 {
                     "step": 1,
-                    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sollicitudin aliquam efficitur. Vestibulum fermentum sem in ante auctor, nec eleifend dui finibus. Aenean sed urna pretium, mollis orci in, posuere ex. Morbi pellentesque dui at orci suscipit fringilla. Aliquam bibendum bibendum euismod."
+                    "instruction": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sollicitudin aliquam efficitur. Vestibulum fermentum sem in ante auctor, nec eleifend dui finibus. Aenean sed urna pretium, mollis orci in, posuere ex. Morbi pellentesque dui at orci suscipit fringilla. Aliquam bibendum bibendum euismod."
                 },
                 {
                     "step": 2,
-                    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sollicitudin aliquam efficitur. Vestibulum fermentum sem in ante auctor, nec eleifend dui finibus. Aenean sed urna pretium, mollis orci in, posuere ex. Morbi pellentesque dui at orci suscipit fringilla. Aliquam bibendum bibendum euismod."
+                    "instruction": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sollicitudin aliquam efficitur. Vestibulum fermentum sem in ante auctor, nec eleifend dui finibus. Aenean sed urna pretium, mollis orci in, posuere ex. Morbi pellentesque dui at orci suscipit fringilla. Aliquam bibendum bibendum euismod."
                 },
                 {
                     "step": 3,
-                    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sollicitudin aliquam efficitur. Vestibulum fermentum sem in ante auctor, nec eleifend dui finibus. Aenean sed urna pretium, mollis orci in, posuere ex. Morbi pellentesque dui at orci suscipit fringilla. Aliquam bibendum bibendum euismod."
+                    "instruction": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sollicitudin aliquam efficitur. Vestibulum fermentum sem in ante auctor, nec eleifend dui finibus. Aenean sed urna pretium, mollis orci in, posuere ex. Morbi pellentesque dui at orci suscipit fringilla. Aliquam bibendum bibendum euismod."
                 },
                 {
                     "step": 4,
-                    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sollicitudin aliquam efficitur. Vestibulum fermentum sem in ante auctor, nec eleifend dui finibus. Aenean sed urna pretium, mollis orci in, posuere ex. Morbi pellentesque dui at orci suscipit fringilla. Aliquam bibendum bibendum euismod."
+                    "instruction": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sollicitudin aliquam efficitur. Vestibulum fermentum sem in ante auctor, nec eleifend dui finibus. Aenean sed urna pretium, mollis orci in, posuere ex. Morbi pellentesque dui at orci suscipit fringilla. Aliquam bibendum bibendum euismod."
                 }
             ]
         }
