@@ -37,7 +37,7 @@ app.post("/register", async (req, res) => {
       // User input username & password
       if (exists.rows[0]) {
         // Username exists
-        res.send("This Username already exists!");
+        res.status(409).send("This Username already exists!");
       } else {
         // username does not exist
         const salt = await crypt.genSalt(); // Generate a random salt for every new password
@@ -78,9 +78,10 @@ app.post("/login", async (req, res) => {
           // Correct password
           res.cookie("authentication", username, {
             signed: true,
-            maxAge: 2592000000,
+            expires: new Date(Date.now() + 2592000000),
           });
-          res.status(302).redirect("/recipes");
+          console.log(res);
+          res.status(200).send("Successful authentication!");
         } else {
           // Wrong password
           res.status(401).send("Wrong password for this username!");
@@ -104,18 +105,22 @@ app.post("/login", async (req, res) => {
 
 app.post("/recipes", upload.single("main"), async (req, res) => {
   try {
-    const cookie = req.signedCookies.authentication;
+    const cookie = req.signedCookies.authentication; // retrieve authentication cookie from request
     if (cookie) {
       const main = req.file; // retrieve the main image from the request
       const { recipe } = req.body; // retrieve the text content
       const content = JSON.parse(recipe);
       const { title, category, groups, instructions, addInstructions, tags } =
         content;
-      const userID = 1; // FIXME: For development purposes the current originator of every recipe will be the user with userID 1
+
+      const userID = await pool.query(
+        "SELECT * FROM users WHERE Username = $1",
+        [cookie]
+      ); // Get userID from database
 
       const newRecipe = await pool.query(
         "INSERT INTO recipes (UserID, MainImage, Title, AdditionalInstructions) VALUES($1, $2, $3, $4) RETURNING *",
-        [userID, main.path, title, addInstructions]
+        [userID.rows[0].userid, main.path, title, addInstructions]
       );
 
       const recipeID = newRecipe.rows[0].recipeid;
@@ -131,7 +136,7 @@ app.post("/recipes", upload.single("main"), async (req, res) => {
         res.status(500).send("Something went wrong!");
       }
     } else {
-      res.status(302).redirect("/register");
+      res.status(401).send("Please register!");
     }
   } catch (err) {
     console.error(err.message);
