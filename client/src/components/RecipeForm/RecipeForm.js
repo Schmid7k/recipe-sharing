@@ -1,4 +1,5 @@
 import React, { Fragment } from "react";
+import { Redirect } from "react-router-dom";
 import PropTypes from 'prop-types';
 import "./RecipeForm.css";
 
@@ -153,7 +154,7 @@ class ImageUploader extends React.Component {
           <h5>Image of the dish</h5>
           {this.props.errors.length > 0 ? <ErrorAlert errors={this.props.errors} />: null}
           <div className="form-group image-uploader-container">
-            <input  type="file" className="form-control-file" id="dishImageFileInput" 
+            <input  type="file" className="form-control-file" id="dishImageFileInput" accept="image/*"
                     onChange={this.handleFileChange} required />
           </div>
         </div>
@@ -589,7 +590,7 @@ class InstructionsStep extends React.Component {
         </div>
         <div className="form-group">
           Step {this.props.number} image (optional)<br />
-          <input type="file" className="form-control-file" id="instructionImageFileInput" onChange={this.handleFileChange} />
+          <input type="file" className="form-control-file" id="instructionImageFileInput" accept="image/*" onChange={this.handleFileChange} />
         </div>
       </Fragment>
     );
@@ -829,7 +830,8 @@ class RecipeForm extends React.Component {
         ingredientErrors: [],
         instructionErrors: [],
         tagErrors: []
-      }
+      },
+      createdID: 0
     }
 
     this.handleInputChange = this.handleInputChange.bind(this);
@@ -849,10 +851,7 @@ class RecipeForm extends React.Component {
   }
 
   handleSubmit(e) {
-    // TODO: Formulate the POST request and verify everything is working
     e.preventDefault();
-    console.log(this.state);
-
     let dataValidates = true;
 
     // validate name
@@ -923,31 +922,43 @@ class RecipeForm extends React.Component {
     this.setState({ errors: errors });
 
     if (dataValidates) {
-      console.log("Data validates, can be submitted");
-      const data = this.state;
-      console.log(data);
+      const formData = new FormData();
+      const recipe = {
+        title: this.state.title,
+        category: this.state.category,
+        groups: this.state.groups,
+        instructions: this.state.instructions,
+        addInstructions: this.state.addInstructions,
+        tags: this.state.tags,
+      }
 
-      /*        
+      formData.append('recipe', JSON.stringify(recipe));
+      formData.append('main', this.state.image);
+      
       fetch('http://localhost:5000/recipes', {
           method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data),
+          credentials: 'include',
+          body: formData,
       })
-      .then(response => response.json())
-      .then(data => {
-          console.log('Success:', data);
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        }
+        throw new Error('Something went wrong...');
+      })
+      .then(recipe => {
+        this.setState({ createdID: recipe.recipeid });
       })
       .catch((error) => {
-          console.error('Error:', error);
-      });*/
+          console.error(error);
+      });
     }
   }
 
   render() {
     return (
       <Fragment>
+        { this.state.createdID !== 0 ? <Redirect push to={`/recipes/${this.state.createdID}`} /> : null }
         <div className="recipe-form-container text-center">
           <h1>Add a new recipe</h1>
           <form onSubmit={this.handleSubmit}>
