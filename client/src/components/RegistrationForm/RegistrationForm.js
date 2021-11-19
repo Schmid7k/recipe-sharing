@@ -84,19 +84,16 @@ class RegistrationForm extends React.Component {
             })
             .then(response => { 
                 if (response.ok) { 
-                    return response.json();
+                    redirect = true;
+                    this.setState({ redirect: redirect });
+                    return response;
                 }
                 throw new Error('Something went wrong...');
             })
-            .then(user => {
-                console.log('Success:', user);
-                redirect = true;
-                this.setState({ redirect: redirect })
-            })
             .catch((error) => {
                 console.error(error);
-                errors.push("Can't create an account with these credentials")
-                this.setState({ errors: errors })
+                errors.push("Can't create an account with these credentials");
+                this.setState({ errors: errors });
             });
         }
     }

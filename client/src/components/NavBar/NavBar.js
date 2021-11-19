@@ -28,10 +28,10 @@ const NavToggler = () => {
   )
 }
 
-const NavItem = ({ text, href, active, source }) => {
+const NavItem = ({ text, href, source }) => {
   return (
     <Fragment>
-      <li className={`nav-item nav-icon-item ${active === true ? "active" : ""}`}>
+      <li className={`nav-item nav-icon-item ${href === window.location.pathname ? "active" : ""}`}>
         <a className="d-md-none" href={href}>
           <img className="nav-icon" src={source} alt={`${text} icon`} />
         </a>
@@ -46,37 +46,52 @@ const NavItem = ({ text, href, active, source }) => {
 NavItem.propTypes = {
   text: PropTypes.string.isRequired,
   href: PropTypes.string.isRequired,
-  active: PropTypes.bool.isRequired,
   source: PropTypes.node.isRequired,
 }
 
-const FilterToggler = ({ text, active, source }) => {
-  return (
-    <Fragment>
-      <li className={`nav-item nav-icon-item ${active === true ? "active" : ""}`}>
-        <div className="d-md-none" data-bs-toggle="collapse" data-bs-target="#filtering-menu" aria-expanded="false" aria-controls="filtering-menu" id='filter-button-icon'>
-          <img className="nav-icon" src={source} alt={`${text} icon`} />
-        </div>
-        <div className="nav-link d-none d-md-block" data-bs-toggle="collapse" data-bs-target="#filtering-menu" aria-expanded="false" aria-controls="filtering-menu" id='filter-button'>
-          {text}
-        </div>
-      </li>
-    </Fragment>
-  )
-}
+class FilterToggler extends React.Component {
+  constructor() {
+    super();
+
+    this.state = {
+      filterActive: false,
+    }
+
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+  handleClick() {
+    this.setState({ filterActive: !this.state.filterActive });
+  }
+
+  render() {
+    return (
+      <Fragment>
+        <li className={`nav-item nav-icon-item ${this.state.filterActive === true ? "active" : ""}`}>
+          <div className="d-md-none" data-bs-toggle="collapse" data-bs-target="#filtering-menu" aria-expanded="false" aria-controls="filtering-menu" id='filter-button-icon' onClick={this.handleClick}>
+            <img className="nav-icon" src={this.props.source} alt={`${this.props.text} icon`} />
+          </div>
+          <div className="nav-link d-none d-md-block" data-bs-toggle="collapse" data-bs-target="#filtering-menu" aria-expanded="false" aria-controls="filtering-menu" id='filter-button' onClick={this.handleClick}>
+            {this.props.text}
+          </div>
+        </li>
+      </Fragment>
+    );
+  }
+};
 
 const NavItems = () => {
   return (
     <Fragment>
       <ul className="navbar-nav mr-auto">
-        <NavItem text="Home" href="/" active={true} source={homeSvg} />
-        <FilterToggler text="Filter" href="/" active={false} source={filterSvg} />
+        <NavItem text="Home" href="/" source={homeSvg} />
+        <FilterToggler text="Filter" href="/" source={filterSvg} />
         {/* <NavItem text="Filter" href="/" active={false} source={filterSvg} /> */}
-        <NavItem text="Add a recipe" href="/addrecipe" active={false} source={recipeSvg} />
+        <NavItem text="Add a recipe" href="/addrecipe" source={recipeSvg} />
       </ul>
     </Fragment>
-  )
-}
+  );
+};
 
 // TODO: maybe hitting search on the search page should not redirect
 const SearchForm = () => {
@@ -96,8 +111,8 @@ const SearchForm = () => {
         </div>
       </form>
     </Fragment>
-  )
-}
+  );
+};
 
 const NavUserInfo = ({ loggedIn }) => {
   if (loggedIn) {
@@ -108,30 +123,30 @@ const NavUserInfo = ({ loggedIn }) => {
           <a href="/user">
             <img id="user-icon" src={dummyIcon} alt="User icon" />
           </a>
-          <a id="username-link" className="nav-link d-none d-md-block" href="/user">
-            <span className="navbar-text">Username</span>
+          <a id="username-link" className={`nav-link d-none d-md-block ${window.location.pathname === "/user" ? "active" : ""}`} href="/user">
+            <span className="navbar-text">{JSON.parse(window.localStorage.getItem('user')).username}</span>
           </a>
         </li>
       </ul>
     </Fragment>
-    )
+    );
   }
   return (
     <Fragment>
       <ul className="navbar-nav mr-auto">
-        <li className="nav-item">
+        <li className={`nav-item ${window.location.pathname === "/login" ? "active" : ""}`}>
           <a className="nav-link" href="/login">
             <span className="navbar-text">Login</span>
           </a>
         </li>
       </ul>
     </Fragment>
-  )
-}
+  );
+};
 
 NavUserInfo.propTypes = {
   loggedIn: PropTypes.bool.isRequired,
-}
+};
 
 const NavigationBar = () => {
   return (
@@ -146,7 +161,7 @@ const NavigationBar = () => {
           <SearchForm />
         </div>
         <div className="float-end">
-          <NavUserInfo loggedIn={false} />
+          <NavUserInfo loggedIn={document.cookie.split(";").map(cookie => cookie.split("=")[0]).includes("authentication") && window.localStorage.getItem('user') !== null} />
         </div>
       </nav>
     </Fragment>

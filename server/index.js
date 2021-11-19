@@ -18,7 +18,10 @@ var storage = multer.diskStorage({
 var upload = multer({ storage: storage });
 
 // middleware
-app.use(cors());
+app.use(cors({
+  origin : "http://localhost:3000",
+  credentials: true,
+}));
 app.use(express.json());
 app.use(cookie_parser("development"));
 

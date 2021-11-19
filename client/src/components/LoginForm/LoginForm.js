@@ -64,21 +64,31 @@ class LoginForm extends React.Component {
 
     if (errors.length === 0) {
       const user = { username: this.state.username, password: this.state.password };
-      // submit credentials and store match or no match result
-      let loginResultPlaceholder = false;
-
-      if (loginResultPlaceholder) {
-        // login 'OK'
-        // authenticate here
-        // redirect to landing page
-        this.setState({ redirect: true })
-      } else {
-        // --> no match? add error, don't authenticate
-        errors.push("Incorrect username and/or password");
-        this.setState({
-          errors: errors
+      fetch('http://localhost:5000/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify(user),
         })
-      }
+        .then(response => { 
+            if (response.ok) { 
+              let userData = {
+                username: this.state.username,
+              }
+              window.localStorage.setItem('user', JSON.stringify(userData))
+              this.setState({ redirect: true });
+              return response;
+            }
+            throw new Error('Something went wrong...');
+        })
+        .catch((error) => {
+            console.error(error);
+            errors.push("Incorrect username and/or password");
+            this.setState({ errors: errors });
+        }
+      );
     }
   }
 
