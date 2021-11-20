@@ -228,7 +228,7 @@ app.get("/recipes/:id", async (req, res) => {
           // Key exists
           recipe.groups[group].push(
             JSON.parse(
-              JSON.stringify({ ingedient: ingredient, amount: amount })
+              JSON.stringify({ ingredient: ingredient, amount: amount })
             )
           );
         } else {
@@ -236,7 +236,7 @@ app.get("/recipes/:id", async (req, res) => {
           recipe.groups[group] = [];
           recipe.groups[group].push(
             JSON.parse(
-              JSON.stringify({ ingedient: ingredient, amount: amount })
+              JSON.stringify({ ingredient: ingredient, amount: amount })
             )
           );
         }

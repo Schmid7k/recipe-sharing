@@ -37,7 +37,7 @@ ReactDOM.render(
           <About />
         </Route>
 
-        <Route path="/user">
+        <Route path="/user/:username">
           <User />
         </Route>
 

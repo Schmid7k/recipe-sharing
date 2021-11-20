@@ -5,6 +5,9 @@ import bookmarkIcon from "../../images/bookmark_svg.svg";
 import starIcon from "../../images/star_svg.svg";
 import recipeInfo from "../../recipe-placeholder-data.json";
 
+import {withRouter} from 'react-router-dom';
+import { Link } from 'react-router-dom'
+
 /**
  * Component for rendering a recipe image.
  * @param {string} source The source for the image file
@@ -38,12 +41,13 @@ RecipeImage.propTypes = {
  *          displayed next to them.
  */
 const RecipeHeader = ({ name, author, category, bookmarks, stars }) => {
+    let userLink = `/user/${author}`;
     return (
       <Fragment>
         <div className="recipe-title">
             <div className="recipe-title-text">
                 <h1>{name}</h1>
-                <h4>@{author}</h4>
+                <Link to={userLink} style={{textDecoration: 'none'}}><h4>@{author}</h4></Link>
                 <h6>Category: {category}</h6>
             </div>
             <div className="recipe-title-icons">
@@ -110,12 +114,12 @@ RecipeTagList.propTypes = {
  * @returns A styled .recipe-ingredient div with two styled divs inside it, .recipe-ingredient-name div with the name
  *          as content and .recipe-ingredient-amount with the amount as content.
  */
-const RecipeIngredient = ({ name, amount }) => {
+const RecipeIngredient = ({ ingredient, amount }) => {
     return (
       <Fragment>
             <div className="recipe-ingredient">
                 <div className="recipe-ingredient-name">
-                    {name}
+                    {ingredient}
                 </div>
                 <div className="recipe-ingredient-amount">
                     {amount}
@@ -126,7 +130,7 @@ const RecipeIngredient = ({ name, amount }) => {
 };
 
 RecipeIngredient.propTypes = {
-    name: PropTypes.string.isRequired,
+    ingredient: PropTypes.string.isRequired,
     amount: PropTypes.string.isRequired,
 };
 
@@ -144,8 +148,8 @@ RecipeIngredient.propTypes = {
             {group !== "Default" ? <h5>{group}</h5> : null}
             <div className="recipe-ingredients-list">
                 {ingredients.map(ingredient => 
-                    <RecipeIngredient   name={ingredient.name} amount={ingredient.amount} 
-                                        key={`${group}-ingredient-${ingredient.name}`} />
+                    <RecipeIngredient   ingredient={ingredient.ingredient} amount={ingredient.amount} 
+                                        key={`${group}-ingredient-${ingredient.ingredient}`} />
                 )}
             </div>
         </Fragment>
@@ -155,7 +159,7 @@ RecipeIngredient.propTypes = {
 RecipeIngredientList.propTypes = {
     group: PropTypes.string.isRequired,
     ingredients: PropTypes.arrayOf(PropTypes.shape({
-        name: PropTypes.string.isRequired,
+        ingredient: PropTypes.string.isRequired,
         amount: PropTypes.string.isRequired,
     })).isRequired,
 };
@@ -189,7 +193,7 @@ RecipeIngredientGroups.propTypes = {
             name: PropTypes.string.isRequired,
             ingredients: PropTypes.arrayOf(
                 PropTypes.shape({
-                    name: PropTypes.string.isRequired,
+                    ingredient: PropTypes.string.isRequired,
                     amount: PropTypes.string.isRequired,
                 })
             ).isRequired,
@@ -304,49 +308,56 @@ class IndividualRecipe extends React.Component {
             recipe: {
             }
         }
+
+        this.handleSettingRecipeData = this.handleSettingRecipeData.bind(this);
     }
 
-    componentDidMount(){
-        // TODO: get data for the state using this.props.id (=recipe id) instead of using placeholder data
-        //       and store it in the state v
+    handleSettingRecipeData(data) {
+        //TODO: no need if the path returns the image, but getting double \\ for some reason in path
+        data.main = data.main.replace(/\\\\/g, '\\');
+
+        // extract tags
+        let tags = [];
+        data.tags.forEach(element => {
+            tags.push(element.name);
+        });
+
+        // extract and format ingredient groups
+        let dataGroups = [];
+        Object.keys(data.groups).forEach(key => {
+            dataGroups.push({
+                name: key,
+                ingredients: data.groups[key]
+            });
+        });
+
         this.setState({
             header: {
-                name: recipeInfo.recipeInfo.title,
-                author: recipeInfo.recipeInfo.username,
-                category: recipeInfo.recipeInfo.category,
-                bookmarks: recipeInfo.recipeInfo.bookmarks,
+                name: data.title,
+                author: recipeInfo.recipeInfo.username, // TODO: add username to fetch results
+                category: data.category,
+                bookmarks: recipeInfo.recipeInfo.bookmarks, // TODO: need to fetch bookmarks and stars (display differently if a user is logged in and already done this?)
                 stars: recipeInfo.recipeInfo.stars
             },
             image: {
-                source: recipeInfo.recipeInfo.image,
-                alternative: recipeInfo.recipeInfo.title
+                source: data.main, 
+                alternative: data.title
             },
-            additionalInstructions: recipeInfo.recipeInfo.additionalInstructions,
-
-            // assuming recipeInfo.recipeInfo.tags is of format 
-            // tags = ["tag", "tag", "tag"]
-            tags: recipeInfo.recipeInfo.tags,
-
-            // assuming recipeInfo.recipeInfo.ingredients is of format:
-            //  ingredients = [
-            //      { 
-            //          name: "Group name", 
-            //          ingredients: [
-            //              { 
-            //                  name: "Ingredient name", 
-            //                  amount: " Ingredient amount"
-            //              }, 
-            //              ...
-            //          ]
-            //      },
-            //      ...
-            //  ]
-            ingredients: recipeInfo.recipeInfo.ingredients,
-
-            // assuming recipeInfo.recipeInfo.instructions is of format 
-            // instructions = [{step: "1", instruction: "Instruction text"}, {step: "2", instruction: "Instruction text"}]
-            instructions: recipeInfo.recipeInfo.instructions
+            additionalInstructions: data.addInstructions,
+            tags: tags,
+            ingredients: dataGroups,
+            // TODO: we're not taking care of the instructions_image for per step images
+            // possibly just add onto backburner for now
+            instructions: data.instructions
         })
+    }
+
+    componentDidMount(){
+       const recipe_id = this.props.match.params.id;
+       fetch(`http://localhost:5000/recipes/${recipe_id}`, {method: 'GET'}) //TODO: we should set a proxy and just use a /path instead of the full path
+       .then(res => res.json())
+       .then(res => this.handleSettingRecipeData(res))
+       .catch(err => this.props.history.push('/')) // TODO: should we have a simple 404 page or just redirect to home?
     }
 
     render(){
@@ -371,4 +382,4 @@ class IndividualRecipe extends React.Component {
     }
 };
 
-export default IndividualRecipe;
+export default withRouter(IndividualRecipe);
