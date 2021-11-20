@@ -287,7 +287,7 @@ class IngredientList extends React.Component {
 
   addIngredient(e, ingredientName, ingredientAmount) {
     e.preventDefault();
-    let name = ingredientName.trim();
+    let name = ingredientName.toLowerCase().trim();
     let amount = ingredientAmount.trim();
     let errors = [];
 
@@ -780,7 +780,7 @@ class TagInput extends React.Component {
   handleInputChange(e) {
     let tagList = [];
     e.target.value.split(";").forEach(tag => {
-      if (tag.trim().length > 0) tagList.push(tag.trim());
+      if (tag.trim().length > 0) tagList.push(tag.toLowerCase().trim());
     });
     this.props.handleInputChange(e.target.name, tagList);
   }
@@ -958,6 +958,8 @@ class RecipeForm extends React.Component {
   render() {
     return (
       <Fragment>
+        { !document.cookie.split(";").map(cookie => cookie.split("=")[0]).includes("authentication") 
+          || window.localStorage.getItem('user') === null ? <Redirect push to="/" /> : null }
         { this.state.createdID !== 0 ? <Redirect push to={`/recipes/${this.state.createdID}`} /> : null }
         <div className="recipe-form-container text-center">
           <h1>Add a new recipe</h1>

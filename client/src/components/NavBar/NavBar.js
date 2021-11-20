@@ -87,7 +87,9 @@ const NavItems = () => {
         <NavItem text="Home" href="/" source={homeSvg} />
         <FilterToggler text="Filter" href="/" source={filterSvg} />
         {/* <NavItem text="Filter" href="/" active={false} source={filterSvg} /> */}
-        <NavItem text="Add a recipe" href="/addrecipe" source={recipeSvg} />
+        { document.cookie.split(";").map(cookie => cookie.split("=")[0]).includes("authentication") 
+          && window.localStorage.getItem('user') !== null 
+          ? <NavItem text="Add a recipe" href="/addrecipe" source={recipeSvg} /> : null}
       </ul>
     </Fragment>
   );
