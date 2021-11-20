@@ -3,8 +3,6 @@ import "./App.css";
 
 //components
 import NavigationBar from "./components/NavBar/NavBar";
-import FilteringMenu from "./components/FilterMenu/FilterMenu";
-import ContentGrid from "./components/ContentGrid/ContentGrid";
 import ContentSearch from "./components/ContentSearch/ContentSearch";
 
 function App() {

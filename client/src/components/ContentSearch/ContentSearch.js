@@ -88,7 +88,9 @@ class ContentSearch extends React.Component {
         // ResizeObserver should be supported by all major browsers, we need this to work with the filtering menu collapsing
         let gridResizeObserver = new ResizeObserver(() => this.handleResize());
         gridResizeObserver.observe(document.getElementById('grid-container'));
-       
+
+        fetch('http://localhost:5000/recipes', {method: 'GET'}).then(res => res.json()).then(res => console.log(res));
+        fetch('http://localhost:5000/filters', {method: 'GET'}).then(res => res.json()).then(res => console.log(res));
         // TODO: fetch some recipe data when loading the grid for the first time, construct the recipe cards
         let recipeCards = [];
 

@@ -147,6 +147,36 @@ app.post("/recipes", upload.single("main"), async (req, res) => {
   }
 });
 
+// GET all filters
+// NOTE: using these to populate the filtering menu for content search
+app.get("/filters", async (req, res) => {
+  try {
+    let filters = {};
+
+    const allTags = await pool.query("SELECT * from tags ORDER BY tagid DESC");
+    const allIngredients = await pool.query("SELECT * from ingredients ORDER BY ingredientsid DESC");
+    const allCategories = await pool.query("SELECT * from categories ORDER BY categoryid DESC");
+
+    filters.allTags = [];
+    filters.allIngredients = [];
+    filters.allCategories = [];
+
+    allTags.rows.forEach(tag => { filters.allTags.push(tag.name); });
+    allIngredients.rows.forEach(ingredient => { filters.allIngredients.push(ingredient.name); });
+    allCategories.rows.forEach(category => { filters.allCategories.push(category.name); });
+
+    // TODO: placeholder data for now - should we have separate tables for most popular ingredients/tags or another column in the table for each?
+    // we don't really have a mechanism for counting popularity, unless the query for recipes with applied filters would track their frequency
+    filters.popTags = ['popTag1', 'popTag2', 'popTag3'];
+    filters.popIngredients = ['popIngredient1', 'popIngredient2', 'popIngredient3'];
+
+    res.status(200).json(filters);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Something went wrong!");
+  }
+});
+
 // GET all recipes
 
 app.get("/recipes", async (req, res) => {
