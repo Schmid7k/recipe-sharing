@@ -17,7 +17,7 @@ import { Link } from 'react-router-dom'
 const RecipeImage = ({ source, alternative }) => {
     return (
         <Fragment>
-            <img className="recipe-image" src={source} alt={alternative} />
+            <img className="recipe-image" src={`/${source}`} alt={alternative} />
         </Fragment>
     );
 }
