@@ -24,11 +24,5 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-/server/images/main/*
-!/server/images/main/.gitkeep
-/client/public/images/3d87eb912038a47b7284d9214306890b
-/client/public/images/9c0326217db173cddec6d3599633225e
-/client/public/images/24a35d662a67054d7ad8fbb98c7e7a1b
-/client/public/images/76b1d9570e7c224347452babbac4c0d4
-/client/public/images/aa8853c2f329c4c1655195ae050abaf7
-/client/public/images/main
+/client/public/images/*
+!/client/public/images/.gitkeep

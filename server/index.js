@@ -9,19 +9,23 @@ const fs = require("fs");
 const { restart } = require("nodemon");
 const { DatabaseError } = require("pg-protocol");
 const cookie_parser = require("cookie-parser");
+const path = require("path");
 
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "images/main/");
+    const correctPath = path.normalize("../client/public/images/");
+    cb(null, correctPath);
   },
 });
 var upload = multer({ storage: storage });
 
 // middleware
-app.use(cors({
-  origin : "http://localhost:3000",
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(cookie_parser("development"));
 
@@ -83,7 +87,6 @@ app.post("/login", async (req, res) => {
             signed: true,
             expires: new Date(Date.now() + 2592000000),
           });
-          console.log(res);
           res.status(200).send("Successful authentication!");
         } else {
           // Wrong password
@@ -154,21 +157,35 @@ app.get("/filters", async (req, res) => {
     let filters = {};
 
     const allTags = await pool.query("SELECT * from tags ORDER BY tagid DESC");
-    const allIngredients = await pool.query("SELECT * from ingredients ORDER BY ingredientsid DESC");
-    const allCategories = await pool.query("SELECT * from categories ORDER BY categoryid DESC");
+    const allIngredients = await pool.query(
+      "SELECT * from ingredients ORDER BY ingredientsid DESC"
+    );
+    const allCategories = await pool.query(
+      "SELECT * from categories ORDER BY categoryid DESC"
+    );
 
     filters.allTags = [];
     filters.allIngredients = [];
     filters.allCategories = [];
 
-    allTags.rows.forEach(tag => { filters.allTags.push(tag.name); });
-    allIngredients.rows.forEach(ingredient => { filters.allIngredients.push(ingredient.name); });
-    allCategories.rows.forEach(category => { filters.allCategories.push(category.name); });
+    allTags.rows.forEach((tag) => {
+      filters.allTags.push(tag.name);
+    });
+    allIngredients.rows.forEach((ingredient) => {
+      filters.allIngredients.push(ingredient.name);
+    });
+    allCategories.rows.forEach((category) => {
+      filters.allCategories.push(category.name);
+    });
 
     // TODO: placeholder data for now - should we have separate tables for most popular ingredients/tags or another column in the table for each?
     // we don't really have a mechanism for counting popularity, unless the query for recipes with applied filters would track their frequency
-    filters.popTags = ['popTag1', 'popTag2', 'popTag3'];
-    filters.popIngredients = ['popIngredient1', 'popIngredient2', 'popIngredient3'];
+    filters.popTags = ["popTag1", "popTag2", "popTag3"];
+    filters.popIngredients = [
+      "popIngredient1",
+      "popIngredient2",
+      "popIngredient3",
+    ];
 
     res.status(200).json(filters);
   } catch (err) {
@@ -199,12 +216,15 @@ app.get("/recipes/:id", async (req, res) => {
     const base = await pool.query("SELECT * from recipes WHERE RecipeID = $1", [
       id,
     ]); // Get recipe from database
-
+    const user = await pool.query("SELECT * FROM users WHERE UserID = $1", [
+      base.rows[0].userid,
+    ]); // Get the recipe author
     if (base.rows[0]) {
       // Recipe exists
       // Recipe template for the response
       var { recipe } = JSON.parse(`{
         "recipe": {
+          "author": "",
           "title": "",
           "main": "",
           "category": "",
@@ -216,6 +236,8 @@ app.get("/recipes/:id", async (req, res) => {
           "tags": []
         }
       }`);
+      // Add recipe author to tempalte
+      recipe.author = user.rows[0].username;
       // Add title to template
       recipe.title = base.rows[0].title;
       // Add path to main image to template
