@@ -86,7 +86,6 @@ const NavItems = () => {
       <ul className="navbar-nav mr-auto">
         <NavItem text="Home" href="/" source={homeSvg} />
         <FilterToggler text="Filter" href="/" source={filterSvg} />
-        {/* <NavItem text="Filter" href="/" active={false} source={filterSvg} /> */}
         { document.cookie.split(";").map(cookie => cookie.split("=")[0]).includes("authentication") 
           && window.localStorage.getItem('user') !== null 
           ? <NavItem text="Add a recipe" href="/addrecipe" source={recipeSvg} /> : null}
@@ -118,6 +117,7 @@ const SearchForm = () => {
 
 const NavUserInfo = ({ loggedIn }) => {
   if (loggedIn) {
+    let username = JSON.parse(window.localStorage.getItem('user')).username;
     return (
     <Fragment>
       <ul className="navbar-nav mr-auto">
@@ -125,8 +125,8 @@ const NavUserInfo = ({ loggedIn }) => {
           <a href="/user">
             <img id="user-icon" src={dummyIcon} alt="User icon" />
           </a>
-          <a id="username-link" className={`nav-link d-none d-md-block ${window.location.pathname === "/user" ? "active" : ""}`} href="/user">
-            <span className="navbar-text">{JSON.parse(window.localStorage.getItem('user')).username}</span>
+          <a id="username-link" className={`nav-link d-none d-md-block ${window.location.pathname === `/user/${username}` ? "active" : ""}`} href={`/user/${username}`}>
+            <span className="navbar-text">{username}</span>
           </a>
         </li>
       </ul>
