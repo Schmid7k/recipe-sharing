@@ -131,13 +131,25 @@ app.post("/recipes", upload.single("main"), async (req, res) => {
 
       const recipeID = newRecipe.rows[0].recipeid;
 
+      const newPath =
+        path.dirname(main.path) + "/" + "recipe" + "_" + recipeID + "_" + 1;
+
+      await pool.query(
+        "UPDATE recipes SET MainImage = $1 WHERE recipeid = $2",
+        [newPath, recipeID]
+      );
+
+      fs.rename(main.path, newPath, (err) => {
+        if (err) console.error("Error while renaming file path: ", +err);
+      });
+
       if (
         (await saveCategories(category, recipeID)) &&
         (await saveGroups(groups, recipeID)) &&
         (await saveInstructions(instructions, recipeID)) &&
         (await saveTags(tags, recipeID))
       ) {
-        res.status(201).json(newRecipe.rows[0]);
+        res.status(201).send("Recipe added successfully!");
       } else {
         res.status(500).send("Something went wrong!");
       }
@@ -316,7 +328,7 @@ app.delete("/recipes/:id", async (req, res) => {
     ); // Retrieve the recipe from the database
     if (recipe.rows[0]) {
       // Recipe exists
-      fs.unlinkSync(String(recipe.rows[0].mainimage)); // Delete the main image related to the database
+      fs.unlinkSync(String(recipe.rows[0].mainimage)); // Delete the main image stored in the database
 
       await pool.query("DELETE FROM recipes WHERE RecipeID = $1", [id]); // Delete the database entry
 
