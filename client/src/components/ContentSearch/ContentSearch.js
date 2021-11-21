@@ -99,7 +99,7 @@ class ContentSearch extends React.Component {
 
             this.setState({
                 recipeCards: recipeCards,
-                display: 'block'
+                display: 'flex'
             });
         });   
     }
