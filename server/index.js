@@ -132,7 +132,7 @@ app.post("/recipes", upload.single("main"), async (req, res) => {
       const recipeID = newRecipe.rows[0].recipeid;
 
       const newPath =
-        path.dirname(main.path) + "/" + "recipe" + "_" + recipeID + "_" + 1;
+        path.dirname(main.path) + "/" + "recipe" + "_" + recipeID + "_" + 0;
 
       await pool.query(
         "UPDATE recipes SET MainImage = $1 WHERE recipeid = $2",
