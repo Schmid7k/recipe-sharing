@@ -4,11 +4,8 @@ const app = express();
 const cors = require("cors");
 const pool = require("./db");
 const helpers = require("./helpers");
-const { application } = require("express");
 const crypt = require("bcrypt");
 const fs = require("fs");
-const { restart } = require("nodemon");
-const { DatabaseError } = require("pg-protocol");
 const cookie_parser = require("cookie-parser");
 const path = require("path");
 
@@ -110,11 +107,12 @@ app.post("/login", async (req, res) => {
 
 // POST; Upload a new recipe
 
-app.post("/recipes", upload.single("main"), async (req, res) => {
+app.post("/recipes", upload.array("images", 100), async (req, res) => {
   try {
     const cookie = req.signedCookies.authentication; // retrieve authentication cookie from request
     if (cookie) {
-      const main = req.file; // retrieve the main image from the request
+      const images = req.files; // retrieve image array from the request
+      const main = images[0];
       const { recipe } = req.body; // retrieve the text content
       const content = JSON.parse(recipe);
       const { title, category, groups, instructions, addInstructions, tags } =
@@ -132,11 +130,7 @@ app.post("/recipes", upload.single("main"), async (req, res) => {
 
       const recipeID = newRecipe.rows[0].recipeid;
 
-      const newPath = path.dirname(main.path) + "/" + recipeID + "_" + 0; // To rename the image paths
-
-      fs.rename(main.path, newPath, (err) => {
-        if (err) console.error("Error while renaming file path: ", +err);
-      });
+      const newPath = helpers.renameImagePath(main.path, recipeID, 0);
 
       await pool.query(
         "UPDATE recipes SET MainImage = $1 WHERE recipeid = $2",
@@ -147,7 +141,11 @@ app.post("/recipes", upload.single("main"), async (req, res) => {
         // Execute the helper functions to store subelements in the database
         (await helpers.saveCategories(category, recipeID)) &&
         (await helpers.saveGroups(groups, recipeID)) &&
-        (await helpers.saveInstructions(instructions, recipeID)) &&
+        (await helpers.saveInstructions(
+          instructions,
+          images.slice(1),
+          recipeID
+        )) &&
         (await helpers.saveTags(tags, recipeID))
       ) {
         res.status(201).send("Recipe added successfully!");
@@ -327,9 +325,17 @@ app.delete("/recipes/:id", async (req, res) => {
       "SELECT * FROM recipes WHERE RecipeID = $1",
       [id]
     ); // Retrieve the recipe from the database
+    const images = await pool.query(
+      "SELECT * FROM recipe_instructions WHERE RecipeID = $1",
+      [id]
+    );
     if (recipe.rows[0]) {
       // Recipe exists
       fs.unlinkSync(String(recipe.rows[0].mainimage)); // Delete the main image stored in the database
+
+      images.rows.forEach((row) => {
+        fs.unlinkSync(String(row.instruction_image));
+      }); // Delete all instruction images
 
       await pool.query("DELETE FROM recipes WHERE RecipeID = $1", [id]); // Delete the database entry
 
