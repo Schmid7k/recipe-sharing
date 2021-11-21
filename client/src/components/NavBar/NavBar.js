@@ -1,4 +1,5 @@
 import React, { Fragment } from "react";
+import { Redirect } from "react-router-dom";
 import PropTypes from 'prop-types';
 import "./NavBar.css";
 import searchSvg from "../../images/search_svg.svg";
@@ -94,25 +95,47 @@ const NavItems = () => {
   );
 };
 
-// TODO: maybe hitting search on the search page should not redirect
-const SearchForm = () => {
-  return (
-    <Fragment>
-      <form className="d-flex my-2 my-lg-0 flex-grow-1">
-        <div className="input-group">
-          <input
-            className="form-control mr-sm-2 search-bar"
-            type="search"
-            placeholder="Enter a search term..."
-            aria-label="Search term input"
-          ></input>
-          <button className="btn btn-search" type="submit" id="button-addon2">
-            <img className="nav-icon" src={searchSvg} alt="Search" />
-          </button>
-        </div>
-      </form>
-    </Fragment>
-  );
+class SearchForm extends React.Component {
+  constructor() {
+    super();
+
+    this.state = {
+      searchTerm: "",
+    }
+
+    this.handleInputChange = this.handleInputChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  handleInputChange(e) {
+    this.setState({ searchTerm: e.target.value });
+  }
+
+  handleSubmit(e) {
+    e.preventDefault();
+    this.props.handleSearchChange(this.state.searchTerm);
+  }
+
+  render() {
+    return (
+      <Fragment>
+        <form className="d-flex my-2 my-lg-0 flex-grow-1" onSubmit={this.handleSubmit}>
+          <div className="input-group">
+            <input
+              className="form-control mr-sm-2 search-bar"
+              type="search"
+              placeholder="Enter a search term..."
+              aria-label="Search term input"
+              onChange={this.handleInputChange}
+            required />
+            <button className="btn btn-search" type="submit" id="button-addon2">
+              <img className="nav-icon" src={searchSvg} alt="Search" />
+            </button>
+          </div>
+        </form>
+      </Fragment>
+    );
+  }
 };
 
 const NavUserInfo = ({ loggedIn }) => {
@@ -150,24 +173,50 @@ NavUserInfo.propTypes = {
   loggedIn: PropTypes.bool.isRequired,
 };
 
-const NavigationBar = () => {
-  return (
-    <Fragment>
-      <nav className="navbar fixed-top navbar-expand-sm navbar-custom" id="main-navbar">
-        <NavBrand />
-        <div className="navbar-nav-items">
-          <NavItems />
-          <NavToggler />
-        </div>
-        <div className="navbar-collapse collapse w-100 order-1 order-sm-0 dual-collapse2" id="navbarSupportedContent">
-          <SearchForm />
-        </div>
-        <div className="float-end">
-          <NavUserInfo loggedIn={document.cookie.split(";").map(cookie => cookie.split("=")[0]).includes("authentication") && window.localStorage.getItem('user') !== null} />
-        </div>
-      </nav>
-    </Fragment>
-  );
+class NavigationBar extends React.Component {
+  constructor() {
+    super();
+
+    this.state = {
+      searchTerm: "",
+      searchRedirect: false,
+    }
+
+    this.handleSearchChange = this.handleSearchChange.bind(this);
+  }
+
+  handleSearchChange(searchTerm) {
+    this.setState({ searchTerm: searchTerm });
+    if (window.location.pathname === "/") {
+      let filter = { searchPhrase: searchTerm };
+      this.props.contentSearch.current.filteringHandler(filter);
+    } else {
+      this.setState({ searchRedirect: true });
+    }
+  }
+
+  render() {
+    return (
+      <Fragment>
+        {this.state.searchRedirect ? 
+          <Redirect to={{ pathname: "/", state: { searchTerm: this.state.searchTerm }, }} /> 
+          : null}
+        <nav className="navbar fixed-top navbar-expand-sm navbar-custom" id="main-navbar">
+          <NavBrand />
+          <div className="navbar-nav-items">
+            <NavItems />
+            <NavToggler />
+          </div>
+          <div className="navbar-collapse collapse w-100 order-1 order-sm-0 dual-collapse2" id="navbarSupportedContent">
+            <SearchForm handleSearchChange={this.handleSearchChange} />
+          </div>
+          <div className="float-end">
+            <NavUserInfo loggedIn={document.cookie.split(";").map(cookie => cookie.split("=")[0]).includes("authentication") && window.localStorage.getItem('user') !== null} />
+          </div>
+        </nav>
+      </Fragment>
+    );
+  }
 };
 
 export default NavigationBar;

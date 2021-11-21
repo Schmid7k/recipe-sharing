@@ -77,9 +77,7 @@ class ContentSearch extends React.Component {
         });
     }
 
-    filteringHandler(e, filters) {
-        e.preventDefault();
-       
+    filteringHandler(filters) {
         //TODO: Make a fetch request here with new filters to rebuild the cards once the endpoint is ready to accept query params
         fetch('http://localhost:5000/recipes', {method: 'GET'}).then(res => res.json()).then(res => { this.buildCards(res); });
 
