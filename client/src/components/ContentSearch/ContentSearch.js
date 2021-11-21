@@ -5,7 +5,6 @@ import FilteringMenu from "../FilterMenu/FilterMenu"
 import ContentGrid from "../ContentGrid/ContentGrid";
 import SearchPopup from "../SearchPopup/SearchPopup";
 import ContentGridCard from "../ContentGridCard/ContentGridCard";
-import recipes from "../../grid-placeholder-data.json";
 
 class ContentSearch extends React.Component {
     constructor(){
@@ -14,12 +13,17 @@ class ContentSearch extends React.Component {
         this.state = {
             recipeCards: [],
             popupDisplay: false, // modifying display directly, but still need to keep track of state here
-            scrollbarWidth: 0 // stashed value
+            scrollbarWidth: 0, // stashed value
+            overflow: '',
+            display: 'none' // modify display when building cards to not show empty items while data is being loaded
         }
+
+        this.popup = React.createRef();
 
         this.popupToggleHandler = this.popupToggleHandler.bind(this);
         this.filteringHandler = this.filteringHandler.bind(this);
         this.handleResize = this.handleResize.bind(this);
+        this.buildCards = this.buildCards.bind(this);
     }
 
     handleResize() {
@@ -34,9 +38,8 @@ class ContentSearch extends React.Component {
             popup.style.width = `${rect.width + this.state.scrollbarWidth}px`; 
         }  
     }
-    
-    // NOTE: this is very much not a React way of doing things, but the best I can cook up for the popup card
-    popupToggleHandler(){ 
+
+    popupToggleHandler(id){ 
         let gridContainer = document.getElementById('grid-container');
         let navbar = document.getElementById('main-navbar');
         let popup = document.getElementById('search-popup-container-bg');
@@ -47,6 +50,7 @@ class ContentSearch extends React.Component {
         let scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
 
         if(!this.state.popupDisplay){
+            this.setState({ overflow: document.body.style.overflowY });
             // hide the body scrollbar and preserve offset of elements due to scrollbar being removed
             document.body.style.overflowY = 'hidden';  
             document.body.style.paddingRight = `${scrollbarWidth}px`;
@@ -57,11 +61,11 @@ class ContentSearch extends React.Component {
             popup.style.width = `${rect.width + scrollbarWidth}px`;  
             popup.style.display = 'inline';
 
-            // reset scroll to top
             gridContainer.scrollTop = 0;
-        } else {
-            // return to default state
-            document.body.style.overflowY = 'scroll';
+
+            this.popup.current.updateData(id);
+        } else { // return to default state      
+            document.body.style.overflowY = this.state.overflow;
             document.body.style.paddingRight = '0px';
             navbar.style.marginRight = '0px'; 
             popup.style.display = 'none';
@@ -73,13 +77,31 @@ class ContentSearch extends React.Component {
         });
     }
 
-    filteringHandler(e) {
+    filteringHandler(e, filters) {
         e.preventDefault();
-        console.log('applying filters');
-        //TODO: should make a fetch request here with new filters to rebuild the cards, then scroll to top
+       
+        //TODO: Make a fetch request here with new filters to rebuild the cards once the endpoint is ready to accept query params
+        fetch('http://localhost:5000/recipes', {method: 'GET'}).then(res => res.json()).then(res => { this.buildCards(res); });
 
         document.body.scrollTop = 0;
         document.documentElement.scrollTop = 0;
+    }
+
+    buildCards(data){
+        this.setState({
+            display: 'none'
+        }, () => {
+            let recipeCards = [];
+
+            data.forEach((recipe) => {
+                recipeCards.push(<ContentGridCard title={recipe.title} img={recipe.mainimage} key={recipe.recipeid} cardCallback={this.popupToggleHandler} id={recipe.recipeid}/>);
+            });
+
+            this.setState({
+                recipeCards: recipeCards,
+                display: 'block'
+            });
+        });   
     }
 
     componentDidMount(){
@@ -89,28 +111,18 @@ class ContentSearch extends React.Component {
         let gridResizeObserver = new ResizeObserver(() => this.handleResize());
         gridResizeObserver.observe(document.getElementById('grid-container'));
 
-        fetch('http://localhost:5000/recipes', {method: 'GET'}).then(res => res.json()).then(res => console.log(res));
-        fetch('http://localhost:5000/filters', {method: 'GET'}).then(res => res.json()).then(res => console.log(res));
-        // TODO: fetch some recipe data when loading the grid for the first time, construct the recipe cards
-        let recipeCards = [];
-
-        recipes.recipes.forEach((recipe, idx) => {
-            recipeCards.push(<ContentGridCard title={recipe.title} img={recipe.img} key={idx} cardCallback={this.popupToggleHandler}/>);
-        });
-
-        this.setState({
-            recipeCards: recipeCards
-        });
+        //initial data, fetching with no filters
+        fetch('http://localhost:5000/recipes', {method: 'GET'}).then(res => res.json()).then(res => { this.buildCards(res); });
     }
 
     render(){
         return (
             <Fragment>
-                <div className="container-fluid container-flex">
+                <div className="container-fluid container-flex" style={{display: this.state.display}}>
                     <FilteringMenu filteringCallback={this.filteringHandler} />
 
                     <div className="content-search-grid-container" id='grid-container'>
-                        <SearchPopup display={this.state.popupDisplay} closeCallback={this.popupToggleHandler} />
+                        <SearchPopup display={this.state.popupDisplay} closeCallback={this.popupToggleHandler} ref={this.popup}/>
                         <ContentGrid content={this.state.recipeCards} />
                     </div>        
                 </div>

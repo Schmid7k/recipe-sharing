@@ -6,17 +6,18 @@ import {ReactComponent as StarIcon} from "../../images/star_icon.svg";
 /* Creates a dropdown select menu for the categories. "Select a category" is shown as a placeholder
   but is hidden in the actual dropdown menu and can't be chosen. */
   // NOTE: I suppose category selection can be hardcoded rather than try fetching values from DB, since it's only few
-const CategorySelection = () => {
+const CategorySelection = ({categories}) => {
+  let catOptions = [];
+  categories.forEach(cat => {
+    catOptions.push(<option value={cat} key={cat}>{cat}</option>)
+  })
+
   return (
     <Fragment>
       <h5><label htmlFor="categories-select">Category</label></h5>
       <select name="categories" id="categories-select" className="form-select" defaultValue="placeholder">
         <option value="placeholder" disabled hidden>Select a category</option>
-        <option value="appetizers">Appetizers</option>
-        <option value="maindishes">Main Dishes</option>
-        <option value="snacks">Snacks</option>
-        <option value="sidedishes">Side Dishes</option>
-        <option value="desserts">Desserts</option>
+        {catOptions}
       </select>
     </Fragment>
   );
@@ -61,7 +62,7 @@ const Checklist = ({items}) => {
   Since both the include and exclude lists just include a dummy checkbox list component currently, clicking on the exclude
   checkbox labels fills in the include ones due to shared id's.*/
 // TODO: "see more" could be added if the lists are very long
-const IngredientSelection = ({topIngredients, ingredients, callbackExlude, callbackInclude, customExcludeIngredients, customIncludeIngredients}) => {
+const IngredientSelection = ({include, exclude, ingredients, callbackExlude, callbackInclude, customExcludeIngredients, customIncludeIngredients}) => {
   return (
     <Fragment>
       <h5>
@@ -78,7 +79,7 @@ const IngredientSelection = ({topIngredients, ingredients, callbackExlude, callb
 
         <div className="popular-item-container">
           <h6>Popular</h6>
-          <Checklist items={topIngredients} />
+          <Checklist items={include} />
         </div>
 
         <h6 style={{marginTop: '20px'}}>Exclude</h6>
@@ -86,7 +87,7 @@ const IngredientSelection = ({topIngredients, ingredients, callbackExlude, callb
        
         <div className="popular-item-container">
           <h6>Popular</h6>
-          <Checklist items={topIngredients} />
+          <Checklist items={exclude} />
         </div>
       </div>
     </Fragment>
@@ -151,7 +152,7 @@ class FilterSearch extends React.Component {
             <div className="search-dropdown-container">
 
               <div className="form-search-container">
-                <input className="form-control" id={this.props.id} list={`items-${this.props.id}`} placeholder={ this.props.placeholder }/>
+                <input className="form-control" id={this.props.id} list={`items-${this.props.id}`} placeholder={ this.props.placeholder } autoComplete="off"/>
                 <datalist id={`items-${this.props.id}`}> 
                   { this.props.items }
                 </datalist>
@@ -210,6 +211,7 @@ class FilteringMenuContents extends React.Component {
     this.updateCustomTags = this.updateCustomTags.bind(this);
     this.getCheckedElements = this.getCheckedElements.bind(this);
     this.checkAll = this.checkAll.bind(this);
+    this. constructFilters = this.constructFilters.bind(this);
   }
 
   updateCustomExcludeIngredients(items) {
@@ -239,16 +241,55 @@ class FilteringMenuContents extends React.Component {
     });
   }
 
+  constructFilters() {
+    let selectedCategory = document.getElementById('categories-select').value;
+
+    let minRating = 0;
+    for(let i = 1; i <= 5; i++){
+      if(document.getElementById(`star-${i}`).checked)
+        minRating = i;
+    }
+
+    let checkedCustomIncludeIngredients = this.getCheckedElements(this.state.customIncludeIngredients, 'include');
+    let checkedCustomExcludeIngredients = this.getCheckedElements(this.state.customExcludeIngredients, 'exclude');
+    let checkedCustomTags = this.getCheckedElements(this.state.customTags, 'tag-list');
+    let checkedTopTags = this.getCheckedElements(this.props.popTagNames, 'top-tag-list');
+    let checkedTopIngredientsInclude = this.getCheckedElements(this.props.popIngredientNames, 'top-ingredient-include-list')
+    let checkedTopIngredientsExclude = this.getCheckedElements(this.props.popIngredientNames, 'top-ingredient-exclude-list')
+
+    this.setState({
+      customIncludeIngredients: checkedCustomIncludeIngredients,
+      customExcludeIngredients: checkedCustomExcludeIngredients,
+      customTags: checkedCustomTags
+
+    }, () => {
+      // BUG: removing unchecked item turns the following item into unchecked too
+      // setting it to checked manually (still gets correct set state)
+      this.checkAll(this.state.customIncludeIngredients, 'include');
+      this.checkAll(this.state.customExcludeIngredients, 'exclude');
+      this.checkAll(this.state.customTags, 'tag-list');
+    });
+
+    return {
+      include : checkedTopIngredientsInclude.concat(this.state.customIncludeIngredients),
+      exclude: checkedTopIngredientsExclude.concat(this.state.customExcludeIngredients),
+      tags: checkedTopTags.concat(this.state.customTags),
+      category: selectedCategory,
+      rating: minRating
+    }
+  }
+
   render() {
     return (
       <Fragment>
         <h3 id="filtersHeader">Filters</h3>
         <form>
           <div className="filter-menu-contents">
-            <CategorySelection />
+            <CategorySelection categories={this.props.categories}/>
             
             <IngredientSelection 
-              topIngredients={this.props.topIngredients} 
+              include={this.props.topIngredientsInclude} 
+              exclude={this.props.topIngredientsExclude} 
               ingredients={this.props.allIngredients} 
               callbackExlude={this.updateCustomExcludeIngredients} 
               callbackInclude={this.updateCustomIncludeIngredients}
@@ -268,62 +309,9 @@ class FilteringMenuContents extends React.Component {
           <div className="text-center mt-2">
             <button id="apply-filters-btn" onClick={(e) => {
               e.preventDefault();
-
-              let selectedCategory = document.getElementById('categories-select').value;
-
-              let minRating = 0;
-              for(let i = 1; i <= 5; i++){
-                if(document.getElementById(`star-${i}`).checked)
-                  minRating = i;
-              }
-
-              let checkedCustomIncludeIngredients = this.getCheckedElements(this.state.customIncludeIngredients, 'include');
-              // let checkedCustomIncludeIngredients = [];
-              // this.state.customIncludeIngredients.forEach(item => {
-              //   if(document.getElementById(`checkbox-include-${item}`).checked)
-              //     checkedCustomIncludeIngredients.push(item);
-              // })
-
-              let checkedCustomExcludeIngredients = this.getCheckedElements(this.state.customExcludeIngredients, 'exclude');
-              // let checkedCustomExcludeIngredients = [];
-              // this.state.customExcludeIngredients.forEach(item => {
-              //   if(document.getElementById(`checkbox-exclude-${item}`).checked)
-              //     checkedCustomExcludeIngredients.push(item);
-              // })
-
-              let checkedCustomTags = this.getCheckedElements(this.state.customTags, 'tag-list');
-              // let checkedCustomTags = [];
-              // this.state.customTags.forEach(item => {
-              //   if(document.getElementById(`checkbox-tag-list-${item}`).checked)
-              //   checkedCustomTags.push(item);
-              // })
-
-              this.setState({
-                customIncludeIngredients: checkedCustomIncludeIngredients,
-                customExcludeIngredients: checkedCustomExcludeIngredients,
-                customTags: checkedCustomTags
-
-              }, () => {
-                // BUG: removing unchecked item turns the following item into unchecked too
-                // setting it to checked manually (still gets correct set state)
-                this.checkAll(this.state.customIncludeIngredients, 'include');
-                this.checkAll(this.state.customExcludeIngredients, 'exclude');
-                this.checkAll(this.state.customTags, 'tag-list');
-                // this.state.customIncludeIngredients.forEach(item => {
-                //   document.getElementById(`checkbox-include-${item}`).checked = true;
-                // });
-                // this.state.customExcludeIngredients.forEach(item => {
-                //   document.getElementById(`checkbox-exclude-${item}`).checked = true;
-                // })
-                // this.state.customTags.forEach(item => {
-                //   document.getElementById(`checkbox-tag-list-${item}`).checked = true;
-                // })
-              });
-
-              //TODO: can get the popular selections by looking up them by ID from the original arrays rather than passing state
-              // assemble everything into a nice json for callback to then make the recipe query
-
-              this.props.filteringCallback(e);      
+              let filters = this.constructFilters();
+              // console.log(filters);
+              this.props.filteringCallback(e, filters);      
             }}>Apply filters</button>
           </div>
         </form>
@@ -347,48 +335,81 @@ class FilteringMenuContents extends React.Component {
 class FilteringMenu extends React.Component {
   constructor() {
     super();
+
+    this.state = {
+      categories: [],
+      topTags: [],
+      topIngredientsInclude: [],
+      topIngredientsExclude: [],
+      ingredientOptions: [],
+      tagOptions: [],
+      popIngredientNames: [],
+      popTagNames: []
+    }
+
+    this.handleFetchingFilters = this.handleFetchingFilters.bind(this);
+  }
+
+  handleFetchingFilters(data) {
+    // console.log(data)
+    let topIngredientListInclude = [];
+    let topIngredientListExclude = [];
+    data.popIngredients.forEach(ingredient => {
+      topIngredientListInclude.push(<ChecklistCheckbox name={ingredient} value={ingredient} checklistName={'top-ingredient-include-list'} key={`${ingredient}-include`}/>);
+      topIngredientListExclude.push(<ChecklistCheckbox name={ingredient} value={ingredient} checklistName={'top-ingredient-exclude-list'} key={`${ingredient}-exclude`}/>);
+    });
+
+    // console.log(topIngredientListInclude);
+    // console.log(topIngredientListExclude)
+
+    let ingredientOptions = [];
+    data.allIngredients.forEach(item => {
+      ingredientOptions.push(<option value={item} key={item}/>);
+    });
+
+    let topTagList = [];
+    data.popTags.forEach(tag => {
+      topTagList.push(<ChecklistCheckbox name={tag} value={tag} checklistName={'top-tag-list'} key={`${tag}-top`}/>);
+    });
+
+    let tagOptions = [];
+    data.allTags.forEach(item => {
+      tagOptions.push(<option value={item} key={`${item}-option`}/>);
+    });
+
+    this.setState({
+      categories: data.allCategories,
+      topTags: topTagList,
+      topIngredientsInclude: topIngredientListInclude,
+      topIngredientsExclude: topIngredientListExclude,
+      ingredientOptions: ingredientOptions,
+      tagOptions: tagOptions,
+      popIngredientNames: data.popIngredients,
+      popTagNames: data.popTags
+    });
+  }
+
+  componentDidMount(){
+    fetch('http://localhost:5000/filters', {method: 'GET'})
+    .then(res => res.json())
+    .then(res => this.handleFetchingFilters(res));
   }
 
   render(){
-    // TODO: these should be fetched when the component mounts and stored
-    let topIngredients = ['ingredient1', 'ingredient2', 'ingredient3', 'ingredient4', 'ingredient5', 'ingredient6', 'ingredient7', 'ingredient8', 'ingredient9'];
-
-    let topIngredientList = [];
-    topIngredients.forEach(ingredient => {
-      topIngredientList.push(<ChecklistCheckbox name={ingredient} value={ingredient} checklistName={'top-ingredient-list'}/>);
-    });
-
-    let topTags = ['tag1', 'tag2', 'tag3', 'tag4', 'tag5'];
-
-    let topTagList = [];
-    topTags.forEach(tag => {
-      topTagList.push(<ChecklistCheckbox name={tag} value={tag} checklistName={'top-tag-list'}/>);
-    });
-
-    let allIngredients = ['apples', 'milk', 'butter', 'eggs', 'wheat', 'pears', 'cheese', 'sugar', 'bread'];
-    
-    let ingredientOptions = [];
-    allIngredients.forEach(item => {
-      ingredientOptions.push(<option value={item}/>);
-    });
-
-    let allTags = ['novelty', 'easy', 'diet', 'low-carb', 'sweet', 'healthy', 'illegal', 'hard', 'fast'];
-
-    let tagOptions = [];
-    allTags.forEach(item => {
-      tagOptions.push(<option value={item}/>);
-    });
-
     return (
       <Fragment>
         <nav id="filtering-menu" className="collapse">
           <div className="filter-menu-container">
             <FilteringMenuContents 
+              categories={this.state.categories}
               filteringCallback={this.props.filteringCallback} 
-              topTags={topTagList}
-              topIngredients={topIngredientList}
-              allIngredients={ingredientOptions}
-              allTags={tagOptions}
+              topTags={this.state.topTags}
+              topIngredientsInclude={this.state.topIngredientsInclude}
+              topIngredientsExclude={this.state.topIngredientsExclude}
+              allIngredients={this.state.ingredientOptions}
+              allTags={this.state.tagOptions}
+              popIngredientNames={this.state.popIngredientNames}
+              popTagNames={this.state.popTagNames}
             />
           </div>
         </nav>

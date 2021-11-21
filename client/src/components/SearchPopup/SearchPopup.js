@@ -1,14 +1,18 @@
 import React, {Fragment} from "react";
 import "./SearchPopup.css";
-
+import recipeInfo from "../../recipe-placeholder-data.json";
 import closeBtnIcon from "../../images/close-round-btn.svg";
+import bookmarkIcon from "../../images/bookmark_svg.svg";
+import starIcon from "../../images/star_svg.svg";
+
+import { Link } from 'react-router-dom'
 
 // TODO: not sure if these should be functional to allow rating here or saving
 const PopupRating = ({number, icon}) => {
     return(
         <Fragment>
             <div className="popup-rating-container">
-                <div className="popup-number">{number}</div>
+                <div className="popup-number" style={{fontWeight: 'bold', fontSize: '1.5em'}}>{number}</div>
                 <img className="popup-rating-icon" src={icon}></img>
             </div>
         </Fragment>
@@ -46,45 +50,34 @@ const PopupTag = ({tagText}) => {
     )
 }
 
-const SearchPopupContent = ({callback}) => {
-    //TODO: all this should be sent to the popup from retrieved data
-    let title = "Sample Title";
-    let username = "@Username";
+const IngredientList = ({title, items}) => {
+    return(
+        <div style={{marginBottom: '20px'}}>
+            <div style={{fontWeight: 'bold'}}>{title}</div>
+            {items}
+        </div>
+    )
+}
 
-    let tagText = ['tag1', 'sampleTag2', 'tag3', 'tag4', 'sampleTag5', 'tag1', 'sampleTag2', 'tag3', 'tag4', 'sampleTag5'];
+const SearchPopupContent = ({callback, data}) => {
     let tags = [];
-
-    tagText.forEach(t => {
-        tags.push(<PopupTag tagText={t}/>);
+    data.tags.forEach(t => {
+        tags.push(<PopupTag tagText={t} key={t}/>);
     });
-
-    let ingredientsRaw = [['ingredient1', '45 g'], ['ingredient1', '45 g'], ['ingredient1', '45 g'], ['ingredient1', '45 g'], ['ingredient1', '45 g']];
-    let ingredients = [];
-
-    ingredientsRaw.forEach(ingredient => {
-        ingredients.push(<PopupIngredient ingredientName={ingredient[0]} quantity={ingredient[1]}/>);
-    });
-
-    let step1 = <PopupInstructionStep stepNumber={1} stepText={"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce ornare, sem nec mattis sodales, mauris eros tincidunt mi, a eleifend nibh felis at tortor. Nam semper maximus lorem ac ultrices. Donec maximus dui sed rhoncus hendrerit."} />
-    let step2 = <PopupInstructionStep stepNumber={2} stepText={"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce ornare, sem nec mattis sodales, mauris eros tincidunt mi, a eleifend nibh felis at tortor. Nam semper maximus lorem ac ultrices. Donec maximus dui sed rhoncus hendrerit."} />
-    
-    let steps = [step1, step2];
 
     return (
         <Fragment>
             <img className="popup-close-btn" src={closeBtnIcon} onClick={callback}></img>
-            <img className="search-popup-img" src='./../../images/snowskin_mooncakes.jpg'/>
+            <img className="search-popup-img" src={data.image}/>
             <div className="popup-body">
                 <div className="popup-header-container">
                     <div className="popup-title-and-username-container">
-                        <h1 className="popup-title">{title}</h1>
-                        {/* TODO: on click should redirect to the user page */}
-                        <div className="popup-username">{username}</div>
+                        <h1 className="popup-title">{data.title}</h1>
+                        <Link className="popup-username" to={`users/${data.author}`}>@{data.author}</Link>
                     </div>
-                    {/* TODO: replace icons */}
                     <div className="popup-rating-and-bookmark-container">
-                        <PopupRating number={7} icon={closeBtnIcon}/>
-                        <PopupRating number={5} icon={closeBtnIcon}/>
+                        <PopupRating number={data.bookmarks} icon={bookmarkIcon}/>
+                        <PopupRating number={data.stars} icon={starIcon}/>
                     </div>
                 </div>
 
@@ -92,26 +85,98 @@ const SearchPopupContent = ({callback}) => {
 
                 <div className="ingredients-instructions-container">
                     <div className="ingredients-container">
-                        <div style={{fontWeight: 'bold'}}>Ingredients</div>
-                        {ingredients}
+                        {data.ingredients}
                     </div>
                     <div className="instructions-container">
                         <div style={{fontWeight: 'bold'}}>Instructions</div>
-                        <div>{steps}</div>
+                        <div>{data.instructions}</div>
                     </div>
                 </div>
-
-                {/* TODO: redirect to individual recipe page */}
-                <button className="popup-more-btn">More</button>
-                
+                <Link className="popup-more-btn" to={`recipes/${data.id}`}>More</Link>             
                 </div>
         </Fragment>
     )
 }
 
 class SearchPopup extends React.Component {
-    render() {
 
+    constructor(){
+        super();
+
+        this.state = {
+            title: '',
+            author: '',
+            tags: [],
+            id: ''
+        }
+    }
+
+    updateData(id){
+        if(this.state.id === id) return;
+
+        fetch(`http://localhost:5000/recipes/${id}`, {method: 'GET'})
+       .then(res => res.json())
+       .then(data => {
+            data.main = data.main.replace(/\\\\/g, '\\');
+
+            // extract tags
+            let tags = [];
+            data.tags.forEach(element => {
+                tags.push(element.name);
+            });
+
+            // tags would never return null but current enpoint returns [null]
+            if(tags[0] === null)
+                tags = [];
+
+            // extract and format ingredient groups
+            let dataGroups = [];
+            Object.keys(data.groups).forEach(key => {
+                dataGroups.push({
+                    name: key === 'Default' ? 'Ingredients' : key,
+                    ingredients: data.groups[key]
+                });
+            });
+
+            let ingredientGroups =[];
+            dataGroups.forEach(group => {
+                let ingredients = [];
+                group.ingredients.forEach(ingredient => {
+                    ingredients.push(<PopupIngredient ingredientName={ingredient.ingredient} quantity={ingredient.amount} key={`ingredient-${ingredient.ingredient}`}/>);
+                });
+                ingredientGroups.push(<IngredientList title={group.name} items={ingredients} key={`group-${group.name}`}/>);
+            })
+
+            let instructions = [];
+            data.instructions.forEach(step => {
+                instructions.push(<PopupInstructionStep stepNumber={step.step} stepText={step.instruction} key={`instruction-${step.step}`}/>);
+            });
+
+            // only show the first two steps of instructions/ingredients
+            if(instructions.length > 2)
+                instructions.length = 2
+
+            if(ingredientGroups.length > 2)
+                ingredientGroups.length = 2
+
+            this.setState({       
+                title: data.title,
+                author: recipeInfo.recipeInfo.username,
+                
+                // TODO: replace with fetching actual data
+                bookmarks: recipeInfo.recipeInfo.bookmarks,
+                stars: recipeInfo.recipeInfo.stars,
+         
+                image: data.main, 
+                tags: tags,
+                ingredients: ingredientGroups,
+                instructions: instructions,
+                id: id
+            });
+       });
+    }
+
+    render() {
         let display = this.props.display ? 'inline' : 'none';
         let callback = () => this.props.closeCallback();
 
@@ -123,7 +188,7 @@ class SearchPopup extends React.Component {
                     onClick={callback}      
                 >
                    <div className="search-popup-container" style={{ display: display }} onClick={e => e.stopPropagation()}>
-                        <SearchPopupContent callback={callback}/>      
+                        <SearchPopupContent callback={callback} data={this.state}/>      
                     </div> 
                 </div>
             </Fragment>
