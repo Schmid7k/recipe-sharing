@@ -294,6 +294,37 @@ app.get("/recipes", async (req, res) => {
   }
 });
 
+app.post("/recipes/:id", async (req, res) => {
+  try {
+    const cookie = req.signedCookies.authentication; // retrieve authentication cookie from request
+    if (cookie) {
+      const { id } = req.params;
+      const { bookmarked } = req.body;
+      const user = await pool.query("SELECT * FROM users WHERE Username = $1", [
+        cookie,
+      ]);
+      if (bookmarked == "1") {
+        await pool.query(
+          "INSERT INTO recipe_bookmarks (RecipeID, UserID) VALUES($1, $2) RETURNING *",
+          [id, user.rows[0].userid]
+        );
+        res.status(201).send("Created bookmark!");
+      } else {
+        await pool.query(
+          "DELETE FROM recipe_bookmarks WHERE RecipeID = $1 AND UserID = $2",
+          [id, user.rows[0].userid]
+        ); // Delete the database entry
+        res.status(200).send("Bookmarked deleted!");
+      }
+    } else {
+      res.status(401).send("Please register!");
+    }
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Something went wrong!");
+  }
+});
+
 // Some specified get request
 
 app.get("/recipes/:id", async (req, res) => {
@@ -322,7 +353,7 @@ app.get("/recipes/:id", async (req, res) => {
           "tags": []
         }
       }`);
-      // Add recipe author to tempalte
+      // Add recipe author to template
       recipe.author = user.rows[0].username;
       // Add title to template
       recipe.title = base.rows[0].title;
@@ -446,18 +477,23 @@ app.get("/user/:username", async (req, res) => {
 
     // need searches to return recipes sorted as reviewed, saved, and uploaded, just filling in with all recipes for now
     const tempRecipes = await pool.query(
-      "SELECT * from recipes ORDER BY RecipeID DESC"
+      "SELECT * FROM recipes ORDER BY RecipeID DESC"
     );
 
     // Get all recipes uploaded by this user
     const uploadedRecipes = await pool.query(
-      "SELECT * from recipes WHERE UserID = $1 ORDER BY RecipeID DESC",
+      "SELECT * FROM recipes WHERE UserID = $1 ORDER BY RecipeID DESC",
+      [id]
+    );
+
+    const savedRecipes = await pool.query(
+      "SELECT * FROM recipes WHERE UserID = $1 ORDER BY RecipeID DESC",
       [id]
     );
 
     let recipes = {
       reviewed: tempRecipes.rows,
-      saved: tempRecipes.rows,
+      saved: savedRecipes.rows,
       uploaded: uploadedRecipes.rows,
     };
 

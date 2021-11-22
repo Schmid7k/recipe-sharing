@@ -64,3 +64,9 @@ CREATE TABLE recipe_ingredients (
     PRIMARY KEY ( ingredientsID, RecipeID, groupID ),
     FOREIGN KEY (RecipeID, groupID) REFERENCES ingredient_groups(RecipeID, groupID) ON DELETE CASCADE
 );
+
+CREATE TABLE recipe_bookmarks (
+    RecipeID integer REFERENCES recipes ON DELETE CASCADE,
+    UserID integer REFERENCES users ON DELETE CASCADE,
+    PRIMARY KEY ( RecipeID, UserID)
+);
