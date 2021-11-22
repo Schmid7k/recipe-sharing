@@ -5,7 +5,6 @@ import {ReactComponent as StarIcon} from "../../images/star_icon.svg";
 
 /* Creates a dropdown select menu for the categories. "Select a category" is shown as a placeholder
   but is hidden in the actual dropdown menu and can't be chosen. */
-  // NOTE: I suppose category selection can be hardcoded rather than try fetching values from DB, since it's only few
 const CategorySelection = ({categories}) => {
   let catOptions = [];
   categories.forEach(cat => {
@@ -271,8 +270,8 @@ class FilteringMenuContents extends React.Component {
     });
 
     return {
-      include : checkedTopIngredientsInclude.concat(this.state.customIncludeIngredients),
-      exclude: checkedTopIngredientsExclude.concat(this.state.customExcludeIngredients),
+      inIngredients: checkedTopIngredientsInclude.concat(this.state.customIncludeIngredients),
+      outIngredients: checkedTopIngredientsExclude.concat(this.state.customExcludeIngredients),
       tags: checkedTopTags.concat(this.state.customTags),
       category: selectedCategory,
       rating: minRating
@@ -320,18 +319,6 @@ class FilteringMenuContents extends React.Component {
   }
 }
 
-/* The nav is set to just collapse instead of collapse-horizontal to make it look better on mobile, 
-  but now the PC collapse transition looks a bit janky (setting min-width for the menu could also play a part in that)... 
-  
-  .filter-menu-container fixes the filtering menu in place when on PC, but when the screen is small enough 
-  its position is changed to static so mobile users can scroll past it while the filtering menu is open. 
-  
-  The contents in the filtering menu are set to overflow-y scroll so if you have a lot of content you have a scrollbar
-  inside the filtering menu. This way the header "Filters" and the applying button are always show to the user
-  and the filtering menu can be set to fixed so that you can apply filters even if you've scrolled far down on the page.
-  
-  The checkboxes etc. still use Bootstrap's default colors. In the prototype those checkboxes were colored with a color
-  from the color palette so that's still missing.*/
 class FilteringMenu extends React.Component {
   constructor() {
     super();

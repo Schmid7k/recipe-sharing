@@ -80,12 +80,16 @@ class ContentSearch extends React.Component {
     filteringHandler(filters) {
         let url = 'http://localhost:5000/recipes?';
         Object.keys(filters).forEach(key => {
-            if (!Array.isArray(filters[key]) || filters[key].length > 0) {
+            if (!Array.isArray(filters[key]) && filters[key] !== "placeholder") {
                 url = url.concat(`${key}=${filters[key]}&`);
+            } else if (Array.isArray(filters[key]) && filters[key].length > 0) {
+                let values = '';
+                filters[key].forEach(value => values = values.concat(`%22${value}%22,`));
+                values = values.slice(0, -1);
+                url = url.concat(`${key}=[${values}]&`);
             }
         });
         url = url.slice(0, -1).replace(' ', '+');
-
         fetch(url, {
           method: 'GET',
         })
