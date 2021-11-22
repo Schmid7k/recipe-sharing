@@ -931,6 +931,10 @@ class RecipeForm extends React.Component {
 
     if (dataValidates) {
       const formData = new FormData();
+
+      let stepImages = {};
+      Object.keys(this.state.stepImages).forEach(key => stepImages[key] = this.state.stepImages[key].name);
+
       const recipe = {
         title: this.state.title,
         category: this.state.category,
@@ -938,6 +942,7 @@ class RecipeForm extends React.Component {
         instructions: this.state.instructions,
         addInstructions: this.state.addInstructions,
         tags: this.state.tags,
+        stepImages: stepImages,
       }
 
       formData.append('recipe', JSON.stringify(recipe));
