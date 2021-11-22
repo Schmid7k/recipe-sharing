@@ -311,7 +311,7 @@ class FilteringMenuContents extends React.Component {
               e.preventDefault();
               let filters = this.constructFilters();
               // console.log(filters);
-              this.props.filteringCallback(e, filters);      
+              this.props.filteringCallback(filters);      
             }}>Apply filters</button>
           </div>
         </form>
