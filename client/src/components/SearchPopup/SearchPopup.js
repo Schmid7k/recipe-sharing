@@ -169,7 +169,7 @@ class SearchPopup extends React.Component {
                 bookmarks: recipeInfo.recipeInfo.bookmarks,
                 stars: recipeInfo.recipeInfo.stars,
          
-                image: `/${data.main}`, 
+                image: `/${data.main.replace(/\\/g, '/').replace('../client/public/', '')}`, 
                 tags: tags,
                 ingredients: ingredientGroups,
                 instructions: instructions,
