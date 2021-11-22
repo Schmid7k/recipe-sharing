@@ -693,6 +693,7 @@ class InstructionsInput extends React.Component {
 
     let stepObj = steps.reduce((obj, step) => ({...obj, [steps.indexOf(step) + 1]: step.description}), {});
     this.props.handleInputChange("instructions", stepObj);
+    this.props.handleStepImageDeletion(idx + 1);
   }
 
   handleImageChange(step, file) {
@@ -836,6 +837,7 @@ class RecipeForm extends React.Component {
 
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleStepImageChange = this.handleStepImageChange.bind(this);
+    this.handleStepImageDeletion = this.handleStepImageDeletion.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
@@ -848,6 +850,12 @@ class RecipeForm extends React.Component {
   handleStepImageChange(step, image) {
     let currentImages = { ...this.state.stepImages, [step]: image };
     this.setState({ stepImages: currentImages })
+  }
+
+  handleStepImageDeletion(step) {
+    let currentImages = { ...this.state.stepImages };
+    delete currentImages[step];
+    this.setState({ stepImages: currentImages });
   }
 
   handleSubmit(e) {
@@ -933,7 +941,8 @@ class RecipeForm extends React.Component {
       }
 
       formData.append('recipe', JSON.stringify(recipe));
-      formData.append('main', this.state.image);
+      formData.append('images', this.state.image);
+      Object.keys(this.state.stepImages).forEach( key => formData.append('images', this.state.stepImages[key]) );
       
       fetch('http://localhost:5000/recipes', {
           method: 'POST',
@@ -946,8 +955,11 @@ class RecipeForm extends React.Component {
         }
         throw new Error('Something went wrong...');
       })
-      .then(recipe => {
-        this.setState({ createdID: recipe.recipeid });
+      .then(recipeID => {
+        setTimeout(() => {
+          this.setState({ createdID: recipeID });
+          console.log('Redirecting...')
+        }, 500);
       })
       .catch((error) => {
           console.error(error);
@@ -969,6 +981,7 @@ class RecipeForm extends React.Component {
               <ImageUploader handleInputChange={this.handleInputChange} errors={this.state.errors.imageErrors} />
               <IngredientInput handleInputChange={this.handleInputChange} errors={this.state.errors.ingredientErrors} />
               <InstructionsInput  handleInputChange={this.handleInputChange} handleStepImageChange={this.handleStepImageChange}
+                                  handleStepImageDeletion={this.handleStepImageDeletion} 
                                   errors={this.state.errors.instructionErrors} />
               <AdditionalInstructionsInput handleInputChange={this.handleInputChange} />
               <TagInput handleInputChange={this.handleInputChange} errors={this.state.errors.tagErrors} />

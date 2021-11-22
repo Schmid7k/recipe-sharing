@@ -148,7 +148,7 @@ app.post("/recipes", upload.array("images", 100), async (req, res) => {
         )) &&
         (await helpers.saveTags(tags, recipeID))
       ) {
-        res.status(201).send("Recipe added successfully!");
+        res.status(201).json(newRecipe.rows[0].recipeid);
       } else {
         res.status(500).send("Something went wrong!");
       }

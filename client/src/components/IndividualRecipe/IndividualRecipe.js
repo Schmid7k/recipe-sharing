@@ -210,7 +210,7 @@ const RecipeTagList = ({ tags }) => {
 };
 
 RecipeTagList.propTypes = {
-    tags: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
+    tags: PropTypes.array.isRequired,
 };
 
 /**
@@ -356,10 +356,7 @@ RecipeInstruction.propTypes = {
 };
 
 RecipeInstructionList.propTypes = {
-    instructions: PropTypes.arrayOf(PropTypes.shape({
-        step: PropTypes.number.isRequired,
-        instruction: PropTypes.string.isRequired,
-    })).isRequired,
+    instructions: PropTypes.array.isRequired,
 };
 
 /**
@@ -440,7 +437,7 @@ class IndividualRecipe extends React.Component {
         this.setState({
             header: {
                 name: data.title,
-                author: recipeInfo.recipeInfo.username, // TODO: add username to fetch results
+                author: data.author,
                 category: data.category,
                 bookmarks: recipeInfo.recipeInfo.bookmarks, // TODO: need to fetch bookmarks and stars (display differently if a user is logged in and already done this?)
                 stars: recipeInfo.recipeInfo.stars
@@ -464,6 +461,8 @@ class IndividualRecipe extends React.Component {
        .then(res => res.json())
        .then(res => this.handleSettingRecipeData(res))
        .catch(err => this.props.history.push('/')) // TODO: should we have a simple 404 page or just redirect to home?
+       document.body.scrollTop = 0;
+       document.documentElement.scrollTop = 0;
     }
 
     render(){
