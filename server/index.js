@@ -260,7 +260,7 @@ app.get("/recipes", async (req, res) => {
           "LEFT JOIN recipe_tags ON recipe_tags.recipeid = recipes.recipeid LEFT JOIN tags ON tags.tagid = recipe_tags.tagid ";
         queryTemplate.end.push("tags.name IN ('" + tags.join("','") + "') ");
       }
-
+      // If the parameter searchPhrase is there
       if (searchPhrase) {
         queryTemplate.end.push(
           "recipes.title LIKE " + "'%" + `${searchPhrase}` + "%' "
@@ -281,7 +281,7 @@ app.get("/recipes", async (req, res) => {
           queryTemplate.start + queryTemplate.mid + queryTemplate.out;
       }
 
-      console.log(finalQuery);
+      // console.log(finalQuery); Uncomment for debug
 
       // Apply the query to the database
       filteredRecipes = await pool.query(finalQuery);
@@ -431,6 +431,11 @@ app.get("/user/:username", async (req, res) => {
   try {
     const { username } = req.params; // for use later to grab the user_id, then all the other related user details
 
+    const user = await pool.query("SELECT * FROM users WHERE Username = $1", [
+      username,
+    ]);
+    const id = user.rows[0].userid;
+
     // we don't have a way for editing bio and uploading an image yet, but maybe we could still store some dummy data
     // for the client to look good and show this off
     // something like [uid, user_id, image_path, bio] table that we could fill in with dummy data directly on the backend
@@ -444,10 +449,16 @@ app.get("/user/:username", async (req, res) => {
       "SELECT * from recipes ORDER BY RecipeID DESC"
     );
 
+    // Get all recipes uploaded by this user
+    const uploadedRecipes = await pool.query(
+      "SELECT * from recipes WHERE UserID = $1 ORDER BY RecipeID DESC",
+      [id]
+    );
+
     let recipes = {
       reviewed: tempRecipes.rows,
       saved: tempRecipes.rows,
-      uploaded: tempRecipes.rows,
+      uploaded: uploadedRecipes.rows,
     };
 
     let userData = {
