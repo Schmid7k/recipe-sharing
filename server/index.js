@@ -350,6 +350,43 @@ app.delete("/recipes/:id", async (req, res) => {
   }
 });
 
+
+// TODO: placeholder for getting user data when loading up a user page 
+
+app.get("/user/:username", async (req, res) => {
+  try {
+    const { username } = req.params; // for use later to grab the user_id, then all the other related user details
+
+    // we don't have a way for editing bio and uploading an image yet, but maybe we could still store some dummy data
+    // for the client to look good and show this off
+    // something like [uid, user_id, image_path, bio] table that we could fill in with dummy data directly on the backend
+    let headerData = {
+      bio: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc ut sapien vel nisl fermentum malesuada. From server.',
+      image: '/images/user_placeholder_icon.svg'
+    }
+
+    // need searches to return recipes sorted as reviewed, saved, and uploaded, just filling in with all recipes for now
+    const tempRecipes = await pool.query("SELECT * from recipes ORDER BY RecipeID DESC");
+
+    let recipes = {
+      reviewed: tempRecipes.rows,
+      saved: tempRecipes.rows,
+      uploaded: tempRecipes.rows
+    }
+
+    let userData = {
+      headerData: headerData,
+      recipes: recipes
+    }
+
+    res.status(200).json(userData);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Something went wrong!");
+  }
+});
+
+
 app.listen(5000, () => {
   console.log("server has started on port 5000");
 });
