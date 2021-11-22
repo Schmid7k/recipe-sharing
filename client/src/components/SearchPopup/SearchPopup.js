@@ -64,6 +64,8 @@ const SearchPopupContent = ({callback, data}) => {
     data.tags.forEach(t => {
         tags.push(<PopupTag tagText={t} key={t}/>);
     });
+    let imagePath = data.image;
+    if(imagePath && imagePath != '/') ['/'].concat(imagePath);
 
     return (
         <Fragment>
@@ -92,7 +94,7 @@ const SearchPopupContent = ({callback, data}) => {
                         <div>{data.instructions}</div>
                     </div>
                 </div>
-                <Link className="popup-more-btn" to={`recipes/${data.id}`}>More</Link>             
+                <Link className="popup-more-btn" to={`/recipes/${data.id}`}>More</Link>             
                 </div>
         </Fragment>
     )
@@ -167,7 +169,7 @@ class SearchPopup extends React.Component {
                 bookmarks: recipeInfo.recipeInfo.bookmarks,
                 stars: recipeInfo.recipeInfo.stars,
          
-                image: data.main, 
+                image: `/${data.main}`, 
                 tags: tags,
                 ingredients: ingredientGroups,
                 instructions: instructions,

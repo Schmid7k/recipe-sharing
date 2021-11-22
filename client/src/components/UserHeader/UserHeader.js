@@ -1,9 +1,8 @@
 import React, { Fragment } from "react";
 import PropTypes from 'prop-types';
 import "./UserHeader.css";
-import dummyIcon from "../../images/dummy_icon.svg";
 
-const UserInfo = ({ username, icon }) => {
+const UserInfo = ({ username, icon, bio }) => {
   return (
     <Fragment>
       <div className="user-info-container">
@@ -11,7 +10,7 @@ const UserInfo = ({ username, icon }) => {
         <div className="user-info-text">
           <h5>{username}</h5>
           <div className="user-info-description">
-              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc ut sapien vel nisl fermentum malesuada.</p>
+              <p>{bio}</p>
           </div>
         </div>
       </div>
@@ -24,10 +23,10 @@ UserInfo.propTypes = {
   icon: PropTypes.node.isRequired,
 };
 
-const UserHeaderButton = ({ text, active, handleClick }) => {
+const UserHeaderButton = ({ text, active, handleClick, id }) => {
   return (
     <Fragment>
-      <button className={`btn btn-primary btn-custom m-1 ${active === true ? "active" : ""}`} onClick={handleClick}>{text}</button>
+      <button className={`btn btn-primary btn-custom m-1 ${active === true ? "active" : ""}`} onClick={handleClick} id={id}>{text}</button>
     </Fragment>
   );
 };
@@ -49,6 +48,8 @@ class UserHeaderButtons extends React.Component {
   }
 
   handleClick(e) {
+    // this.props.callback(e.target.id[e.target.id.length - 1])
+    this.props.callback(e.target.id)
     this.setState({ active: e.target.outerText});
   }
 
@@ -56,22 +57,22 @@ class UserHeaderButtons extends React.Component {
     return (
       <Fragment>
         <div className="user-button-container text-center">
-          <UserHeaderButton text="All" active={this.state.active === "All"} handleClick={this.handleClick} />
-          <UserHeaderButton text="Reviewed" active={this.state.active === "Reviewed"} handleClick={this.handleClick} />
-          <UserHeaderButton text="Saved" active={this.state.active === "Saved"} handleClick={this.handleClick} />
-          <UserHeaderButton text="Uploaded" active={this.state.active === "Uploaded"} handleClick={this.handleClick} />
+          <UserHeaderButton text="All" active={this.state.active === "All"} handleClick={this.handleClick} id={'All'}/>
+          <UserHeaderButton text="Reviewed" active={this.state.active === "Reviewed"} handleClick={this.handleClick} id={'Reviewed'}/>
+          <UserHeaderButton text="Saved" active={this.state.active === "Saved"} handleClick={this.handleClick} id={'Saved'}/>
+          <UserHeaderButton text="Uploaded" active={this.state.active === "Uploaded"} handleClick={this.handleClick} id={'Uploaded'}/>
         </div>
       </Fragment>
     );
   }    
 };
 
-const UserHeader = () => {
+const UserHeader = ({data, callback}) => {
   return (
     <Fragment>
-      <div className="user-header-container">
-        <UserInfo username="Username" icon={dummyIcon} />
-        <UserHeaderButtons />
+      <div className="user-header-container" style={{marginBottom: '50px'}}>
+        <UserInfo username={data.username} icon={data.img} bio={data.bio}/>
+        <UserHeaderButtons callback={callback}/>
       </div>
     </Fragment>
   );
