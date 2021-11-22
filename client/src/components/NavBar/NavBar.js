@@ -147,7 +147,7 @@ const NavUserInfo = ({ loggedIn }) => {
     <Fragment>
       <ul className="navbar-nav mr-auto">
         <li id="user-info">
-          <a href="/user">
+          <a href={`/user/${username}`}>
             <img id="user-icon" src={dummyIcon} alt="User icon" />
           </a>
           <a id="username-link" className={`nav-link d-none d-md-block ${window.location.pathname === `/user/${username}` ? "active" : ""}`} href={`/user/${username}`}>
