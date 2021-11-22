@@ -1,6 +1,4 @@
 const pool = require("./db");
-const path = require("path");
-const fs = require("fs");
 
 // Helper function that saves instructions to the instruction database
 
@@ -8,16 +6,12 @@ async function saveInstructions(instructions, images, recipeID) {
   try {
     var counter = 0;
     Object.entries(instructions).forEach(async (instruction) => {
-      const newPath = renameImagePath(
-        images[counter].path,
-        recipeID,
-        counter + 1
-      );
+      const imagePath = images[counter].path;
       counter += 1;
       const [step, description] = instruction;
       await pool.query(
         "INSERT INTO recipe_instructions (RecipeID, Step, Instruction, Instruction_Image) VALUES($1, $2, $3, $4) RETURNING *",
-        [recipeID, step, description, newPath]
+        [recipeID, step, description, imagePath]
       );
     });
     return true;
@@ -136,20 +130,9 @@ async function saveGroups(groups, recipeID) {
   }
 }
 
-function renameImagePath(oldPath, recipeID, index) {
-  const newPath = path.dirname(oldPath) + "/" + recipeID + "_" + index; // To rename the image paths
-
-  fs.rename(oldPath, newPath, (err) => {
-    if (err) console.error("Error while renaming file path: ", +err);
-  });
-
-  return newPath;
-}
-
 module.exports = {
   saveInstructions,
   saveTags,
   saveCategories,
   saveGroups,
-  renameImagePath,
 };

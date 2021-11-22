@@ -130,11 +130,9 @@ app.post("/recipes", upload.array("images", 100), async (req, res) => {
 
       const recipeID = newRecipe.rows[0].recipeid;
 
-      const newPath = helpers.renameImagePath(main.path, recipeID, 0);
-
       await pool.query(
         "UPDATE recipes SET MainImage = $1 WHERE recipeid = $2",
-        [newPath, recipeID]
+        [main.path, recipeID]
       ); // Update the new image path in the database
 
       if (
@@ -209,10 +207,74 @@ app.get("/filters", async (req, res) => {
 
 app.get("/recipes", async (req, res) => {
   try {
-    const allRecipes = await pool.query(
-      "SELECT * from recipes ORDER BY RecipeID DESC"
-    ); // Retrieve all recipes from the database
-    res.status(200).json(allRecipes.rows);
+    // If the request contains no query parameter
+    if (Object.keys(req.query).length == 0) {
+      const allRecipes = await pool.query(
+        "SELECT * FROM recipes ORDER BY RecipeID DESC"
+      ); // Retrieve all recipes from the database
+      res.status(200).json(allRecipes.rows);
+    } else {
+      // The request contains query parameter
+      var { category, inIngredients, outIngredients, tags } = req.query; // Retrieve the query parameters from the request
+      var filteredRecipes;
+      // This is the query template used to build the query that is sent to the database later
+      var queryTemplate = {
+        start: "SELECT DISTINCT recipes.* FROM recipes ",
+        mid: "",
+        end: [],
+        out: "",
+      };
+      // If the parameter category is there
+      if (category) {
+        queryTemplate.mid =
+          queryTemplate.mid +
+          "LEFT JOIN recipe_categories ON recipe_categories.recipeid = recipes.recipeid LEFT JOIN categories ON categories.categoryid = recipe_categories.categoryid ";
+        queryTemplate.end.push(
+          "categories.name = " + "'" + `${category}` + "' "
+        );
+      }
+      // If the parameter inIngredients is there
+      if (inIngredients) {
+        inIngredients = JSON.parse(inIngredients);
+        queryTemplate.mid =
+          queryTemplate.mid +
+          "LEFT JOIN recipe_ingredients ON recipe_ingredients.recipeid = recipes.recipeid LEFT JOIN ingredients ON ingredients.ingredientsid = recipe_ingredients.ingredientsid ";
+        queryTemplate.end.push(
+          "ingredients.name IN ('" + inIngredients.join("','") + "') "
+        );
+      }
+      // If the parameter outIngredients is there
+      if (outIngredients) {
+        outIngredients = JSON.parse(outIngredients);
+        queryTemplate.out =
+          "EXCEPT (SELECT recipes.* FROM recipes LEFT JOIN recipe_ingredients ON recipe_ingredients.recipeid = recipes.recipeid LEFT JOIN ingredients ON ingredients.ingredientsid = recipe_ingredients.ingredientsid WHERE ingredients.name IN ('" +
+          outIngredients.join("','") +
+          "')) ";
+      }
+      // If the parameter tags is there
+      if (tags) {
+        tags = JSON.parse(tags);
+        queryTemplate.mid =
+          queryTemplate.mid +
+          "LEFT JOIN recipe_tags ON recipe_tags.recipeid = recipes.recipeid LEFT JOIN tags ON tags.tagid = recipe_tags.tagid ";
+        queryTemplate.end.push("tags.name IN ('" + tags.join("','") + "') ");
+      }
+
+      // Construct the database query
+      const finalQuery =
+        queryTemplate.start +
+        queryTemplate.mid +
+        "WHERE " +
+        queryTemplate.end.join(" AND ") +
+        queryTemplate.out;
+
+      console.log(finalQuery);
+
+      // Apply the query to the database
+      filteredRecipes = await pool.query(finalQuery);
+      // Send results to client
+      res.status(200).json(filteredRecipes.rows);
+    }
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Something went wrong!");
@@ -224,7 +286,7 @@ app.get("/recipes", async (req, res) => {
 app.get("/recipes/:id", async (req, res) => {
   try {
     const { id } = req.params; // Get the URL parameter
-    const base = await pool.query("SELECT * from recipes WHERE RecipeID = $1", [
+    const base = await pool.query("SELECT * FROM recipes WHERE RecipeID = $1", [
       id,
     ]); // Get recipe from database
     const user = await pool.query("SELECT * FROM users WHERE UserID = $1", [
@@ -350,8 +412,7 @@ app.delete("/recipes/:id", async (req, res) => {
   }
 });
 
-
-// TODO: placeholder for getting user data when loading up a user page 
+// TODO: placeholder for getting user data when loading up a user page
 
 app.get("/user/:username", async (req, res) => {
   try {
@@ -361,23 +422,25 @@ app.get("/user/:username", async (req, res) => {
     // for the client to look good and show this off
     // something like [uid, user_id, image_path, bio] table that we could fill in with dummy data directly on the backend
     let headerData = {
-      bio: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc ut sapien vel nisl fermentum malesuada. From server.',
-      image: '/images/user_placeholder_icon.svg'
-    }
+      bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc ut sapien vel nisl fermentum malesuada. From server.",
+      image: "/images/user_placeholder_icon.svg",
+    };
 
     // need searches to return recipes sorted as reviewed, saved, and uploaded, just filling in with all recipes for now
-    const tempRecipes = await pool.query("SELECT * from recipes ORDER BY RecipeID DESC");
+    const tempRecipes = await pool.query(
+      "SELECT * from recipes ORDER BY RecipeID DESC"
+    );
 
     let recipes = {
       reviewed: tempRecipes.rows,
       saved: tempRecipes.rows,
-      uploaded: tempRecipes.rows
-    }
+      uploaded: tempRecipes.rows,
+    };
 
     let userData = {
       headerData: headerData,
-      recipes: recipes
-    }
+      recipes: recipes,
+    };
 
     res.status(200).json(userData);
   } catch (err) {
@@ -385,7 +448,6 @@ app.get("/user/:username", async (req, res) => {
     res.status(500).send("Something went wrong!");
   }
 });
-
 
 app.listen(5000, () => {
   console.log("server has started on port 5000");
