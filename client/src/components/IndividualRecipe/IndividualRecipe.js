@@ -1,11 +1,12 @@
 import React, { Fragment } from "react";
 import PropTypes from 'prop-types';
 import "./IndividualRecipe.css";
+import { ReactComponent as StarIcon } from "../../images/star_icon.svg";
 import bookmarkIcon from "../../images/bookmark_svg.svg";
 import starIcon from "../../images/star_svg.svg";
 import recipeInfo from "../../recipe-placeholder-data.json";
 
-import {withRouter} from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import { Link } from 'react-router-dom'
 
 /**
@@ -40,25 +41,130 @@ RecipeImage.propTypes = {
  *          .recipe-title-icons div contains the bookmark count and star rating and image icons for those 
  *          displayed next to them.
  */
-const RecipeHeader = ({ name, author, category, bookmarks, stars }) => {
-    let userLink = `/user/${author}`;
-    return (
-      <Fragment>
-        <div className="recipe-title">
-            <div className="recipe-title-text">
-                <h1>{name}</h1>
-                <Link to={userLink} style={{textDecoration: 'none'}}><h4>@{author}</h4></Link>
-                <h6>Category: {category}</h6>
+class RecipeHeader extends React.Component {
+    constructor() {
+        super();
+
+        this.state = {
+            bookmarked: false,
+            rated: false,
+            rating: 0,
+        }
+
+        this.handleBookmarkClick = this.handleBookmarkClick.bind(this);
+        this.handleRatingChange = this.handleRatingChange.bind(this);
+        this.handleStarSubmit = this.handleStarSubmit.bind(this);
+    }
+
+    // TODO: pass and store whether the recipe has been bookmarked and/or rated in state
+    componentDidMount() {
+        // if bookmarked
+        // this.setState({ bookmarked: true });
+        // if rated
+        // this.setState({ rated: true });
+        // this.setState({ rating: [rating] });
+    }
+
+    handleBookmarkClick() {
+        if (this.state.bookmarked) {
+            console.log("Removing recipe from bookmarks...")
+            this.setState({ bookmarked: false });
+            // post removal info
+        } else {
+            console.log("Bookmarking recipe..")
+            this.setState({ bookmarked: true });
+            // post new bookmark info
+        }
+    }
+
+    handleRatingChange(e) {
+        this.setState({ rating: e.target.value });
+    }
+
+    handleStarSubmit(e) {
+        e.preventDefault();
+        if (!this.state.rated) {
+            this.setState({ rated: true });
+            console.log("Submitted rating: ", this.state.rating);
+            // post rating info
+        }
+    }
+
+    render() {
+        let userLink = `/user/${this.props.author}`;
+        return (
+        <Fragment>
+            <div className="recipe-title">
+                <div className="recipe-title-text">
+                    <h1>{this.props.name}</h1>
+                    <Link to={userLink} style={{textDecoration: 'none'}}><h4>@{this.props.author}</h4></Link>
+                    <h6>Category: {this.props.category}</h6>
+                </div>
+                <div className="recipe-title-icons">
+                    <div className="recipe-title-icons-top">
+                        <div className="recipe-title-icon-container">
+                            <div id="bookmark-btn" onClick={this.handleBookmarkClick}>
+                                <h2 style={{ filter: this.state.bookmarked ? 'none' : 'brightness(0)' }}>
+                                    {this.props.bookmarks}<img className="recipe-title-icon" src={bookmarkIcon} alt="Stars" />
+                                </h2>
+                                <span id="bookmark-tooltip">
+                                    {this.state.bookmarked ? "Remove from bookmarks" : "Bookmark recipe"}
+                                </span>
+                            </div>
+                        </div>
+                        <div className="recipe-title-icon-container" style={{ filter: this.state.rated ? 'none' : 'brightness(0)' }}>
+                            <h2>{this.props.stars}<img className="recipe-title-icon" src={starIcon} alt="Stars" /></h2>
+                        </div>
+                    </div>
+                    {this.state.rated ? 
+                        <div className="recipe-title-icons-bottom">
+                            <h6>You rated this recipe:</h6>
+                            <StarIcon   className={`star-rating-icon ${Number(this.state.rating) > 0 ? 'filled' : null}`} 
+                                        alt="star" />
+                            <StarIcon   className={`star-rating-icon ${Number(this.state.rating) > 1 ? 'filled' : null}`} 
+                                        alt="star" />
+                            <StarIcon   className={`star-rating-icon ${Number(this.state.rating) > 2 ? 'filled' : null}`} 
+                                        alt="star" />
+                            <StarIcon   className={`star-rating-icon ${Number(this.state.rating) > 3 ? 'filled' : null}`} 
+                                        alt="star" />
+                            <StarIcon   className={`star-rating-icon ${Number(this.state.rating) > 4 ? 'filled' : null}`} 
+                                        alt="star" />
+                        </div>
+                        :
+                        <div className="recipe-title-icons-bottom">
+                            <h6>Your rating:</h6>
+                            <form onSubmit={this.handleStarSubmit}>
+                                <div className="star-rating" onChange={this.handleRatingChange}>
+                                    <input type="radio" name="stars" id="star-5" value={5}/>
+                                    <label className="form-check-label" htmlFor="star-5">
+                                        <StarIcon className="star-rating-icon" alt="star" />
+                                    </label>
+                                    <input type="radio" name="stars" id="star-4" value={4}/>
+                                    <label className="form-check-label" htmlFor="star-4">
+                                        <StarIcon className="star-rating-icon" alt="star" />
+                                    </label>
+                                    <input type="radio" name="stars" id="star-3" value={3}/>
+                                    <label className="form-check-label" htmlFor="star-3">
+                                        <StarIcon className="star-rating-icon" alt="star" />
+                                        </label>
+                                    <input type="radio" name="stars" id="star-2" value={2}/>
+                                    <label className="form-check-label" htmlFor="star-2">
+                                        <StarIcon className="star-rating-icon" alt="star" />
+                                    </label>
+                                    <input type="radio" name="stars" id="star-1" value={1} />
+                                    <label className="form-check-label" htmlFor="star-1">
+                                        <StarIcon className="star-rating-icon" alt="star" />
+                                    </label>
+                                </div>
+                                <button className="btn btn-primary btn-custom">Submit rating</button>
+                            </form>
+                        </div>
+                    }
+                </div>
             </div>
-            <div className="recipe-title-icons">
-                <h2>
-                    {bookmarks}<img className="recipe-title-icon" src={bookmarkIcon} alt="Stars" /> 
-                    {stars}<img className="recipe-title-icon" src={starIcon} alt="Stars" />
-                </h2>
-            </div>
-        </div>
-      </Fragment>
-    );
+        </Fragment>
+        );
+    }
 };
 
 RecipeHeader.propTypes = {

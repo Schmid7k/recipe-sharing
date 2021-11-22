@@ -13,7 +13,7 @@ const PopupRating = ({number, icon}) => {
         <Fragment>
             <div className="popup-rating-container">
                 <div className="popup-number" style={{fontWeight: 'bold', fontSize: '1.5em'}}>{number}</div>
-                <img className="popup-rating-icon" src={icon}></img>
+                <img className="popup-rating-icon" style={{ filter: 'brightness(0)' }} src={icon}></img>
             </div>
         </Fragment>
     )
