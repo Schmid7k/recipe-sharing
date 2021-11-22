@@ -78,8 +78,29 @@ class ContentSearch extends React.Component {
     }
 
     filteringHandler(filters) {
-        //TODO: Make a fetch request here with new filters to rebuild the cards once the endpoint is ready to accept query params
-        fetch('http://localhost:5000/recipes', {method: 'GET'}).then(res => res.json()).then(res => { this.buildCards(res); });
+        let url = 'http://localhost:5000/recipes?';
+        Object.keys(filters).forEach(key => {
+            if (!Array.isArray(filters[key]) || filters[key].length > 0) {
+                url = url.concat(`${key}=${filters[key]}&`);
+            }
+        });
+        url = url.slice(0, -1).replace(' ', '+');
+
+        fetch(url, {
+          method: 'GET',
+        })
+        .then(response => {
+            if (response.ok) {
+            return response.json();
+            }
+            throw new Error('Something went wrong...');
+        })
+        .then(recipes => {
+            this.buildCards(recipes);
+        })
+        .catch((error) => {
+            console.error(error);
+        });
 
         document.body.scrollTop = 0;
         document.documentElement.scrollTop = 0;
