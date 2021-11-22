@@ -111,3 +111,8 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+#logo-img {
+    height: 2.2em;
+    margin: -0.8em 0.2em -0.5em -0.5rem;
+}

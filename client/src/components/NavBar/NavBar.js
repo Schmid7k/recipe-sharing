@@ -2,6 +2,7 @@ import React, { Fragment } from "react";
 import { Redirect } from "react-router-dom";
 import PropTypes from 'prop-types';
 import "./NavBar.css";
+import siteLogo from "../../images/logo.png";
 import searchSvg from "../../images/search_svg.svg";
 import searchTogglerSvg from "../../images/search_toggler.svg";
 import homeSvg from "../../images/home_svg.svg";
@@ -13,6 +14,7 @@ const NavBrand = () => {
   return (
     <Fragment>
       <a className="navbar-brand handwritten-text" href="/">
+        <img id="logo-img" src={siteLogo} alt="Logo" />
         Recipe Sharing
       </a>
     </Fragment>
