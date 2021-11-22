@@ -260,13 +260,19 @@ app.get("/recipes", async (req, res) => {
         queryTemplate.end.push("tags.name IN ('" + tags.join("','") + "') ");
       }
 
+      var finalQuery;
       // Construct the database query
-      const finalQuery =
-        queryTemplate.start +
-        queryTemplate.mid +
-        "WHERE " +
-        queryTemplate.end.join(" AND ") +
-        queryTemplate.out;
+      if (queryTemplate.end.length > 0) {
+        finalQuery =
+          queryTemplate.start +
+          queryTemplate.mid +
+          "WHERE " +
+          queryTemplate.end.join(" AND ") +
+          queryTemplate.out;
+      } else {
+        finalQuery =
+          queryTemplate.start + queryTemplate.mid + queryTemplate.out;
+      }
 
       console.log(finalQuery);
 
