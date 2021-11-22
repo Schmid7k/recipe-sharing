@@ -215,7 +215,8 @@ app.get("/recipes", async (req, res) => {
       res.status(200).json(allRecipes.rows);
     } else {
       // The request contains query parameter
-      var { category, inIngredients, outIngredients, tags } = req.query; // Retrieve the query parameters from the request
+      var { category, inIngredients, outIngredients, tags, searchPhrase } =
+        req.query; // Retrieve the query parameters from the request
       var filteredRecipes;
       // This is the query template used to build the query that is sent to the database later
       var queryTemplate = {
@@ -258,6 +259,12 @@ app.get("/recipes", async (req, res) => {
           queryTemplate.mid +
           "LEFT JOIN recipe_tags ON recipe_tags.recipeid = recipes.recipeid LEFT JOIN tags ON tags.tagid = recipe_tags.tagid ";
         queryTemplate.end.push("tags.name IN ('" + tags.join("','") + "') ");
+      }
+
+      if (searchPhrase) {
+        queryTemplate.end.push(
+          "recipes.title LIKE " + "'%" + `${searchPhrase}` + "%' "
+        );
       }
 
       var finalQuery;
