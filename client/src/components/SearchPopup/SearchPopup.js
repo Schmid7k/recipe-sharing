@@ -8,12 +8,12 @@ import starIcon from "../../images/star_svg.svg";
 import { Link } from 'react-router-dom'
 
 // TODO: not sure if these should be functional to allow rating here or saving
-const PopupRating = ({number, icon}) => {
+const PopupRating = ({number, icon, userHasDone}) => {
     return(
         <Fragment>
-            <div className="popup-rating-container">
+            <div className="popup-rating-container" style={{ filter: userHasDone? 'none' : 'brightness(0)' }} >
                 <div className="popup-number" style={{fontWeight: 'bold', fontSize: '1.5em'}}>{number}</div>
-                <img className="popup-rating-icon" style={{ filter: 'brightness(0)' }} src={icon} alt="Rating icon" ></img>
+                <img className="popup-rating-icon" src={icon} alt="Rating icon" ></img>
             </div>
         </Fragment>
     )
@@ -78,8 +78,8 @@ const SearchPopupContent = ({callback, data}) => {
                         <Link className="popup-username" to={`users/${data.author}`}>@{data.author}</Link>
                     </div>
                     <div className="popup-rating-and-bookmark-container">
-                        <PopupRating number={data.bookmarks} icon={bookmarkIcon}/>
-                        <PopupRating number={data.stars} icon={starIcon}/>
+                        <PopupRating number={data.bookmarks} icon={bookmarkIcon} userHasDone={data.bookmarked} />
+                        <PopupRating number={data.stars} icon={starIcon} userHasDone={false} />
                     </div>
                 </div>
 
@@ -116,7 +116,7 @@ class SearchPopup extends React.Component {
     updateData(id){
         if(this.state.id === id) return;
 
-        fetch(`http://localhost:5000/recipes/${id}`, {method: 'GET'})
+        fetch(`http://localhost:5000/recipes/${id}`, {method: 'GET', credentials: 'include'})
        .then(res => res.json())
        .then(data => {
             data.main = data.main.replace(/\\\\/g, '\\');
@@ -163,10 +163,11 @@ class SearchPopup extends React.Component {
 
             this.setState({       
                 title: data.title,
-                author: recipeInfo.recipeInfo.username,
+                author: data.author,
                 
+                bookmarks: data.bookmarks,
+                bookmarked: (Number(data.isBookmarked) === 1 ? true : false),
                 // TODO: replace with fetching actual data
-                bookmarks: recipeInfo.recipeInfo.bookmarks,
                 stars: recipeInfo.recipeInfo.stars,
          
                 image: `/${data.main.replace(/\\/g, '/').replace('../client/public/', '')}`, 
