@@ -263,10 +263,9 @@ app.get("/recipes", async (req, res) => {
       // If the parameter searchPhrase is there
       if (searchPhrase) {
         queryTemplate.end.push(
-          "recipes.title LIKE " + "'%" + `${searchPhrase}` + "%' "
+          "recipes.title ILIKE " + "'%" + `${searchPhrase}` + "%' "
         );
       }
-      // TODO: ORDER BY recipeid DESC
       var finalQuery;
       // Construct the database query
       if (queryTemplate.end.length > 0) {
@@ -275,13 +274,14 @@ app.get("/recipes", async (req, res) => {
           queryTemplate.mid +
           "WHERE " +
           queryTemplate.end.join(" AND ") +
-          queryTemplate.out;
+          queryTemplate.out +
+          "ORDER BY recipeid DESC";
       } else {
         finalQuery =
           queryTemplate.start + queryTemplate.mid + queryTemplate.out;
       }
 
-      // console.debug(finalQuery); Uncomment for debug
+      console.debug(finalQuery); // Uncomment for debug
 
       // Apply the query to the database
       filteredRecipes = await pool.query(finalQuery);
@@ -306,11 +306,15 @@ app.post("/recipes/:id/rate", async (req, res) => {
       ]); // Query database for user
       const { rating } = req.body;
       await pool.query(
-        "INSERT INTO recipe_ratings (Rating, RecipeID, UserID) VALUES($1, $2, $3) RETURNING *",
+        "INSERT INTO recipe_ratings (Rating, RecipeID, UserID) VALUES ($1, $2, $3) RETURNING *",
         [rating, id, user.rows[0].userid]
       ); // Insert new bookmark into recipe_bookmarks table
 
-      res.status(201).send("Created rating!");
+      const avgRating = await pool.query(
+        "SELECT ROUND(AVG(recipe_ratings.rating), 2) as avgRating FROM recipe_ratings WHERE recipe_ratings.recipeid = $1",
+        [id]
+      ); // Get new average rating
+      res.status(201).json(avgRating.rows[0]);
     } else {
       res.status(401).send("Please register!");
     }
@@ -488,11 +492,11 @@ app.get("/recipes/:id", async (req, res) => {
       recipe.bookmarks = bookmarks.rows[0].count;
       // Get average rating
       const avgRating = await pool.query(
-        "SELECT AVG(recipe_ratings.rating) FROM recipe_ratings WHERE recipe_ratings.recipeid = $1",
+        "SELECT ROUND(AVG(recipe_ratings.rating), 2) AS avg FROM recipe_ratings WHERE recipe_ratings.recipeid = $1",
         [id]
       );
       // Add average rating to response, such that the average rating is a number rounded to at most 2 decimal places
-      recipe.avgRating = Math.round(avgRating.rows[0].avg * 100) / 100;
+      recipe.avgRating = avgRating.rows[0].avg;
       // Get tags
       const tags = await pool.query(
         "SELECT tags.name FROM recipes LEFT JOIN recipe_tags ON recipe_tags.recipeid = recipes.recipeid LEFT JOIN tags ON tags.tagid = recipe_tags.tagid WHERE recipes.recipeid = $1",
