@@ -27,3 +27,4 @@ yarn-error.log*
 /client/public/images/*
 !/client/public/images/.gitkeep
 cookies.txt
+!/client/public/images/user_placeholder_icon.svg

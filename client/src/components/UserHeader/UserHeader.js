@@ -81,9 +81,9 @@ class UserInfo extends React.Component {
             :
               <Fragment>
               <input  type="file" className="form-control-file" id="pfp-input" accept="image/*" style={{display: 'none'}} onChange={this.handleFileChange} required />
-              <img className="upload-icon" src={uploadIcon} alt="upload icon" onClick={() => {
-                document.getElementById('pfp-input').click();
-              }}/>
+              <div className="upload-icon-container"  onClick={() => { document.getElementById('pfp-input').click(); }}>
+                <img className="upload-icon" src={uploadIcon} alt="upload icon" />
+              </div>
               </Fragment>
           }
           <div className="user-info-text">
@@ -94,7 +94,7 @@ class UserInfo extends React.Component {
             {
               this.state.editing ?
               <Fragment>
-                <textarea id="bio-textarea" name="bio-textarea" placeholder="" style={{minWidth: '23rem'}} onChange={(e) => this.handleEditingBioText(e)} value={this.state.editBio}></textarea>
+                <textarea id="bio-textarea" name="bio-textarea" placeholder="" onChange={(e) => this.handleEditingBioText(e)} value={this.state.editBio}></textarea>
                 <button className='bio-submit-button' onClick={this.handleSendingBio}>Submit</button>
               </Fragment>
               :
