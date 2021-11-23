@@ -38,6 +38,7 @@ RecipeImage.propTypes = {
  * @param {number} this.props.stars Star rating of the recipe
  * @param {number} this.props.rated   Number indicating whether the current user has already rated the recipe and what rating they gave
  * @param {string}  this.props.recipeid    The recipe ID for the current recipe
+ * @param {boolean} this.props.loggedIn Boolean to indicate whether the user is logged in
  * @returns A .recipe-title div that contains .recipe-title-text and .recipe-title-icons divs.
  *          .recipe-title-text div contains headers for the name of the dish, the author and the category.
  *          .recipe-title-icons div contains the bookmark count and star rating and image icons for those 
@@ -57,49 +58,44 @@ class RecipeHeader extends React.Component {
         this.handleStarSubmit = this.handleStarSubmit.bind(this);
     }
 
-    // TODO: pass and store whether the recipe has been rated in state
-    componentDidMount() {
-        // if rated
-        // this.setState({ rated: true });
-        // this.setState({ rating: [rating] });
-    }
-
     handleBookmarkClick() {
-        if (this.props.bookmarked) {
-            let url = `http://localhost:5000/recipes/${this.props.recipeid}/save`;
-            fetch(url, {
-                method: 'DELETE',
-                credentials: 'include',
-            })
-            .then(response => {
-                if (response.ok) {
-                    this.props.handleHeaderChange('bookmarks', Number(this.props.bookmarks - 1));
-                    this.props.handleHeaderChange('bookmarked', false);
-                    return response;
-                }
-                throw new Error('Something went wrong...');
-            })
-            .catch((error) => {
-                console.error(error);
-            });
-        } else {
-            let url = `http://localhost:5000/recipes/${this.props.recipeid}/save`;
-            fetch(url, {
-                method: 'POST',
-                credentials: 'include',
-            })
-            .then(response => {
-                if (response.ok) {
-                    this.props.handleHeaderChange('bookmarks', Number(this.props.bookmarks + 1));
-                    this.props.handleHeaderChange('bookmarked', true);
-                    return response;
-                }
-                throw new Error('Something went wrong...');
-            })
-            .catch((error) => {
-                console.error(error);
-            });
-        }
+        if (this.props.loggedIn) {
+            if (this.props.bookmarked) {
+                let url = `http://localhost:5000/recipes/${this.props.recipeid}/save`;
+                fetch(url, {
+                    method: 'DELETE',
+                    credentials: 'include',
+                })
+                .then(response => {
+                    if (response.ok) {
+                        this.props.handleHeaderChange('bookmarks', Number(this.props.bookmarks - 1));
+                        this.props.handleHeaderChange('bookmarked', false);
+                        return response;
+                    }
+                    throw new Error('Something went wrong...');
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+            } else {
+                let url = `http://localhost:5000/recipes/${this.props.recipeid}/save`;
+                fetch(url, {
+                    method: 'POST',
+                    credentials: 'include',
+                })
+                .then(response => {
+                    if (response.ok) {
+                        this.props.handleHeaderChange('bookmarks', Number(this.props.bookmarks + 1));
+                        this.props.handleHeaderChange('bookmarked', true);
+                        return response;
+                    }
+                    throw new Error('Something went wrong...');
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+            }
+        }  
     }
 
     handleRatingChange(e) {
@@ -108,30 +104,32 @@ class RecipeHeader extends React.Component {
 
     handleStarSubmit(e) {
         e.preventDefault();
-        if (!this.props.rated) {
-            const rating = { rating: this.state.userRating };
-            let url = `http://localhost:5000/recipes/${this.props.recipeid}/rate`;
-            fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include',
-                body: JSON.stringify(rating),
-            })
-            .then(response => {
-                if (response.ok) {
-                    return response.json();
-                }
-                throw new Error('Something went wrong...');
-            })
-            .then(rating => {
-                this.props.handleHeaderChange('stars', Number(rating.avgrating));
-                this.props.handleHeaderChange('rated', this.state.userRating);
-            })
-            .catch((error) => {
-                console.error(error);
-            });
+        if (this.props.loggedIn) {
+            if (!this.props.rated) {
+                const rating = { rating: this.state.userRating };
+                let url = `http://localhost:5000/recipes/${this.props.recipeid}/rate`;
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify(rating),
+                })
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    }
+                    throw new Error('Something went wrong...');
+                })
+                .then(rating => {
+                    this.props.handleHeaderChange('stars', Number(rating.avgrating));
+                    this.props.handleHeaderChange('rated', this.state.userRating);
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+            }
         }
     }
 
@@ -148,20 +146,22 @@ class RecipeHeader extends React.Component {
                 <div className="recipe-title-icons">
                     <div className="recipe-title-icons-top">
                         <div className="recipe-title-icon-container">
-                            <div id="bookmark-btn" onClick={this.handleBookmarkClick}>
+                            <div id="bookmark-btn" onClick={this.handleBookmarkClick} style={{ cursor: this.props.loggedIn ? 'pointer' : 'default' }}>
                                 <h2 style={{ filter: this.props.bookmarked ? 'none' : 'brightness(0)' }}>
                                     {this.props.bookmarks}<img className="recipe-title-icon" src={bookmarkIcon} alt="Stars" />
                                 </h2>
-                                <span id="bookmark-tooltip">
-                                    {this.props.bookmarked ? "Remove from bookmarks" : "Bookmark recipe"}
-                                </span>
+                                {this.props.loggedIn ? 
+                                    <span id="bookmark-tooltip">
+                                        {this.props.bookmarked ? "Remove from bookmarks" : "Bookmark recipe"}
+                                    </span>
+                                : null}
                             </div>
                         </div>
                         <div className="recipe-title-icon-container" style={{ filter: (this.props.rated !== 0) ? 'none' : 'brightness(0)' }}>
                             <h2>{this.props.stars}<img className="recipe-title-icon" src={starIcon} alt="Stars" /></h2>
                         </div>
                     </div>
-                    {this.props.rated !== 0 ? 
+                    {this.props.loggedIn && this.props.rated !== 0 ? 
                         <div className="recipe-title-icons-bottom">
                             <h6>You rated this recipe:</h6>
                             <StarIcon   className={`star-rating-icon ${Number(this.props.rated) > 0 ? 'filled' : null}`} 
@@ -175,35 +175,36 @@ class RecipeHeader extends React.Component {
                             <StarIcon   className={`star-rating-icon ${Number(this.props.rated) > 4 ? 'filled' : null}`} 
                                         alt="star" />
                         </div>
-                        :
-                        <div className="recipe-title-icons-bottom">
-                            <h6>Your rating:</h6>
-                            <form onSubmit={this.handleStarSubmit}>
-                                <div className="star-rating" onChange={this.handleRatingChange}>
-                                    <input type="radio" name="stars" id="star-5" value={5}/>
-                                    <label className="form-check-label" htmlFor="star-5">
-                                        <StarIcon className="star-rating-icon" alt="star" />
-                                    </label>
-                                    <input type="radio" name="stars" id="star-4" value={4}/>
-                                    <label className="form-check-label" htmlFor="star-4">
-                                        <StarIcon className="star-rating-icon" alt="star" />
-                                    </label>
-                                    <input type="radio" name="stars" id="star-3" value={3}/>
-                                    <label className="form-check-label" htmlFor="star-3">
-                                        <StarIcon className="star-rating-icon" alt="star" />
+                        : (this.props.loggedIn ?
+                            <div className="recipe-title-icons-bottom">
+                                <h6>Your rating:</h6>
+                                <form onSubmit={this.handleStarSubmit}>
+                                    <div className="star-rating" onChange={this.handleRatingChange}>
+                                        <input type="radio" name="stars" id="star-5" value={5}/>
+                                        <label className="form-check-label" htmlFor="star-5">
+                                            <StarIcon className="star-rating-icon" alt="star" />
                                         </label>
-                                    <input type="radio" name="stars" id="star-2" value={2}/>
-                                    <label className="form-check-label" htmlFor="star-2">
-                                        <StarIcon className="star-rating-icon" alt="star" />
-                                    </label>
-                                    <input type="radio" name="stars" id="star-1" value={1} />
-                                    <label className="form-check-label" htmlFor="star-1">
-                                        <StarIcon className="star-rating-icon" alt="star" />
-                                    </label>
-                                </div>
-                                <button className="btn btn-primary btn-custom">Submit rating</button>
-                            </form>
-                        </div>
+                                        <input type="radio" name="stars" id="star-4" value={4}/>
+                                        <label className="form-check-label" htmlFor="star-4">
+                                            <StarIcon className="star-rating-icon" alt="star" />
+                                        </label>
+                                        <input type="radio" name="stars" id="star-3" value={3}/>
+                                        <label className="form-check-label" htmlFor="star-3">
+                                            <StarIcon className="star-rating-icon" alt="star" />
+                                            </label>
+                                        <input type="radio" name="stars" id="star-2" value={2}/>
+                                        <label className="form-check-label" htmlFor="star-2">
+                                            <StarIcon className="star-rating-icon" alt="star" />
+                                        </label>
+                                        <input type="radio" name="stars" id="star-1" value={1} />
+                                        <label className="form-check-label" htmlFor="star-1">
+                                            <StarIcon className="star-rating-icon" alt="star" />
+                                        </label>
+                                    </div>
+                                    <button className="btn btn-primary btn-custom">Submit rating</button>
+                                </form>
+                            </div>
+                        : null)   
                     }
                 </div>
             </div>
@@ -431,6 +432,95 @@ RecipeAdditionalInstructions.propTypes = {
 };
 
 /**
+ * Component for rendering a single comment
+ * @param {string} content  Comment content in string format
+ * @param {string} author  Username of the commenter in string format
+ * @returns A single .recipe-comment div element with the specified content and author below it.
+ */
+ const RecipeComment = ({ content, author }) => {
+    return (
+      <Fragment>
+            <div className="recipe-comment mt-3 mb-3">
+                <div className="recipe-comment-content">
+                    {content}
+                </div>
+                <em>- {author}</em>
+            </div>
+      </Fragment>
+    );
+};
+
+RecipeComment.propTypes = {
+    content: PropTypes.string.isRequired,
+    author: PropTypes.string.isRequired,
+};
+
+/**
+ * Component for rendering the header 'Comments' and the comments itself
+ * @param {array}       this.props.comments  Array of comments that should be shown
+ * @param {function}    this.props.handleCommentSubmit  Callback function for new comment submission
+ * @param {loggedIn}    this.props.loggedIn Boolean to indicate whether the user is logged in
+ * @returns A .recipe-element div with a header, a comment submission text area and a list of RecipeComment elements.
+ */
+ class RecipeComments extends React.Component {
+    constructor() {
+        super();
+
+        this.state = {
+            newComment: "",
+            error: null
+        }
+
+        this.handleInputChange = this.handleInputChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+    }
+
+    handleInputChange(e) {
+        this.setState({ newComment: e.target.value });
+    }
+
+    handleSubmit(e) {
+        e.preventDefault();
+        if (this.state.newComment.length > 0 && this.state.newComment.length <= 1024) {
+            this.props.handleCommentSubmit(this.state.newComment);
+            this.setState({ newComment: "", error: "" });
+        } else {
+            this.setState({ error: "Comment length must be between 1-1024 characters"});
+        }
+    }
+
+    render() {
+        return (
+            <Fragment>
+                <div className="recipe-element">
+                    <h3>Comments</h3>
+                    {this.props.loggedIn ? 
+                        <form className="mt-4 mb-4" onSubmit={this.handleSubmit}>
+                            <div className="form-group">
+                                <label htmlFor="commentInputTextarea"><h5>Add a new comment</h5></label>
+                                {this.state.error ? <div class="alert alert-danger" role="alert">{this.state.error}</div> : null}
+                                <textarea   className="form-control" id="commentInputTextarea" rows="3" 
+                                            onChange={this.handleInputChange} value={this.state.newComment}
+                                            maxLength={1024} required></textarea>
+                            </div>
+                            <button type="submit" className="btn btn-primary btn-custom mt-2 mb-2">Post comment</button>
+                        </form>
+                    : null}
+                    
+                    {this.props.comments.map(comment => 
+                        <RecipeComment content={comment.comment} author={comment.username} key={comment.commentid} />
+                    )}
+                </div>
+            </Fragment>
+        );
+    }
+};
+
+RecipeComments.propTypes = {
+    comments: PropTypes.array.isRequired,
+};
+
+/**
  * Component to render an individual recipe.
  * Stores all the relevant recipe data in its state, this.state.
  * @param   {string}  this.props.id   The recipe of the recipe being rendered by IndividualRecipe
@@ -459,12 +549,13 @@ class IndividualRecipe extends React.Component {
             tags: [],
             ingredients: [],
             instructions: [],
-            recipe: {
-            }
+            comments: [],
+            loggedIn: false
         }
 
         this.handleSettingRecipeData = this.handleSettingRecipeData.bind(this);
         this.handleHeaderChange = this.handleHeaderChange.bind(this);
+        this.handleCommentSubmit = this.handleCommentSubmit.bind(this);
     }
 
     handleSettingRecipeData(data) {
@@ -503,13 +594,19 @@ class IndividualRecipe extends React.Component {
             additionalInstructions: data.addInstructions,
             tags: tags,
             ingredients: dataGroups,
-            // TODO: we're not taking care of the instructions_image for per step images
-            // possibly just add onto backburner for now
-            instructions: data.instructions
+            instructions: data.instructions,
+            comments: data.comments
         })
     }
 
     componentDidMount(){
+        document.body.style.overflowY = 'auto';
+
+        let cookie =  document.cookie.split(";").map(cookie => cookie.split("=")[0]);
+        for( let i = 0; i < cookie.length; i++)
+            cookie[i] = cookie[i].trim();
+        this.setState({loggedIn: cookie.includes("authentication")});
+
         const recipe_id = this.props.match.params.id;
         fetch(`http://localhost:5000/recipes/${recipe_id}`, {
                 method: 'GET',
@@ -530,6 +627,34 @@ class IndividualRecipe extends React.Component {
         })
     }
 
+    handleCommentSubmit(newComment) {
+        const recipe_id = this.props.match.params.id;
+        let url = `http://localhost:5000/recipes/${recipe_id}/comment`;
+        let comment = { comment: newComment };
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify(comment),
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            throw new Error('Something went wrong...');
+        })
+        .then(comment => {
+            let comments = this.state.comments;
+            comments.unshift({commentid: comment.commentid, comment: comment.comment, username: comment.author});
+            this.setState({ comments: comments });
+        })
+        .catch((error) => {
+            console.error(error);
+        });
+    }
+
     render(){
         return (
             <Fragment>
@@ -543,10 +668,12 @@ class IndividualRecipe extends React.Component {
                                         category={this.state.header.category} bookmarks={this.state.header.bookmarks} 
                                         bookmarked={this.state.header.bookmarked} stars={this.state.header.stars} 
                                         rated={this.state.header.rated} recipeid={this.props.match.params.id} 
-                                        handleHeaderChange={this.handleHeaderChange} />
+                                        handleHeaderChange={this.handleHeaderChange} loggedIn={this.state.loggedIn} />
                         <RecipeIngredientGroups ingredients={this.state.ingredients} />
                         <RecipeInstructionList instructions={this.state.instructions} />
                         <RecipeAdditionalInstructions description={this.state.additionalInstructions} />
+                        <RecipeComments comments={this.state.comments} handleCommentSubmit={this.handleCommentSubmit} 
+                                        loggedIn={this.state.loggedIn} />
                     </div>
                 </div>
             </Fragment>

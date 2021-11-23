@@ -76,10 +76,6 @@
     color: #DF7861;
 }
 
-#bookmark-btn {
-    cursor: pointer;
-}
-
 #bookmark-tooltip {
     visibility: hidden;
     width: 120px;
@@ -177,4 +173,10 @@ img.recipe-instruction-image{
 
 .recipe-element {
     margin-top: 1.0rem;
+}
+
+.recipe-container .btn-custom {
+    background-color: #DF7861;
+    border-color: #DF7861;
+    font-weight: bold;
 }

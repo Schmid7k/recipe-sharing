@@ -475,7 +475,8 @@ app.get("/recipes/:id", async (req, res) => {
         "instructions": {
         },
         "addInstructions": "",
-        "tags": []
+        "tags": [],
+        "comments": []
       }
     }`);
     // Check if currently logged in user already bookmarked and/or rated this recipe
@@ -525,6 +526,13 @@ app.get("/recipes/:id", async (req, res) => {
       );
       // Add average rating to response, such that the average rating is a number rounded to at most 2 decimal places
       recipe.avgRating = avgRating.rows[0].avg;
+      // Get comments
+      const comments = await pool.query(
+        "SELECT recipe_comments.commentid, recipe_comments.comment, users.username  FROM recipes INNER JOIN recipe_comments ON recipe_comments.recipeid = recipes.recipeid INNER JOIN users ON recipe_comments.userid=users.userid WHERE recipes.recipeid = $1 ORDER BY recipe_comments.commentid DESC",
+        [id]
+      );
+      // Add comments to template
+      recipe.comments = JSON.parse(JSON.stringify(comments.rows));
       // Get tags
       const tags = await pool.query(
         "SELECT tags.name FROM recipes LEFT JOIN recipe_tags ON recipe_tags.recipeid = recipes.recipeid LEFT JOIN tags ON tags.tagid = recipe_tags.tagid WHERE recipes.recipeid = $1",
@@ -732,12 +740,37 @@ app.get("/userdata/:username", async (req, res) => {
   res.json(headerData);
 });
 
+// GET request for fetching 3 recipe recommendations based on bookmark count
 app.get("/recommendations", async (req, res) => {
   try {
     const recommendedRecipes = await pool.query(
       "SELECT recipe_bookmarks.recipeid, recipes.title, recipes.mainimage, COUNT(recipe_bookmarks.recipeid) AS bookmark_count FROM recipe_bookmarks INNER JOIN recipes ON recipe_bookmarks.recipeid=recipes.recipeid GROUP BY recipe_bookmarks.recipeid, recipes.title, recipes.mainimage ORDER BY bookmark_count DESC LIMIT 3"
     );
     res.status(200).json(recommendedRecipes.rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Something went wrong!");
+  }
+});
+
+// POST request for posting comments to a recipe
+app.post("/recipes/:id/comment", async (req, res) => {
+  try {
+    const cookie = req.signedCookies.authentication; // retrieve authentication cookie from request
+    if (cookie) {
+      const { id } = req.params; // Retrieve recipeid from url
+      const user = await pool.query("SELECT * FROM users WHERE Username = $1", [
+        cookie,
+      ]); // Query database for user
+      const { comment } = req.body;
+      const newComment = await pool.query(
+        "INSERT INTO recipe_comments (RecipeID, UserID, Comment) VALUES ($1, $2, $3) RETURNING *",
+        [id, user.rows[0].userid, comment]
+      ); // Insert new comment into recipe_comments table
+      res.status(201).json({ commentid: newComment.rows[0].commentid, author: cookie, comment: newComment.rows[0].comment });
+    } else {
+      res.status(401).send("Please register!");
+    }
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Something went wrong!");

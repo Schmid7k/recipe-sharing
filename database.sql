@@ -84,3 +84,10 @@ CREATE TABLE recipe_ratings (
     UserID integer REFERENCES users ON DELETE CASCADE,
     PRIMARY KEY ( RecipeID, UserID)
 );
+
+CREATE TABLE recipe_comments (
+    CommentID SERIAL PRIMARY KEY,
+    RecipeID integer REFERENCES recipes ON DELETE CASCADE,
+    UserID integer REFERENCES users ON DELETE CASCADE,
+    Comment VARCHAR(1024) NOT NULL
+);
