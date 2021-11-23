@@ -77,3 +77,9 @@ CREATE TABLE user_info (
     imagePath VARCHAR(1024),
     bio VARCHAR(1024)
 );
+
+CREATE TABLE recipe_ratings (
+    RecipeID integer REFERENCES recipes ON DELETE CASCADE,
+    UserID integer REFERENCES users ON DELETE CASCADE,
+    PRIMARY KEY ( RecipeID, UserID)
+);

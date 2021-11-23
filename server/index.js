@@ -350,29 +350,44 @@ app.get("/recipes/:id", async (req, res) => {
     const base = await pool.query("SELECT * FROM recipes WHERE RecipeID = $1", [
       id,
     ]); // Get recipe from database
-    const user = await pool.query("SELECT * FROM users WHERE UserID = $1", [
-      base.rows[0].userid,
-    ]); // Get the recipe author
+    const cookie = req.signedCookies.authentication; // retrieve authentication cookie from request
+    // Recipe template for the response
+    var { recipe } = JSON.parse(`{
+      "recipe": {
+        "author": "",
+        "title": "",
+        "main": "",
+        "category": "",
+        "bookmarks":"",
+        "isBookmarked":"0",
+        "groups": {
+        },
+        "instructions": {
+        },
+        "addInstructions": "",
+        "tags": []
+      }
+    }`);
+    // Check if currently logged in user already bookmarked this recipe
+    if (cookie) {
+      const user = await pool.query("SELECT * FROM users WHERE Username = $1", [
+        cookie,
+      ]); // Query database for user
+      const isBookmarked = await pool.query(
+        "SELECT recipe_bookmarks.recipeid FROM recipe_bookmarks WHERE userid = $1 AND recipeid = $2",
+        [user.rows[0].userid, id]
+      );
+      if (isBookmarked.rows[0]) {
+        recipe.isBookmarked = "1";
+      }
+    }
     if (base.rows[0]) {
       // Recipe exists
-      // Recipe template for the response
-      var { recipe } = JSON.parse(`{
-        "recipe": {
-          "author": "",
-          "title": "",
-          "main": "",
-          "category": "",
-          "bookmarks":"",
-          "groups": {
-          },
-          "instructions": {
-          },
-          "addInstructions": "",
-          "tags": []
-        }
-      }`);
+      const author = await pool.query("SELECT * FROM users WHERE UserID = $1", [
+        base.rows[0].userid,
+      ]); // Get the recipe author
       // Add recipe author to template
-      recipe.author = user.rows[0].username;
+      recipe.author = author.rows[0].username;
       // Add title to template
       recipe.title = base.rows[0].title;
       // Add path to main image to template
@@ -539,24 +554,31 @@ app.get("/user/:username", async (req, res) => {
 
 // POST request to update user bio + pfp
 // TODO: need store the bio and image in user_info
-app.post("/userdata", upload.fields([{name: 'bio', maxCount: 1}, {name: 'image', maxCount: 1}]),  async (req, res) => {
-  try {
-    const cookie = req.signedCookies.authentication;
-    if (cookie) {
-      console.log(cookie)
-      // console.log(req.body)
-      // console.log(req.files)
-      console.log(req.files.image[0].path)
-     
-      res.status(201).send("Bio updated!");
-    } else {
-      res.status(401).send("Please register!");
+app.post(
+  "/userdata",
+  upload.fields([
+    { name: "bio", maxCount: 1 },
+    { name: "image", maxCount: 1 },
+  ]),
+  async (req, res) => {
+    try {
+      const cookie = req.signedCookies.authentication;
+      if (cookie) {
+        console.log(cookie);
+        // console.log(req.body)
+        // console.log(req.files)
+        console.log(req.files.image[0].path);
+
+        res.status(201).send("Bio updated!");
+      } else {
+        res.status(401).send("Please register!");
+      }
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send("Something went wrong!");
     }
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send("Something went wrong!");
   }
-});
+);
 
 // TODO: Get request to fetch user data *after* it's been updated by the user
 
