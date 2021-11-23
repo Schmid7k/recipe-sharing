@@ -52,7 +52,7 @@ class User extends React.Component {
         }
       });
     })
-    .catch(err => this.props.history.push('/')); 
+    .catch(err => this.props.history.push('/browse')); 
   }
 
   handleResize() {
@@ -178,7 +178,7 @@ class User extends React.Component {
     fetch(`http://localhost:5000/user/${username}`, {method: 'GET'})
     .then(res => res.json())
     .then(res => this.handleUserData(res))
-    .catch(err => this.props.history.push('/'))
+    .catch(err => this.props.history.push('/browse'))
   }
 
   render(){

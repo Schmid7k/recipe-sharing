@@ -71,7 +71,7 @@ class FilterToggler extends React.Component {
   render() {
     return (
       <Fragment>
-        {window.location.pathname === "/" ? 
+        {window.location.pathname === "/browse" ? 
           <li className={`nav-item nav-icon-item ${this.state.filterActive ? "active" : ""}`}>
             <div className="d-md-none" data-bs-toggle="collapse" data-bs-target="#filtering-menu" aria-expanded="false" aria-controls="filtering-menu" id='filter-button-icon' onClick={this.handleClick}>
               <img className="nav-icon" src={this.props.source} alt={`${this.props.text} icon`} />
@@ -99,8 +99,8 @@ const NavItems = () => {
   return (
     <Fragment>
       <ul className="navbar-nav mr-auto">
-        <NavItem text="Home" href="/" source={homeSvg} />
-        <FilterToggler text="Filter" href="/" source={filterSvg} />
+        <NavItem text="Browse" href="/browse" source={homeSvg} />
+        <FilterToggler text="Filter" href="/browse" source={filterSvg} />
         { document.cookie.split(";").map(cookie => cookie.split("=")[0]).includes("authentication") 
           && window.localStorage.getItem('user') !== null 
           ? <NavItem text="Add a recipe" href="/addrecipe" source={recipeSvg} /> : null}
@@ -201,7 +201,7 @@ class NavigationBar extends React.Component {
 
   handleSearchChange(searchTerm) {
     this.setState({ searchTerm: searchTerm });
-    if (window.location.pathname === "/") {
+    if (window.location.pathname === "/browse") {
       let filter = { searchPhrase: searchTerm };
       this.props.contentSearch.current.filteringHandler(filter);
     } else {
@@ -213,7 +213,7 @@ class NavigationBar extends React.Component {
     return (
       <Fragment>
         {this.state.searchRedirect ? 
-          <Redirect to={{ pathname: "/", state: { searchTerm: this.state.searchTerm }, }} /> 
+          <Redirect to={{ pathname: "/browse", state: { searchTerm: this.state.searchTerm }, }} /> 
           : null}
         <nav className="navbar fixed-top navbar-expand-sm navbar-custom" id="main-navbar">
           <NavBrand />

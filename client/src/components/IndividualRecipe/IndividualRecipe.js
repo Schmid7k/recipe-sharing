@@ -514,7 +514,7 @@ class IndividualRecipe extends React.Component {
             }) //TODO: we should set a proxy and just use a /path instead of the full path
             .then(res => res.json())
             .then(res => this.handleSettingRecipeData(res))
-            .catch(err => this.props.history.push('/')
+            .catch(err => this.props.history.push('/browse')
         ); // TODO: should we have a simple 404 page or just redirect to home?
         document.body.scrollTop = 0;
         document.documentElement.scrollTop = 0;

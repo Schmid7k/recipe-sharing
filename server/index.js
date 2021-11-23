@@ -732,6 +732,18 @@ app.get("/userdata/:username", async (req, res) => {
   res.json(headerData);
 });
 
+app.get("/recommendations", async (req, res) => {
+  try {
+    const recommendedRecipes = await pool.query(
+      "SELECT recipe_bookmarks.recipeid, recipes.title, recipes.mainimage, COUNT(recipe_bookmarks.recipeid) AS bookmark_count FROM recipe_bookmarks INNER JOIN recipes ON recipe_bookmarks.recipeid=recipes.recipeid GROUP BY recipe_bookmarks.recipeid, recipes.title, recipes.mainimage ORDER BY bookmark_count DESC LIMIT 3"
+    );
+    res.status(200).json(recommendedRecipes.rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Something went wrong!");
+  }
+});
+
 app.listen(5000, () => {
   console.log("server has started on port 5000");
 });

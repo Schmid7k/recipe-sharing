@@ -22,6 +22,10 @@ ReactDOM.render(
       <Switch>
 
         <Route exact path="/">
+          <About />
+        </Route>
+
+        <Route exact path="/browse">
           <App />
         </Route>
 
@@ -31,10 +35,6 @@ ReactDOM.render(
 
         <Route exact path="/registration">
           <Registration />
-        </Route>
-
-        <Route path="/about">
-          <About />
         </Route>
 
         <Route path="/user/:username">
