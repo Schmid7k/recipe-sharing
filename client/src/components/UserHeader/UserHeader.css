@@ -43,8 +43,8 @@
     justify-content: center;
     padding: 1rem;
     /* min-width: 23rem; */
-    /* max-width: 30rem;
-    width: 100%; */
+    /* max-width: 30rem;*/
+    width: 100%; 
 }
 
 .user-info-text h5 {
@@ -101,5 +101,6 @@
 }
 
 #bio-textarea {
-    width: 100%;
+    /* width: 100%; */
+    /* width: 200px; */
 }
