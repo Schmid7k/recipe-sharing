@@ -31,9 +31,9 @@ code {
   display: flex;
 }
 
-.btn-custom:focus, input:focus, .form-select:focus, .form-control:focus {
-    box-shadow: 0 0 0 0.25rem rgba(223, 120, 97, 0.5);
-    border-color: #DF7861;
+.btn-custom:focus, input:focus, .form-select:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.25rem rgba(223, 120, 97, 0.5);
+  border-color: #DF7861;
 }
 
 .form-check input:checked {
