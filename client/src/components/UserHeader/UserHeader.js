@@ -89,7 +89,7 @@ class UserInfo extends React.Component {
           <div className="user-info-text">
             <div className='bio-header-container'>
               <h5 style={{margin: '0px'}}>{this.props.username}</h5>
-              {loggedIn ? <img src={editIcons} className='edit-icon' onClick={this.handleEditingChange}/> : null}
+              {loggedIn ? <img src={editIcons} className='edit-icon' onClick={this.handleEditingChange} alt="Edit icon" /> : null}
             </div>
             {
               this.state.editing ?

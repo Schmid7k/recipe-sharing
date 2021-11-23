@@ -1,5 +1,4 @@
 import React, { Fragment } from "react";
-import PropTypes from 'prop-types';
 import "./FilterMenu.css";
 import {ReactComponent as StarIcon} from "../../images/star_icon.svg";
 
@@ -210,7 +209,7 @@ class FilteringMenuContents extends React.Component {
     this.updateCustomTags = this.updateCustomTags.bind(this);
     this.getCheckedElements = this.getCheckedElements.bind(this);
     this.checkAll = this.checkAll.bind(this);
-    this. constructFilters = this.constructFilters.bind(this);
+    this.constructFilters = this.constructFilters.bind(this);
   }
 
   updateCustomExcludeIngredients(items) {
