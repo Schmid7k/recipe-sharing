@@ -1,6 +1,5 @@
 import React, {Fragment} from "react";
 import "./SearchPopup.css";
-import recipeInfo from "../../recipe-placeholder-data.json";
 import closeBtnIcon from "../../images/close-round-btn.svg";
 import bookmarkIcon from "../../images/bookmark_svg.svg";
 import starIcon from "../../images/star_svg.svg";
@@ -79,7 +78,7 @@ const SearchPopupContent = ({callback, data}) => {
                     </div>
                     <div className="popup-rating-and-bookmark-container">
                         <PopupRating number={data.bookmarks} icon={bookmarkIcon} userHasDone={data.bookmarked} />
-                        <PopupRating number={data.stars} icon={starIcon} userHasDone={false} />
+                        <PopupRating number={data.stars} icon={starIcon} userHasDone={data.rated !== 0 ? true : false} />
                     </div>
                 </div>
 
@@ -167,8 +166,8 @@ class SearchPopup extends React.Component {
                 
                 bookmarks: data.bookmarks,
                 bookmarked: (Number(data.isBookmarked) === 1 ? true : false),
-                // TODO: replace with fetching actual data
-                stars: recipeInfo.recipeInfo.stars,
+                stars: Number(data.avgRating),
+                rated: Number(data.isRated),
          
                 image: `/${data.main.replace(/\\/g, '/').replace('../client/public/', '')}`, 
                 tags: tags,
