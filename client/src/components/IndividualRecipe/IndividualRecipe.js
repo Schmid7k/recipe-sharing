@@ -4,7 +4,6 @@ import "./IndividualRecipe.css";
 import { ReactComponent as StarIcon } from "../../images/star_icon.svg";
 import bookmarkIcon from "../../images/bookmark_svg.svg";
 import starIcon from "../../images/star_svg.svg";
-import recipeInfo from "../../recipe-placeholder-data.json";
 
 import { withRouter } from 'react-router-dom';
 import { Link } from 'react-router-dom'
@@ -31,11 +30,14 @@ RecipeImage.propTypes = {
 /**
  * Component for rendering the recipe header that includes the name of the dish, username for the submitter,
  * recipe category, bookmarks and star rating.
- * @param {string} name Name of recipe to be displayed
- * @param {string} author Username of the submitter to be displayed
- * @param {string} category Category of the recipe to be displayed
- * @param {number} bookmarks Number of bookmarks for the recipe
- * @param {number} stars Star rating of the recipe
+ * @param {string} this.props.name Name of recipe to be displayed
+ * @param {string} this.props.author Username of the submitter to be displayed
+ * @param {string} this.props.category Category of the recipe to be displayed
+ * @param {number} this.props.bookmarks Number of bookmarks for the recipe
+ * @param {boolean} this.props.bookmarked  Boolean indicating whether the current user has already bookmarked the recipe
+ * @param {number} this.props.stars Star rating of the recipe
+ * @param {number} this.props.rated   Number indicating whether the current user has already rated the recipe and what rating they gave
+ * @param {string}  this.props.recipeid    The recipe ID for the current recipe
  * @returns A .recipe-title div that contains .recipe-title-text and .recipe-title-icons divs.
  *          .recipe-title-text div contains headers for the name of the dish, the author and the category.
  *          .recipe-title-icons div contains the bookmark count and star rating and image icons for those 
@@ -64,7 +66,6 @@ class RecipeHeader extends React.Component {
 
     handleBookmarkClick() {
         if (this.props.bookmarked) {
-            console.log("Removing recipe from bookmarks...")
             let url = `http://localhost:5000/recipes/${this.props.recipeid}/save`;
             fetch(url, {
                 method: 'DELETE',
@@ -82,7 +83,6 @@ class RecipeHeader extends React.Component {
                 console.error(error);
             });
         } else {
-            console.log("Bookmarking recipe..")
             let url = `http://localhost:5000/recipes/${this.props.recipeid}/save`;
             fetch(url, {
                 method: 'POST',
@@ -108,10 +108,30 @@ class RecipeHeader extends React.Component {
 
     handleStarSubmit(e) {
         e.preventDefault();
-        if (!this.state.rated) {
-            this.setState({ rated: true });
-            console.log("Submitted rating: ", this.state.userRating);
-            // post rating info
+        if (!this.props.rated) {
+            const rating = { rating: this.state.userRating };
+            let url = `http://localhost:5000/recipes/${this.props.recipeid}/rate`;
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify(rating),
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                }
+                throw new Error('Something went wrong...');
+            })
+            .then(rating => {
+                this.props.handleHeaderChange('stars', Number(rating.avgrating));
+                this.props.handleHeaderChange('rated', this.state.userRating);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
         }
     }
 
@@ -137,22 +157,22 @@ class RecipeHeader extends React.Component {
                                 </span>
                             </div>
                         </div>
-                        <div className="recipe-title-icon-container" style={{ filter: this.state.rated ? 'none' : 'brightness(0)' }}>
+                        <div className="recipe-title-icon-container" style={{ filter: (this.props.rated !== 0) ? 'none' : 'brightness(0)' }}>
                             <h2>{this.props.stars}<img className="recipe-title-icon" src={starIcon} alt="Stars" /></h2>
                         </div>
                     </div>
-                    {this.state.rated ? 
+                    {this.props.rated !== 0 ? 
                         <div className="recipe-title-icons-bottom">
                             <h6>You rated this recipe:</h6>
-                            <StarIcon   className={`star-rating-icon ${Number(this.state.userRating) > 0 ? 'filled' : null}`} 
+                            <StarIcon   className={`star-rating-icon ${Number(this.props.rated) > 0 ? 'filled' : null}`} 
                                         alt="star" />
-                            <StarIcon   className={`star-rating-icon ${Number(this.state.userRating) > 1 ? 'filled' : null}`} 
+                            <StarIcon   className={`star-rating-icon ${Number(this.props.rated) > 1 ? 'filled' : null}`} 
                                         alt="star" />
-                            <StarIcon   className={`star-rating-icon ${Number(this.state.userRating) > 2 ? 'filled' : null}`} 
+                            <StarIcon   className={`star-rating-icon ${Number(this.props.rated) > 2 ? 'filled' : null}`} 
                                         alt="star" />
-                            <StarIcon   className={`star-rating-icon ${Number(this.state.userRating) > 3 ? 'filled' : null}`} 
+                            <StarIcon   className={`star-rating-icon ${Number(this.props.rated) > 3 ? 'filled' : null}`} 
                                         alt="star" />
-                            <StarIcon   className={`star-rating-icon ${Number(this.state.userRating) > 4 ? 'filled' : null}`} 
+                            <StarIcon   className={`star-rating-icon ${Number(this.props.rated) > 4 ? 'filled' : null}`} 
                                         alt="star" />
                         </div>
                         :
@@ -424,7 +444,9 @@ class IndividualRecipe extends React.Component {
                 category: "",
                 bookmarks: 0,
                 bookmarked: false,
-                stars: 0
+                ratings: [],
+                rated: false,
+                stars: 0,
             },
             image: {
                 source: "",
@@ -468,7 +490,8 @@ class IndividualRecipe extends React.Component {
                 category: data.category,
                 bookmarks: Number(data.bookmarks),
                 bookmarked: (Number(data.isBookmarked) === 1 ? true : false),
-                stars: recipeInfo.recipeInfo.stars // TODO: need to fetch bookmarks and stars (display differently if a user is logged in and already done this?)
+                stars: Number(data.avgRating),
+                rated: Number(data.isRated)
             },
             image: {
                 source: data.main, 
@@ -498,8 +521,6 @@ class IndividualRecipe extends React.Component {
     }
 
     handleHeaderChange(attribute, value) {
-        console.log("updating header with attribute: ", attribute);
-        console.log("updating header with value: ", value);
         let header = this.state.header;
         header[attribute] = value;
         this.setState({
@@ -519,7 +540,8 @@ class IndividualRecipe extends React.Component {
                         <RecipeHeader   name={this.state.header.name} author={this.state.header.author} 
                                         category={this.state.header.category} bookmarks={this.state.header.bookmarks} 
                                         bookmarked={this.state.header.bookmarked} stars={this.state.header.stars} 
-                                        recipeid={this.props.match.params.id} handleHeaderChange={this.handleHeaderChange} />
+                                        rated={this.state.header.rated} recipeid={this.props.match.params.id} 
+                                        handleHeaderChange={this.handleHeaderChange} />
                         <RecipeIngredientGroups ingredients={this.state.ingredients} />
                         <RecipeInstructionList instructions={this.state.instructions} />
                         <RecipeAdditionalInstructions description={this.state.additionalInstructions} />
