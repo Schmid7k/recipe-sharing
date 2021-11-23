@@ -227,34 +227,38 @@ app.get("/recipes", async (req, res) => {
       };
       // If the parameter category is there
       if (category) {
+        category = category.toLowerCase();
         queryTemplate.mid =
           queryTemplate.mid +
           "LEFT JOIN recipe_categories ON recipe_categories.recipeid = recipes.recipeid LEFT JOIN categories ON categories.categoryid = recipe_categories.categoryid ";
         queryTemplate.end.push(
-          "categories.name = " + "'" + `${category}` + "' "
+          "LOWER(categories.name) = " + "'" + `${category}` + "' "
         );
       }
       // If the parameter inIngredients is there
       if (inIngredients) {
         inIngredients = JSON.parse(inIngredients);
+        inIngredients = inIngredients.map((x) => x.toLowerCase());
         queryTemplate.mid =
           queryTemplate.mid +
           "LEFT JOIN recipe_ingredients ON recipe_ingredients.recipeid = recipes.recipeid LEFT JOIN ingredients ON ingredients.ingredientsid = recipe_ingredients.ingredientsid ";
         queryTemplate.end.push(
-          "ingredients.name IN ('" + inIngredients.join("','") + "') "
+          "LOWER(ingredients.name) IN ('" + inIngredients.join("','") + "') "
         );
       }
       // If the parameter outIngredients is there
       if (outIngredients) {
         outIngredients = JSON.parse(outIngredients);
+        outIngredients = outIngredients.map((x) => x.toLowerCase());
         queryTemplate.out =
-          "EXCEPT (SELECT recipes.* FROM recipes LEFT JOIN recipe_ingredients ON recipe_ingredients.recipeid = recipes.recipeid LEFT JOIN ingredients ON ingredients.ingredientsid = recipe_ingredients.ingredientsid WHERE ingredients.name IN ('" +
+          "EXCEPT (SELECT recipes.* FROM recipes LEFT JOIN recipe_ingredients ON recipe_ingredients.recipeid = recipes.recipeid LEFT JOIN ingredients ON ingredients.ingredientsid = recipe_ingredients.ingredientsid WHERE LOWER(ingredients.name) IN ('" +
           outIngredients.join("','") +
           "')) ";
       }
       // If the parameter tags is there
       if (tags) {
         tags = JSON.parse(tags);
+        tags = tags.map((x) => x.toLowerCase());
         queryTemplate.mid =
           queryTemplate.mid +
           "LEFT JOIN recipe_tags ON recipe_tags.recipeid = recipes.recipeid LEFT JOIN tags ON tags.tagid = recipe_tags.tagid ";
@@ -262,8 +266,9 @@ app.get("/recipes", async (req, res) => {
       }
       // If the parameter searchPhrase is there
       if (searchPhrase) {
+        searchPhrase = searchPhrase.toLowerCase();
         queryTemplate.end.push(
-          "recipes.title ILIKE " + "'%" + `${searchPhrase}` + "%' "
+          "LOWER(recipes.title) ILIKE " + "'%" + `${searchPhrase}` + "%' "
         );
       }
       var finalQuery;
@@ -278,7 +283,10 @@ app.get("/recipes", async (req, res) => {
           "ORDER BY recipeid DESC";
       } else {
         finalQuery =
-          queryTemplate.start + queryTemplate.mid + queryTemplate.out;
+          queryTemplate.start +
+          queryTemplate.mid +
+          queryTemplate.out +
+          "ORDER BY recipeid DESC";
       }
 
       console.debug(finalQuery); // Uncomment for debug

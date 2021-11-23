@@ -26,6 +26,7 @@ async function saveInstructions(instructions, images, recipeID) {
 async function saveTags(tags, recipeID) {
   try {
     tags.forEach(async (tag) => {
+      tag = tag.toLowerCase();
       const checkTag = await pool.query("SELECT * FROM tags WHERE Name = $1", [
         tag,
       ]);
@@ -81,7 +82,8 @@ async function saveCategories(category, recipeID) {
 async function saveIngredients(ingredients, recipeID, groupID) {
   try {
     ingredients.forEach(async (entry) => {
-      const ingredient = entry.ingredient;
+      const ingredient = entry.ingredient.toLowerCase();
+
       const amount = entry.amount;
       const checkIngredient = await pool.query(
         "SELECT * FROM ingredients WHERE Name = $1",
