@@ -263,7 +263,7 @@ app.get("/recipes", async (req, res) => {
       // If the parameter searchPhrase is there
       if (searchPhrase) {
         queryTemplate.end.push(
-          "recipes.title LIKE " + "'%" + `${searchPhrase}` + "%' "
+          "recipes.title ILIKE " + "'%" + `${searchPhrase}` + "%' "
         );
       }
 

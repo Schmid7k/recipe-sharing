@@ -95,7 +95,7 @@ class ContentSearch extends React.Component {
                 url = url.concat(`${key}=${filters[key]}&`);
             } else if (Array.isArray(filters[key]) && filters[key].length > 0) {
                 let values = '';
-                filters[key].forEach(value => values = values.concat(`%22${value}%22,`));
+                filters[key].forEach(value => values = values.concat(`%22${value.toLowerCase()}%22,`));
                 values = values.slice(0, -1);
                 url = url.concat(`${key}=[${values}]&`);
             }
