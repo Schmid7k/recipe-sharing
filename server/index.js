@@ -362,6 +362,7 @@ app.get("/recipes/:id", async (req, res) => {
           "title": "",
           "main": "",
           "category": "",
+          "bookmarks":"",
           "groups": {
           },
           "instructions": {
@@ -378,6 +379,11 @@ app.get("/recipes/:id", async (req, res) => {
       recipe.main = base.rows[0].mainimage;
       // Add additional instructions to template
       recipe.addInstructions = base.rows[0].additionalinstructions;
+      const bookmarks = await pool.query(
+        "SELECT COUNT(*) FROM recipes LEFT JOIN recipe_bookmarks ON recipe_bookmarks.recipeid = recipes.recipeid WHERE recipe_bookmarks.recipeid = $1",
+        [id]
+      );
+      recipe.bookmarks = bookmarks.rows[0].count;
       // Get tags
       const tags = await pool.query(
         "SELECT tags.name FROM recipes LEFT JOIN recipe_tags ON recipe_tags.recipeid = recipes.recipeid LEFT JOIN tags ON tags.tagid = recipe_tags.tagid WHERE recipes.recipeid = $1",
