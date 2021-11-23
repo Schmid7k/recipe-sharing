@@ -212,7 +212,12 @@ class FilteringMenuContents extends React.Component {
     this.getCheckedElements = this.getCheckedElements.bind(this);
     this.checkAll = this.checkAll.bind(this);
     this.constructFilters = this.constructFilters.bind(this);
+    // this.test = this.test.bind(this);
   }
+
+  // test(){
+  //   console.log('smthsmth');
+  // }
 
   updateCustomExcludeIngredients(items) {
     this.setState({ customExcludeIngredients: items });
@@ -270,13 +275,16 @@ class FilteringMenuContents extends React.Component {
       this.checkAll(this.state.customTags, 'tag-list');
     });
 
-    return {
+    let filter = {
       inIngredients: checkedTopIngredientsInclude.concat(this.state.customIncludeIngredients),
       outIngredients: checkedTopIngredientsExclude.concat(this.state.customExcludeIngredients),
       tags: checkedTopTags.concat(this.state.customTags),
       category: selectedCategory,
-      rating: minRating
+      rating: minRating,
+      searchPhrase: document.getElementById('navbar-searchbar').value
     }
+
+    return filter;
   }
 
   render() {
@@ -398,6 +406,7 @@ class FilteringMenu extends React.Component {
               allTags={this.state.tagOptions}
               popIngredientNames={this.state.popIngredientNames}
               popTagNames={this.state.popTagNames}
+              ref={this.props.filterSearch}
             />
           </div>
         </nav>

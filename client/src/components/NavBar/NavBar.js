@@ -137,6 +137,7 @@ class SearchForm extends React.Component {
           <div className="input-group">
             <input
               className="form-control mr-sm-2 search-bar"
+              id='navbar-searchbar'
               type="search"
               placeholder="Enter a search term..."
               aria-label="Search term input"
@@ -202,8 +203,10 @@ class NavigationBar extends React.Component {
   handleSearchChange(searchTerm) {
     this.setState({ searchTerm: searchTerm });
     if (window.location.pathname === "/browse") {
-      let filter = { searchPhrase: searchTerm };
-      this.props.contentSearch.current.filteringHandler(filter);
+      // let filter = { searchPhrase: searchTerm };
+      let filterMenuFilters = this.props.filterSearch.current.constructFilters();
+      filterMenuFilters.searchPhrase = searchTerm;
+      this.props.contentSearch.current.filteringHandler(filterMenuFilters);
     } else {
       this.setState({ searchRedirect: true });
     }

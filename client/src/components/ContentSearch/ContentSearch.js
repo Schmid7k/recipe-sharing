@@ -153,7 +153,7 @@ class ContentSearch extends React.Component {
         return (
             <Fragment>
                 <div className="container-fluid container-flex" style={{display: this.state.display}}>
-                    <FilteringMenu filteringCallback={this.filteringHandler} />
+                    <FilteringMenu filteringCallback={this.filteringHandler} filterSearch={this.props.filterSearch}/>
 
                     <div className="content-search-grid-container" id='grid-container'>
                         <SearchPopup display={this.state.popupDisplay} closeCallback={this.popupToggleHandler} ref={this.popup}/>

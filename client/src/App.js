@@ -15,6 +15,7 @@ class App extends React.Component {
     }
 
     this.contentSearch = React.createRef();
+    this.filterSearch = React.createRef();
   }
 
   componentDidMount() {
@@ -29,8 +30,8 @@ class App extends React.Component {
   render() {
     return (
       <Fragment>
-        <NavigationBar contentSearch={this.contentSearch} />
-        <ContentSearch ref={this.contentSearch} />
+        <NavigationBar contentSearch={this.contentSearch} filterSearch={this.filterSearch}/>
+        <ContentSearch ref={this.contentSearch} filterSearch={this.filterSearch}/>
       </Fragment>
     );
   }
