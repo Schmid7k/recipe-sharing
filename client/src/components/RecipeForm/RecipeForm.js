@@ -973,9 +973,14 @@ class RecipeForm extends React.Component {
   }
 
   render() {
+    let cookie =  document.cookie.split(";").map(cookie => cookie.split("=")[0]);
+
+    for( let i = 0; i < cookie.length; i++)
+      cookie[i] = cookie[i].trim();
+
     return (
       <Fragment>
-        { !document.cookie.split(";").map(cookie => cookie.split("=")[0]).includes("authentication") 
+        { !cookie.includes("authentication") 
           || window.localStorage.getItem('user') === null ? <Redirect push to="/browse" /> : null }
         { this.state.createdID !== 0 ? <Redirect push to={`/recipes/${this.state.createdID}`} /> : null }
         <div className="recipe-form-container text-center">
