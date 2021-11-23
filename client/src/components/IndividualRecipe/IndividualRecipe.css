@@ -170,6 +170,11 @@
     padding: 0.5rem 0rem;
 }
 
+img.recipe-instruction-image{
+    max-height: 15em;
+    border-radius: 20px;
+}
+
 .recipe-element {
     margin-top: 1.0rem;
 }

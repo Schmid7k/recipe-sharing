@@ -5,7 +5,7 @@ import "./NavBar.css";
 import siteLogo from "../../images/logo.png";
 import searchSvg from "../../images/search_svg.svg";
 import searchTogglerSvg from "../../images/search_toggler.svg";
-import homeSvg from "../../images/home_svg.svg";
+import gridSvg from "../../images/grid_svg.svg";
 import filterSvg from "../../images/filter_svg.svg";
 import recipeSvg from "../../images/recipe_svg.svg";
 import dummyIcon from "../../images/dummy_icon.svg";
@@ -99,7 +99,7 @@ const NavItems = () => {
   return (
     <Fragment>
       <ul className="navbar-nav mr-auto">
-        <NavItem text="Browse" href="/browse" source={homeSvg} />
+        <NavItem text="Browse" href="/browse" source={gridSvg} />
         <FilterToggler text="Filter" href="/browse" source={filterSvg} />
         { document.cookie.split(";").map(cookie => cookie.split("=")[0]).includes("authentication") 
           && window.localStorage.getItem('user') !== null 

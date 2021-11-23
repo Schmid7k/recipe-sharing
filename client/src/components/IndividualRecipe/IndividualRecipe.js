@@ -361,14 +361,16 @@ RecipeIngredientGroups.propTypes = {
  * @returns A styled .recipe-instruction div with a header that has the step and a styled 
  *          .recipe-instruction-description div with the step description as content.
  */
-const RecipeInstruction = ({ step, description }) => {
+const RecipeInstruction = ({ step, description, img }) => {
     return (
       <Fragment>
         <div className="recipe-instruction">
             <h5>Step {step}</h5>
-            <div className="recipe-instruction-description">
+            <div className="recipe-instruction-description mb-3">
                 {description}
             </div>
+            <img    className="recipe-instruction-image" src={`/${img.replace(/\\/g, '/').replace('../client/public/', '')}`} 
+                    alt={`Step ${step} instruction`} onError={(e) => e.target.style.display = 'none'} />
         </div>
       </Fragment>
     );
@@ -392,7 +394,8 @@ RecipeInstruction.propTypes = {
                 <h3>Instructions</h3>
                 <div className="recipe-instructions-list">
                     {instructions.map((instruction, idx) => 
-                        <RecipeInstruction step={instruction.step} description={instruction.instruction} key={idx} />
+                        <RecipeInstruction step={instruction.step} description={instruction.instruction} 
+                                            img={instruction.instruction_image} key={idx} />
                     )}
                 </div>
             </div>
@@ -516,8 +519,7 @@ class IndividualRecipe extends React.Component {
             .then(res => this.handleSettingRecipeData(res))
             .catch(err => this.props.history.push('/browse')
         ); // TODO: should we have a simple 404 page or just redirect to home?
-        document.body.scrollTop = 0;
-        document.documentElement.scrollTop = 0;
+        window.scrollTo(0, 0);
     }
 
     handleHeaderChange(attribute, value) {
@@ -531,7 +533,7 @@ class IndividualRecipe extends React.Component {
     render(){
         return (
             <Fragment>
-                <div className="recipe-container">
+                <div className="recipe-container pb-5">
                     <div className="recipe-column-left">
                         <RecipeImage source={this.state.image.source} alternative={this.state.image.alternative} />
                         <RecipeTagList tags={this.state.tags} />
