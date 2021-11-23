@@ -115,8 +115,15 @@ app.post("/recipes", upload.array("images", 100), async (req, res) => {
       const main = images[0];
       const { recipe } = req.body; // retrieve the text content
       const content = JSON.parse(recipe);
-      const { title, category, groups, instructions, addInstructions, tags } =
-        content;
+      const {
+        title,
+        category,
+        groups,
+        instructions,
+        addInstructions,
+        tags,
+        stepImages,
+      } = content;
 
       const userID = await pool.query(
         "SELECT * FROM users WHERE Username = $1",
@@ -142,6 +149,7 @@ app.post("/recipes", upload.array("images", 100), async (req, res) => {
         (await helpers.saveInstructions(
           instructions,
           images.slice(1),
+          stepImages,
           recipeID
         )) &&
         (await helpers.saveTags(tags, recipeID))
@@ -573,32 +581,45 @@ app.delete("/recipes/:id", async (req, res) => {
   try {
     const cookie = req.signedCookies.authentication; // retrieve authentication cookie from request
     if (cookie) {
+      // User is logged in
       const { id } = req.params;
+      const user = await pool.query(
+        "SELECT * FROM users WHERE users.Username = $1",
+        [cookie]
+      ); // retrieve user from database
       const recipe = await pool.query(
-        "SELECT * FROM recipes WHERE RecipeID = $1",
-        [id]
-      ); // Retrieve the recipe from the database
-      const images = await pool.query(
-        "SELECT * FROM recipe_instructions WHERE RecipeID = $1",
-        [id]
-      );
+        "SELECT * FROM recipes WHERE recipes.userid = $1 AND recipes.recipeid = $2",
+        [user.rows[0].userid, id]
+      ); // Retrieve the recipe from the database and check if the user is actually the author
+
       if (recipe.rows[0]) {
-        // Recipe exists
-        fs.unlinkSync(String(recipe.rows[0].mainimage)); // Delete the main image stored in the database
+        // Current user is author
+        const images = await pool.query(
+          "SELECT * FROM recipe_instructions WHERE RecipeID = $1",
+          [id]
+        ); // retrieve instruction images from the database
+        if (recipe.rows[0]) {
+          // Recipe exists
+          fs.unlinkSync(String(recipe.rows[0].mainimage)); // Delete the main image stored in the database
 
-        images.rows.forEach((row) => {
-          fs.unlinkSync(String(row.instruction_image));
-        }); // Delete all instruction images
+          images.rows.forEach((row) => {
+            if (row.instruction_image != "") {
+              fs.unlinkSync(String(row.instruction_image));
+            }
+          }); // Delete all instruction images
 
-        await pool.query("DELETE FROM recipes WHERE RecipeID = $1", [id]); // Delete the database entry
+          await pool.query("DELETE FROM recipes WHERE RecipeID = $1", [id]); // Delete the database entry
 
-        res.status(200).send("Recipe deleted successfully!");
+          res.status(200).send("Recipe deleted successfully!");
+        } else {
+          // Recipe does not exist
+          res.status(404).send("This recipe does not exist");
+        }
       } else {
-        // Recipe does not exist
-        res.status(404).send("This recipe does not exist");
+        res.status(401).send("Please register!");
       }
     } else {
-      res.status(401).send("Please register!");
+      res.status(401).send("Not authorized to delete this recipe!");
     }
   } catch (error) {
     console.error(error.message);

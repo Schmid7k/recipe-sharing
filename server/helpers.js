@@ -2,13 +2,16 @@ const pool = require("./db");
 
 // Helper function that saves instructions to the instruction database
 
-async function saveInstructions(instructions, images, recipeID) {
+async function saveInstructions(instructions, images, stepImages, recipeID) {
   try {
     var counter = 0;
     Object.entries(instructions).forEach(async (instruction) => {
-      const imagePath = images[counter].path;
-      counter += 1;
       const [step, description] = instruction;
+      var imagePath = "";
+      if (stepImages[step]) {
+        imagePath = images[counter].path;
+        counter += 1;
+      }
       await pool.query(
         "INSERT INTO recipe_instructions (RecipeID, Step, Instruction, Instruction_Image) VALUES($1, $2, $3, $4) RETURNING *",
         [recipeID, step, description, imagePath]
