@@ -296,26 +296,47 @@ app.get("/recipes", async (req, res) => {
 
 // POST request to bookmark a recipe
 
-app.post("/recipes/:id", async (req, res) => {
+app.post("/recipes/:id/save", async (req, res) => {
   try {
     const cookie = req.signedCookies.authentication; // retrieve authentication cookie from request
     if (cookie) {
-      const { id } = req.params;
-      const { bookmarked } = req.body;
+      const { id } = req.params; // Retrieve recipeid from url
       const user = await pool.query("SELECT * FROM users WHERE Username = $1", [
         cookie,
-      ]);
-      if (bookmarked) {
-        await pool.query(
-          "INSERT INTO recipe_bookmarks (RecipeID, UserID) VALUES($1, $2) RETURNING *",
-          [id, user.rows[0].userid]
-        );
-        res.status(201).send("Created bookmark!");
-      }
+      ]); // Query database for user
+      await pool.query(
+        "INSERT INTO recipe_bookmarks (RecipeID, UserID) VALUES($1, $2) RETURNING *",
+        [id, user.rows[0].userid]
+      ); // Insert new bookmark into recipe_bookmarks table
+      res.status(201).send("Created bookmark!");
     } else {
       res.status(401).send("Please register!");
     }
   } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Something went wrong!");
+  }
+});
+
+// DELETE request to delete a bookmark from a specified recipe
+
+app.delete("/recipes/:id/save", async (req, res) => {
+  try {
+    const cookie = req.signedCookies.authentication; // retrieve authentication cookie from request
+    if (cookie) {
+      const { id } = req.params; // retrieve recipeid from url
+      const user = await pool.query("SELECT * FROM users WHERE Username = $1", [
+        cookie,
+      ]); // Query database for user
+      await pool.query(
+        "DELETE FROM recipe_bookmarks WHERE RecipeID = $1 AND UserID = $2",
+        [id, user.rows[0].userid]
+      ); // Delete the database entry
+      res.status(200).send("Bookmark deleted!");
+    } else {
+      res.status(401).send("Please register!");
+    }
+  } catch {
     console.error(err.message);
     res.status(500).send("Something went wrong!");
   }
@@ -425,42 +446,28 @@ app.delete("/recipes/:id", async (req, res) => {
     const cookie = req.signedCookies.authentication; // retrieve authentication cookie from request
     if (cookie) {
       const { id } = req.params;
-      const { bookmarked } = req.body;
-      if (bookmarked) {
-        const user = await pool.query(
-          "SELECT * FROM users WHERE Username = $1",
-          [cookie]
-        );
+      const recipe = await pool.query(
+        "SELECT * FROM recipes WHERE RecipeID = $1",
+        [id]
+      ); // Retrieve the recipe from the database
+      const images = await pool.query(
+        "SELECT * FROM recipe_instructions WHERE RecipeID = $1",
+        [id]
+      );
+      if (recipe.rows[0]) {
+        // Recipe exists
+        fs.unlinkSync(String(recipe.rows[0].mainimage)); // Delete the main image stored in the database
 
-        await pool.query(
-          "DELETE FROM recipe_bookmarks WHERE RecipeID = $1 AND UserID = $2",
-          [id, user.rows[0].userid]
-        ); // Delete the database entry
-        res.status(200).send("Bookmarked deleted!");
+        images.rows.forEach((row) => {
+          fs.unlinkSync(String(row.instruction_image));
+        }); // Delete all instruction images
+
+        await pool.query("DELETE FROM recipes WHERE RecipeID = $1", [id]); // Delete the database entry
+
+        res.status(200).send("Recipe deleted successfully!");
       } else {
-        const recipe = await pool.query(
-          "SELECT * FROM recipes WHERE RecipeID = $1",
-          [id]
-        ); // Retrieve the recipe from the database
-        const images = await pool.query(
-          "SELECT * FROM recipe_instructions WHERE RecipeID = $1",
-          [id]
-        );
-        if (recipe.rows[0]) {
-          // Recipe exists
-          fs.unlinkSync(String(recipe.rows[0].mainimage)); // Delete the main image stored in the database
-
-          images.rows.forEach((row) => {
-            fs.unlinkSync(String(row.instruction_image));
-          }); // Delete all instruction images
-
-          await pool.query("DELETE FROM recipes WHERE RecipeID = $1", [id]); // Delete the database entry
-
-          res.status(200).send("Recipe deleted successfully!");
-        } else {
-          // Recipe does not exist
-          res.status(404).send("This recipe does not exist");
-        }
+        // Recipe does not exist
+        res.status(404).send("This recipe does not exist");
       }
     } else {
       res.status(401).send("Please register!");
@@ -505,8 +512,6 @@ app.get("/user/:username", async (req, res) => {
       "SELECT recipes.* FROM recipes WHERE recipes.recipeid IN (SELECT recipeid FROM recipe_bookmarks WHERE userid = $1) ORDER BY recipes.recipeid DESC",
       [id]
     );
-
-    console.log(savedRecipes.rows);
 
     let recipes = {
       reviewed: tempRecipes.rows,
