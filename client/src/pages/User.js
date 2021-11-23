@@ -37,6 +37,22 @@ class User extends React.Component {
     // this.filteringHandler = this.filteringHandler.bind(this);
     this.handleResize = this.handleResize.bind(this);
     this.buildCards = this.buildCards.bind(this);
+    this.updateBio = this.updateBio.bind(this);
+  }
+
+  updateBio(newBio) {
+    fetch(`http://localhost:5000/userdata/${this.state.header.username}`, {method: 'GET'})
+    .then(res => res.json())
+    .then(res => {
+      this.setState({
+        header : {
+          username: this.state.header.username,
+          bio: res.bio,
+          img: res.image
+        }
+      });
+    })
+    .catch(err => this.props.history.push('/')); 
   }
 
   handleResize() {
@@ -171,7 +187,7 @@ class User extends React.Component {
         <NavigationBar />
         <div className="container-fluid" id='grid-container'>
           <div className="container pt-3">        
-              <UserHeader data={this.state.header} callback={this.tabHandler}/>
+              <UserHeader data={this.state.header} callback={this.tabHandler} updateBio={this.updateBio}/>
               <SearchPopup display={this.state.popupDisplay} closeCallback={this.popupToggleHandler} ref={this.popup}/>
               <ContentGrid content={this.state.recipes[this.state.currentOption]}/>
           </div>

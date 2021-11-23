@@ -13,7 +13,7 @@ const PopupRating = ({number, icon}) => {
         <Fragment>
             <div className="popup-rating-container">
                 <div className="popup-number" style={{fontWeight: 'bold', fontSize: '1.5em'}}>{number}</div>
-                <img className="popup-rating-icon" style={{ filter: 'brightness(0)' }} src={icon}></img>
+                <img className="popup-rating-icon" style={{ filter: 'brightness(0)' }} src={icon} alt="Rating icon" ></img>
             </div>
         </Fragment>
     )
@@ -65,12 +65,12 @@ const SearchPopupContent = ({callback, data}) => {
         tags.push(<PopupTag tagText={t} key={t}/>);
     });
     let imagePath = data.image;
-    if(imagePath && imagePath != '/') ['/'].concat(imagePath);
+    if(imagePath && imagePath !== '/') ['/'].concat(imagePath);
 
     return (
         <Fragment>
-            <img className="popup-close-btn" src={closeBtnIcon} onClick={callback}></img>
-            <img className="search-popup-img" src={data.image}/>
+            <img className="popup-close-btn" src={closeBtnIcon} onClick={callback} alt="Close button"></img>
+            <img className="search-popup-img" src={data.image} alt={data.title} />
             <div className="popup-body">
                 <div className="popup-header-container">
                     <div className="popup-title-and-username-container">

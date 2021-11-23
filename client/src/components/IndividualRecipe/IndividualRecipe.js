@@ -68,12 +68,38 @@ class RecipeHeader extends React.Component {
     handleBookmarkClick() {
         if (this.state.bookmarked) {
             console.log("Removing recipe from bookmarks...")
-            this.setState({ bookmarked: false });
-            // post removal info
+            let url = `http://localhost:5000/recipes/${this.props.recipeid}/save`;
+            fetch(url, {
+                method: 'DELETE',
+                credentials: 'include',
+            })
+            .then(response => {
+                if (response.ok) {
+                    this.setState({ bookmarked: false });
+                    return response;
+                }
+                throw new Error('Something went wrong...');
+            })
+            .catch((error) => {
+                console.error(error);
+            });
         } else {
             console.log("Bookmarking recipe..")
-            this.setState({ bookmarked: true });
-            // post new bookmark info
+            let url = `http://localhost:5000/recipes/${this.props.recipeid}/save`;
+            fetch(url, {
+                method: 'POST',
+                credentials: 'include',
+            })
+            .then(response => {
+                if (response.ok) {
+                    this.setState({ bookmarked: true });
+                    return response;
+                }
+                throw new Error('Something went wrong...');
+            })
+            .catch((error) => {
+                console.error(error);
+            });
         }
     }
 
@@ -476,7 +502,7 @@ class IndividualRecipe extends React.Component {
                     <div className="recipe-column-right">
                         <RecipeHeader   name={this.state.header.name} author={this.state.header.author} 
                                         category={this.state.header.category} bookmarks={this.state.header.bookmarks} 
-                                        stars={this.state.header.stars} />
+                                        stars={this.state.header.stars} recipeid={this.props.match.params.id} />
                         <RecipeIngredientGroups ingredients={this.state.ingredients} />
                         <RecipeInstructionList instructions={this.state.instructions} />
                         <RecipeAdditionalInstructions description={this.state.additionalInstructions} />

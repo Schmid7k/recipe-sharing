@@ -15,7 +15,8 @@ class ContentSearch extends React.Component {
             popupDisplay: false, // modifying display directly, but still need to keep track of state here
             scrollbarWidth: 0, // stashed value
             overflow: '',
-            display: 'none' // modify display when building cards to not show empty items while data is being loaded
+            display: 'none', // modify display when building cards to not show empty items while data is being loaded
+            searchPhrase: ''
         }
 
         this.popup = React.createRef();
@@ -79,12 +80,22 @@ class ContentSearch extends React.Component {
 
     filteringHandler(filters) {
         let url = 'http://localhost:5000/recipes?';
+
+        // search phrase is included in filters
+        if (filters.searchPhrase) {
+            this.setState({ searchPhrase: filters.searchPhrase });
+        } 
+        // new search phrase not included but previous search had a search phrase (= filtering search phrase results)
+        else if (!filters.searchPhrase && this.state.searchPhrase !== '') {
+            url = url.concat(`searchPhrase=${this.state.searchPhrase}&`);
+        }
+
         Object.keys(filters).forEach(key => {
             if (!Array.isArray(filters[key]) && filters[key] !== "placeholder") {
                 url = url.concat(`${key}=${filters[key]}&`);
             } else if (Array.isArray(filters[key]) && filters[key].length > 0) {
                 let values = '';
-                filters[key].forEach(value => values = values.concat(`%22${value}%22,`));
+                filters[key].forEach(value => values = values.concat(`%22${value.toLowerCase()}%22,`));
                 values = values.slice(0, -1);
                 url = url.concat(`${key}=[${values}]&`);
             }
@@ -146,7 +157,7 @@ class ContentSearch extends React.Component {
 
                     <div className="content-search-grid-container" id='grid-container'>
                         <SearchPopup display={this.state.popupDisplay} closeCallback={this.popupToggleHandler} ref={this.popup}/>
-                        <ContentGrid content={this.state.recipeCards} />
+                        <ContentGrid content={this.state.recipeCards} searchPhrase={this.state.searchPhrase} />
                     </div>        
                 </div>
             </Fragment>

@@ -1,5 +1,4 @@
 import React, { Fragment } from "react";
-import PropTypes from 'prop-types';
 import "./FilterMenu.css";
 import {ReactComponent as StarIcon} from "../../images/star_icon.svg";
 
@@ -22,7 +21,6 @@ const CategorySelection = ({categories}) => {
   );
 }
 
-// TODO: there might be issues with the id, ensuring a unique one would be better
 class ChecklistCheckbox extends React.Component {
   constructor(){
     super();
@@ -40,7 +38,7 @@ class ChecklistCheckbox extends React.Component {
       <Fragment>
         <div className="form-check">
           <input className="form-check-input" type="checkbox" id={`checkbox-${this.props.checklistName}-${this.props.value}`} name={this.props.value} value={this.props.value} checked={this.state.checked} onChange={e => {this.setState({checked: !this.state.checked})}}/>
-          <label className="form-check-label filter-checkbox-item" htmlFor={this.props.value}> {this.props.name}</label>
+          <label className="form-check-label filter-checkbox-item" htmlFor={`checkbox-${this.props.checklistName}-${this.props.value}`}> {this.props.name}</label>
         </div>
       </Fragment>
     );
@@ -115,41 +113,44 @@ const TagSelection = ({topTags, tags, callback, customTags}) => {
   );
 }
 
-// TODO: datalist allows for repeated entries
-// this leads to having shared ids of elements so could cause odd behaviour
-// it'd be best to either not add duplicates (easiest)
-// or update the dropdown items available
 class FilterSearch extends React.Component {
   constructor() {
     super();
+
+    this.state = { error: null }
+
     this.handleAddingItems = this.handleAddingItems.bind(this);
   }
 
   handleAddingItems(e) {
     e.preventDefault();
-    let value = document.getElementById(this.props.id).value;
+    let value = document.getElementById(this.props.id).value.toLowerCase().trim();
 
     if (value === '') return; // TODO: check against silly/malicious input
 
     let items = this.props.customSet;
-    items.push(value);
-
-    document.getElementById(this.props.id).value = '';
-
-    this.props.callback(items)
+    if (!items.includes(value)) {
+      items.push(value);
+      document.getElementById(this.props.id).value = '';
+      this.props.callback(items);
+      this.setState({ error: null });
+    } else {
+      let error = "Ingredient already added";
+      this.setState({ error: error });
+    }
   }
 
   render() {
     let items = [];
     this.props.customSet.forEach(item => {
-      items.push(<ChecklistCheckbox checklistName={this.props.checklistName} name={item} value={item} startChecked={true}/>);
+      items.push(<ChecklistCheckbox checklistName={this.props.checklistName} name={item} value={item} startChecked={true} key={`checklist-${item}`} />);
     });
 
     return (
       <Fragment>
           <div className="search-container">
+            {this.state.error ? <div className="alert alert-danger" role="alert">{this.state.error}</div> : null}
             <div className="search-dropdown-container">
-
               <div className="form-search-container">
                 <input className="form-control" id={this.props.id} list={`items-${this.props.id}`} placeholder={ this.props.placeholder } autoComplete="off"/>
                 <datalist id={`items-${this.props.id}`}> 
@@ -210,7 +211,7 @@ class FilteringMenuContents extends React.Component {
     this.updateCustomTags = this.updateCustomTags.bind(this);
     this.getCheckedElements = this.getCheckedElements.bind(this);
     this.checkAll = this.checkAll.bind(this);
-    this. constructFilters = this.constructFilters.bind(this);
+    this.constructFilters = this.constructFilters.bind(this);
   }
 
   updateCustomExcludeIngredients(items) {

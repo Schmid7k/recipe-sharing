@@ -70,3 +70,10 @@ CREATE TABLE recipe_bookmarks (
     UserID integer REFERENCES users ON DELETE CASCADE,
     PRIMARY KEY ( RecipeID, UserID)
 );
+
+CREATE TABLE user_info (
+    infoID SERIAL PRIMARY KEY,
+    UserID integer REFERENCES users ON DELETE SET NULL,
+    imagePath VARCHAR(1024),
+    bio VARCHAR(1024)
+);

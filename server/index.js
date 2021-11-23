@@ -263,7 +263,7 @@ app.get("/recipes", async (req, res) => {
       // If the parameter searchPhrase is there
       if (searchPhrase) {
         queryTemplate.end.push(
-          "recipes.title LIKE " + "'%" + `${searchPhrase}` + "%' "
+          "recipes.title ILIKE " + "'%" + `${searchPhrase}` + "%' "
         );
       }
 
@@ -535,6 +535,38 @@ app.get("/user/:username", async (req, res) => {
     console.error(err.message);
     res.status(500).send("Something went wrong!");
   }
+});
+
+// POST request to update user bio + pfp
+// TODO: need store the bio and image in user_info
+app.post("/userdata", upload.fields([{name: 'bio', maxCount: 1}, {name: 'image', maxCount: 1}]),  async (req, res) => {
+  try {
+    const cookie = req.signedCookies.authentication;
+    if (cookie) {
+      console.log(cookie)
+      // console.log(req.body)
+      // console.log(req.files)
+      console.log(req.files.image[0].path)
+     
+      res.status(201).send("Bio updated!");
+    } else {
+      res.status(401).send("Please register!");
+    }
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Something went wrong!");
+  }
+});
+
+// TODO: Get request to fetch user data *after* it's been updated by the user
+
+app.get("/userdata/:username", async (req, res) => {
+  let headerData = {
+    bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc ut sapien vel nisl fermentum malesuada. From server v2.",
+    image: "/images/user_placeholder_icon.svg",
+  };
+
+  res.json(headerData);
 });
 
 app.listen(5000, () => {

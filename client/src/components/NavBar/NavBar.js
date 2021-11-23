@@ -64,20 +64,32 @@ class FilterToggler extends React.Component {
   }
 
   handleClick() {
-    this.setState({ filterActive: !this.state.filterActive });
+    let filterBtn = document.getElementById('filter-button');
+    this.setState({ filterActive: (filterBtn && filterBtn.ariaExpanded === 'true') });
   }
 
   render() {
     return (
       <Fragment>
-        <li className={`nav-item nav-icon-item ${this.state.filterActive === true ? "active" : ""}`}>
-          <div className="d-md-none" data-bs-toggle="collapse" data-bs-target="#filtering-menu" aria-expanded="false" aria-controls="filtering-menu" id='filter-button-icon' onClick={this.handleClick}>
-            <img className="nav-icon" src={this.props.source} alt={`${this.props.text} icon`} />
-          </div>
-          <div className="nav-link d-none d-md-block" data-bs-toggle="collapse" data-bs-target="#filtering-menu" aria-expanded="false" aria-controls="filtering-menu" id='filter-button' onClick={this.handleClick}>
-            {this.props.text}
-          </div>
-        </li>
+        {window.location.pathname === "/" ? 
+          <li className={`nav-item nav-icon-item ${this.state.filterActive ? "active" : ""}`}>
+            <div className="d-md-none" data-bs-toggle="collapse" data-bs-target="#filtering-menu" aria-expanded="false" aria-controls="filtering-menu" id='filter-button-icon' onClick={this.handleClick}>
+              <img className="nav-icon" src={this.props.source} alt={`${this.props.text} icon`} />
+            </div>
+            <div className="nav-link d-none d-md-block" data-bs-toggle="collapse" data-bs-target="#filtering-menu" aria-expanded="false" aria-controls="filtering-menu" id='filter-button' onClick={this.handleClick}>
+              {this.props.text}
+            </div>
+          </li>
+        :
+          <li className="nav-item nav-icon-item disabled">
+            <div className="d-md-none" id='filter-button-icon'>
+              <img className="nav-icon" src={this.props.source} alt={`${this.props.text} icon`} />
+            </div>
+            <div className="nav-link d-none d-md-block" id='filter-button'>
+              {this.props.text}
+            </div>
+          </li>
+        }
       </Fragment>
     );
   }
