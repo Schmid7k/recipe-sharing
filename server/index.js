@@ -181,6 +181,14 @@ app.get("/filters", async (req, res) => {
       "SELECT * from categories ORDER BY categoryid DESC"
     );
 
+    const popTags = await pool.query(
+      "SELECT tags.name, COUNT(tags.name) FROM recipe_tags INNER JOIN tags ON recipe_tags.tagid=tags.tagid GROUP BY recipe_tags.tagid, tags.name ORDER BY count(recipe_tags.tagid) DESC LIMIT 5;"
+    );
+
+    const popIngredients = await pool.query(
+      "SELECT ingredients.name, count(recipe_ingredients.ingredientsid) FROM recipe_ingredients INNER JOIN ingredients ON recipe_ingredients.ingredientsid=ingredients.ingredientsid GROUP BY recipe_ingredients.ingredientsid, ingredients.name ORDER BY count(recipe_ingredients.ingredientsid) DESC LIMIT 5"
+    );
+
     filters.allTags = [];
     filters.allIngredients = [];
     filters.allCategories = [];
@@ -197,12 +205,16 @@ app.get("/filters", async (req, res) => {
 
     // TODO: placeholder data for now - should we have separate tables for most popular ingredients/tags or another column in the table for each?
     // we don't really have a mechanism for counting popularity, unless the query for recipes with applied filters would track their frequency
-    filters.popTags = ["popTag1", "popTag2", "popTag3"];
-    filters.popIngredients = [
-      "popIngredient1",
-      "popIngredient2",
-      "popIngredient3",
-    ];
+    filters.popTags = [];
+    filters.popIngredients = [];
+
+    popTags.rows.forEach((tag) => {
+      filters.popTags.push(tag.name);
+    });
+
+    popIngredients.rows.forEach((ingredient) => {
+      filters.popIngredients.push(ingredient.name);
+    });
 
     res.status(200).json(filters);
   } catch (err) {
