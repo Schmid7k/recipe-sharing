@@ -15,7 +15,8 @@ class ContentSearch extends React.Component {
             popupDisplay: false, // modifying display directly, but still need to keep track of state here
             scrollbarWidth: 0, // stashed value
             overflow: '',
-            display: 'none' // modify display when building cards to not show empty items while data is being loaded
+            display: 'none', // modify display when building cards to not show empty items while data is being loaded
+            searchPhrase: ''
         }
 
         this.popup = React.createRef();
@@ -79,6 +80,16 @@ class ContentSearch extends React.Component {
 
     filteringHandler(filters) {
         let url = 'http://localhost:5000/recipes?';
+
+        // search phrase is included in filters
+        if (filters.searchPhrase) {
+            this.setState({ searchPhrase: filters.searchPhrase });
+        } 
+        // new search phrase not included but previous search had a search phrase (= filtering search phrase results)
+        else if (!filters.searchPhrase && this.state.searchPhrase !== '') {
+            url = url.concat(`searchPhrase=${this.state.searchPhrase}&`);
+        }
+
         Object.keys(filters).forEach(key => {
             if (!Array.isArray(filters[key]) && filters[key] !== "placeholder") {
                 url = url.concat(`${key}=${filters[key]}&`);
@@ -146,7 +157,7 @@ class ContentSearch extends React.Component {
 
                     <div className="content-search-grid-container" id='grid-container'>
                         <SearchPopup display={this.state.popupDisplay} closeCallback={this.popupToggleHandler} ref={this.popup}/>
-                        <ContentGrid content={this.state.recipeCards} />
+                        <ContentGrid content={this.state.recipeCards} searchPhrase={this.state.searchPhrase} />
                     </div>        
                 </div>
             </Fragment>
