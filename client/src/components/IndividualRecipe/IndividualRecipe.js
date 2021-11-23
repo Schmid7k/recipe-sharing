@@ -46,9 +46,8 @@ class RecipeHeader extends React.Component {
         super();
 
         this.state = {
-            bookmarked: false,
             rated: false,
-            rating: 0,
+            userRating: 0,
         }
 
         this.handleBookmarkClick = this.handleBookmarkClick.bind(this);
@@ -56,17 +55,15 @@ class RecipeHeader extends React.Component {
         this.handleStarSubmit = this.handleStarSubmit.bind(this);
     }
 
-    // TODO: pass and store whether the recipe has been bookmarked and/or rated in state
+    // TODO: pass and store whether the recipe has been rated in state
     componentDidMount() {
-        // if bookmarked
-        // this.setState({ bookmarked: true });
         // if rated
         // this.setState({ rated: true });
         // this.setState({ rating: [rating] });
     }
 
     handleBookmarkClick() {
-        if (this.state.bookmarked) {
+        if (this.props.bookmarked) {
             console.log("Removing recipe from bookmarks...")
             let url = `http://localhost:5000/recipes/${this.props.recipeid}/save`;
             fetch(url, {
@@ -75,7 +72,8 @@ class RecipeHeader extends React.Component {
             })
             .then(response => {
                 if (response.ok) {
-                    this.setState({ bookmarked: false });
+                    this.props.handleHeaderChange('bookmarks', Number(this.props.bookmarks - 1));
+                    this.props.handleHeaderChange('bookmarked', false);
                     return response;
                 }
                 throw new Error('Something went wrong...');
@@ -92,7 +90,8 @@ class RecipeHeader extends React.Component {
             })
             .then(response => {
                 if (response.ok) {
-                    this.setState({ bookmarked: true });
+                    this.props.handleHeaderChange('bookmarks', Number(this.props.bookmarks + 1));
+                    this.props.handleHeaderChange('bookmarked', true);
                     return response;
                 }
                 throw new Error('Something went wrong...');
@@ -104,14 +103,14 @@ class RecipeHeader extends React.Component {
     }
 
     handleRatingChange(e) {
-        this.setState({ rating: e.target.value });
+        this.setState({ userRating: e.target.value });
     }
 
     handleStarSubmit(e) {
         e.preventDefault();
         if (!this.state.rated) {
             this.setState({ rated: true });
-            console.log("Submitted rating: ", this.state.rating);
+            console.log("Submitted rating: ", this.state.userRating);
             // post rating info
         }
     }
@@ -130,11 +129,11 @@ class RecipeHeader extends React.Component {
                     <div className="recipe-title-icons-top">
                         <div className="recipe-title-icon-container">
                             <div id="bookmark-btn" onClick={this.handleBookmarkClick}>
-                                <h2 style={{ filter: this.state.bookmarked ? 'none' : 'brightness(0)' }}>
+                                <h2 style={{ filter: this.props.bookmarked ? 'none' : 'brightness(0)' }}>
                                     {this.props.bookmarks}<img className="recipe-title-icon" src={bookmarkIcon} alt="Stars" />
                                 </h2>
                                 <span id="bookmark-tooltip">
-                                    {this.state.bookmarked ? "Remove from bookmarks" : "Bookmark recipe"}
+                                    {this.props.bookmarked ? "Remove from bookmarks" : "Bookmark recipe"}
                                 </span>
                             </div>
                         </div>
@@ -145,15 +144,15 @@ class RecipeHeader extends React.Component {
                     {this.state.rated ? 
                         <div className="recipe-title-icons-bottom">
                             <h6>You rated this recipe:</h6>
-                            <StarIcon   className={`star-rating-icon ${Number(this.state.rating) > 0 ? 'filled' : null}`} 
+                            <StarIcon   className={`star-rating-icon ${Number(this.state.userRating) > 0 ? 'filled' : null}`} 
                                         alt="star" />
-                            <StarIcon   className={`star-rating-icon ${Number(this.state.rating) > 1 ? 'filled' : null}`} 
+                            <StarIcon   className={`star-rating-icon ${Number(this.state.userRating) > 1 ? 'filled' : null}`} 
                                         alt="star" />
-                            <StarIcon   className={`star-rating-icon ${Number(this.state.rating) > 2 ? 'filled' : null}`} 
+                            <StarIcon   className={`star-rating-icon ${Number(this.state.userRating) > 2 ? 'filled' : null}`} 
                                         alt="star" />
-                            <StarIcon   className={`star-rating-icon ${Number(this.state.rating) > 3 ? 'filled' : null}`} 
+                            <StarIcon   className={`star-rating-icon ${Number(this.state.userRating) > 3 ? 'filled' : null}`} 
                                         alt="star" />
-                            <StarIcon   className={`star-rating-icon ${Number(this.state.rating) > 4 ? 'filled' : null}`} 
+                            <StarIcon   className={`star-rating-icon ${Number(this.state.userRating) > 4 ? 'filled' : null}`} 
                                         alt="star" />
                         </div>
                         :
@@ -424,6 +423,7 @@ class IndividualRecipe extends React.Component {
                 author: "",
                 category: "",
                 bookmarks: 0,
+                bookmarked: false,
                 stars: 0
             },
             image: {
@@ -439,6 +439,7 @@ class IndividualRecipe extends React.Component {
         }
 
         this.handleSettingRecipeData = this.handleSettingRecipeData.bind(this);
+        this.handleHeaderChange = this.handleHeaderChange.bind(this);
     }
 
     handleSettingRecipeData(data) {
@@ -465,8 +466,9 @@ class IndividualRecipe extends React.Component {
                 name: data.title,
                 author: data.author,
                 category: data.category,
-                bookmarks: recipeInfo.recipeInfo.bookmarks, // TODO: need to fetch bookmarks and stars (display differently if a user is logged in and already done this?)
-                stars: recipeInfo.recipeInfo.stars
+                bookmarks: Number(data.bookmarks),
+                bookmarked: (Number(data.isBookmarked) === 1 ? true : false),
+                stars: recipeInfo.recipeInfo.stars // TODO: need to fetch bookmarks and stars (display differently if a user is logged in and already done this?)
             },
             image: {
                 source: data.main, 
@@ -482,13 +484,27 @@ class IndividualRecipe extends React.Component {
     }
 
     componentDidMount(){
-       const recipe_id = this.props.match.params.id;
-       fetch(`http://localhost:5000/recipes/${recipe_id}`, {method: 'GET'}) //TODO: we should set a proxy and just use a /path instead of the full path
-       .then(res => res.json())
-       .then(res => this.handleSettingRecipeData(res))
-       .catch(err => this.props.history.push('/')) // TODO: should we have a simple 404 page or just redirect to home?
-       document.body.scrollTop = 0;
-       document.documentElement.scrollTop = 0;
+        const recipe_id = this.props.match.params.id;
+        fetch(`http://localhost:5000/recipes/${recipe_id}`, {
+                method: 'GET',
+                credentials: 'include',
+            }) //TODO: we should set a proxy and just use a /path instead of the full path
+            .then(res => res.json())
+            .then(res => this.handleSettingRecipeData(res))
+            .catch(err => this.props.history.push('/')
+        ); // TODO: should we have a simple 404 page or just redirect to home?
+        document.body.scrollTop = 0;
+        document.documentElement.scrollTop = 0;
+    }
+
+    handleHeaderChange(attribute, value) {
+        console.log("updating header with attribute: ", attribute);
+        console.log("updating header with value: ", value);
+        let header = this.state.header;
+        header[attribute] = value;
+        this.setState({
+            header: header,
+        })
     }
 
     render(){
@@ -502,7 +518,8 @@ class IndividualRecipe extends React.Component {
                     <div className="recipe-column-right">
                         <RecipeHeader   name={this.state.header.name} author={this.state.header.author} 
                                         category={this.state.header.category} bookmarks={this.state.header.bookmarks} 
-                                        stars={this.state.header.stars} recipeid={this.props.match.params.id} />
+                                        bookmarked={this.state.header.bookmarked} stars={this.state.header.stars} 
+                                        recipeid={this.props.match.params.id} handleHeaderChange={this.handleHeaderChange} />
                         <RecipeIngredientGroups ingredients={this.state.ingredients} />
                         <RecipeInstructionList instructions={this.state.instructions} />
                         <RecipeAdditionalInstructions description={this.state.additionalInstructions} />
