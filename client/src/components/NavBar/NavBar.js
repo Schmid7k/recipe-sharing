@@ -95,13 +95,13 @@ class FilterToggler extends React.Component {
   }
 };
 
-const NavItems = () => {
+const NavItems = ({loggedIn}) => {
   return (
     <Fragment>
       <ul className="navbar-nav mr-auto">
         <NavItem text="Browse" href="/browse" source={gridSvg} />
         <FilterToggler text="Filter" href="/browse" source={filterSvg} />
-        { document.cookie.split(";").map(cookie => cookie.split("=")[0]).includes("authentication") 
+        { loggedIn
           && window.localStorage.getItem('user') !== null 
           ? <NavItem text="Add a recipe" href="/addrecipe" source={recipeSvg} /> : null}
       </ul>
@@ -195,9 +195,19 @@ class NavigationBar extends React.Component {
     this.state = {
       searchTerm: "",
       searchRedirect: false,
+      loggedIn: false
     }
 
     this.handleSearchChange = this.handleSearchChange.bind(this);
+  }
+
+  componentDidMount() {
+    let cookie =  document.cookie.split(";").map(cookie => cookie.split("=")[0]);
+
+    for( let i = 0; i < cookie.length; i++)
+      cookie[i] = cookie[i].trim();
+
+    this.setState({loggedIn: cookie.includes("authentication")});
   }
 
   handleSearchChange(searchTerm) {
@@ -221,14 +231,14 @@ class NavigationBar extends React.Component {
         <nav className="navbar fixed-top navbar-expand-sm navbar-custom" id="main-navbar">
           <NavBrand />
           <div className="navbar-nav-items">
-            <NavItems />
+            <NavItems loggedIn={this.state.loggedIn}/>
             <NavToggler />
           </div>
           <div className="navbar-collapse collapse w-100 order-1 order-sm-0 dual-collapse2" id="navbarSupportedContent">
             <SearchForm handleSearchChange={this.handleSearchChange} />
           </div>
           <div className="float-end">
-            <NavUserInfo loggedIn={document.cookie.split(";").map(cookie => cookie.split("=")[0]).includes("authentication") && window.localStorage.getItem('user') !== null} />
+            <NavUserInfo loggedIn={this.state.loggedIn} />
           </div>
         </nav>
       </Fragment>
