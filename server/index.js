@@ -263,10 +263,10 @@ app.get("/recipes", async (req, res) => {
       // If the parameter searchPhrase is there
       if (searchPhrase) {
         queryTemplate.end.push(
-          "recipes.title ILIKE " + "'%" + `${searchPhrase}` + "%' "
+          "recipes.title LIKE " + "'%" + `${searchPhrase}` + "%' "
         );
       }
-
+      // TODO: ORDER BY recipeid DESC
       var finalQuery;
       // Construct the database query
       if (queryTemplate.end.length > 0) {
@@ -281,7 +281,7 @@ app.get("/recipes", async (req, res) => {
           queryTemplate.start + queryTemplate.mid + queryTemplate.out;
       }
 
-      // console.log(finalQuery); Uncomment for debug
+      // console.debug(finalQuery); Uncomment for debug
 
       // Apply the query to the database
       filteredRecipes = await pool.query(finalQuery);
@@ -289,6 +289,82 @@ app.get("/recipes", async (req, res) => {
       res.status(200).json(filteredRecipes.rows);
     }
   } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Something went wrong!");
+  }
+});
+
+// POST request to rate a recipe
+
+app.post("/recipes/:id/rate", async (req, res) => {
+  try {
+    const cookie = req.signedCookies.authentication; // retrieve authentication cookie from request
+    if (cookie) {
+      const { id } = req.params; // Retrieve recipeid from url
+      const user = await pool.query("SELECT * FROM users WHERE Username = $1", [
+        cookie,
+      ]); // Query database for user
+      const { rating } = req.body;
+      await pool.query(
+        "INSERT INTO recipe_ratings (Rating, RecipeID, UserID) VALUES($1, $2, $3) RETURNING *",
+        [rating, id, user.rows[0].userid]
+      ); // Insert new bookmark into recipe_bookmarks table
+
+      res.status(201).send("Created rating!");
+    } else {
+      res.status(401).send("Please register!");
+    }
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Something went wrong!");
+  }
+});
+
+// PUT request to update a rating on a recipe
+
+app.put("/recipes/:id/rate", async (req, res) => {
+  try {
+    const cookie = req.signedCookies.authentication; // retrieve authentication cookie from request
+    if (cookie) {
+      const { id } = req.params; // Retrieve recipeid from url
+      const user = await pool.query("SELECT * FROM users WHERE Username = $1", [
+        cookie,
+      ]); // Query database for user
+      const { rating } = req.body;
+      await pool.query(
+        "UPDATE recipe_ratings SET Rating = $1 WHERE recipeid = $2 AND userid = $3",
+        [rating, id, user.rows[0].userid]
+      ); // Insert new bookmark into recipe_bookmarks table
+
+      res.status(200).send("Updated rating!");
+    } else {
+      res.status(401).send("Please register!");
+    }
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Something went wrong!");
+  }
+});
+
+// DELETE request to delete a rating from a specified recipe
+
+app.delete("/recipes/:id/rate", async (req, res) => {
+  try {
+    const cookie = req.signedCookies.authentication; // retrieve authentication cookie from request
+    if (cookie) {
+      const { id } = req.params; // retrieve recipeid from url
+      const user = await pool.query("SELECT * FROM users WHERE Username = $1", [
+        cookie,
+      ]); // Query database for user
+      await pool.query(
+        "DELETE FROM recipe_ratings WHERE RecipeID = $1 AND UserID = $2",
+        [id, user.rows[0].userid]
+      ); // Delete the database entry
+      res.status(200).send("Rating deleted!");
+    } else {
+      res.status(401).send("Please register!");
+    }
+  } catch {
     console.error(err.message);
     res.status(500).send("Something went wrong!");
   }
@@ -359,7 +435,9 @@ app.get("/recipes/:id", async (req, res) => {
         "main": "",
         "category": "",
         "bookmarks":"",
-        "isBookmarked":"0",
+        "isBookmarked": 0,
+        "isRated": 0,
+        "avgRating": 0,
         "groups": {
         },
         "instructions": {
@@ -368,7 +446,7 @@ app.get("/recipes/:id", async (req, res) => {
         "tags": []
       }
     }`);
-    // Check if currently logged in user already bookmarked this recipe
+    // Check if currently logged in user already bookmarked and/or rated this recipe
     if (cookie) {
       const user = await pool.query("SELECT * FROM users WHERE Username = $1", [
         cookie,
@@ -378,7 +456,15 @@ app.get("/recipes/:id", async (req, res) => {
         [user.rows[0].userid, id]
       );
       if (isBookmarked.rows[0]) {
-        recipe.isBookmarked = "1";
+        recipe.isBookmarked = 1;
+      }
+
+      const isRated = await pool.query(
+        "SELECT recipe_ratings.rating FROM recipe_ratings WHERE userid = $1 AND recipeid = $2",
+        [user.rows[0].userid, id]
+      );
+      if (isRated.rows[0]) {
+        recipe.isRated = isRated.rows[0].rating;
       }
     }
     if (base.rows[0]) {
@@ -394,11 +480,19 @@ app.get("/recipes/:id", async (req, res) => {
       recipe.main = base.rows[0].mainimage;
       // Add additional instructions to template
       recipe.addInstructions = base.rows[0].additionalinstructions;
+      // Get bookmark count
       const bookmarks = await pool.query(
-        "SELECT COUNT(*) FROM recipes LEFT JOIN recipe_bookmarks ON recipe_bookmarks.recipeid = recipes.recipeid WHERE recipe_bookmarks.recipeid = $1",
+        "SELECT COUNT(*) FROM recipe_bookmarks WHERE recipe_bookmarks.recipeid = $1",
         [id]
       );
       recipe.bookmarks = bookmarks.rows[0].count;
+      // Get average rating
+      const avgRating = await pool.query(
+        "SELECT AVG(recipe_ratings.rating) FROM recipe_ratings WHERE recipe_ratings.recipeid = $1",
+        [id]
+      );
+      // Add average rating to response, such that the average rating is a number rounded to at most 2 decimal places
+      recipe.avgRating = Math.round(avgRating.rows[0].avg * 100) / 100;
       // Get tags
       const tags = await pool.query(
         "SELECT tags.name FROM recipes LEFT JOIN recipe_tags ON recipe_tags.recipeid = recipes.recipeid LEFT JOIN tags ON tags.tagid = recipe_tags.tagid WHERE recipes.recipeid = $1",
@@ -448,6 +542,7 @@ app.get("/recipes/:id", async (req, res) => {
           );
         }
       }
+      // console.debug(recipe); Uncomment for debug
       // Send response
       res.status(200).json(recipe);
     } else {
@@ -519,13 +614,14 @@ app.get("/user/:username", async (req, res) => {
     };
 
     // need searches to return recipes sorted as reviewed, saved, and uploaded, just filling in with all recipes for now
-    const tempRecipes = await pool.query(
-      "SELECT * FROM recipes ORDER BY RecipeID DESC"
+    const reviewedRecipes = await pool.query(
+      "SELECT recipes.* FROM recipes WHERE recipes.recipeid IN (SELECT recipeid FROM recipe_ratings WHERE userid = $1) ORDER BY recipes.recipeid DESC",
+      [id]
     );
 
     // Get all recipes uploaded by this user
     const uploadedRecipes = await pool.query(
-      "SELECT * FROM recipes WHERE UserID = $1 ORDER BY RecipeID DESC",
+      "SELECT * FROM recipes WHERE UserID = $1 ORDER BY recipeid DESC",
       [id]
     );
 
@@ -535,7 +631,7 @@ app.get("/user/:username", async (req, res) => {
     );
 
     let recipes = {
-      reviewed: tempRecipes.rows,
+      reviewed: reviewedRecipes.rows,
       saved: savedRecipes.rows,
       uploaded: uploadedRecipes.rows,
     };

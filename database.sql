@@ -79,6 +79,7 @@ CREATE TABLE user_info (
 );
 
 CREATE TABLE recipe_ratings (
+    Rating integer,
     RecipeID integer REFERENCES recipes ON DELETE CASCADE,
     UserID integer REFERENCES users ON DELETE CASCADE,
     PRIMARY KEY ( RecipeID, UserID)
