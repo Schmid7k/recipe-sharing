@@ -61,7 +61,7 @@ class RecipeHeader extends React.Component {
     handleBookmarkClick() {
         if (this.props.loggedIn) {
             if (this.props.bookmarked) {
-                let url = `http://localhost:5000/recipes/${this.props.recipeid}/save`;
+                let url = `/recipes/${this.props.recipeid}/save`;
                 fetch(url, {
                     method: 'DELETE',
                     credentials: 'include',
@@ -78,7 +78,7 @@ class RecipeHeader extends React.Component {
                     console.error(error);
                 });
             } else {
-                let url = `http://localhost:5000/recipes/${this.props.recipeid}/save`;
+                let url = `/recipes/${this.props.recipeid}/save`;
                 fetch(url, {
                     method: 'POST',
                     credentials: 'include',
@@ -107,7 +107,7 @@ class RecipeHeader extends React.Component {
         if (this.props.loggedIn) {
             if (!this.props.rated) {
                 const rating = { rating: this.state.userRating };
-                let url = `http://localhost:5000/recipes/${this.props.recipeid}/rate`;
+                let url = `/recipes/${this.props.recipeid}/rate`;
                 fetch(url, {
                     method: 'POST',
                     headers: {
@@ -559,7 +559,6 @@ class IndividualRecipe extends React.Component {
     }
 
     handleSettingRecipeData(data) {
-        //TODO: no need if the path returns the image, but getting double \\ for some reason in path
         data.main = data.main.replace(/\\\\/g, '\\');
 
         // extract tags
@@ -608,14 +607,14 @@ class IndividualRecipe extends React.Component {
         this.setState({loggedIn: cookie.includes("authentication")});
 
         const recipe_id = this.props.match.params.id;
-        fetch(`http://localhost:5000/recipes/${recipe_id}`, {
+        fetch(`/recipes/${recipe_id}`, {
                 method: 'GET',
                 credentials: 'include',
-            }) //TODO: we should set a proxy and just use a /path instead of the full path
+            })
             .then(res => res.json())
             .then(res => this.handleSettingRecipeData(res))
             .catch(err => this.props.history.push('/browse')
-        ); // TODO: should we have a simple 404 page or just redirect to home?
+        );
         window.scrollTo(0, 0);
     }
 
@@ -629,7 +628,7 @@ class IndividualRecipe extends React.Component {
 
     handleCommentSubmit(newComment) {
         const recipe_id = this.props.match.params.id;
-        let url = `http://localhost:5000/recipes/${recipe_id}/comment`;
+        let url = `/recipes/${recipe_id}/comment`;
         let comment = { comment: newComment };
         fetch(url, {
             method: 'POST',

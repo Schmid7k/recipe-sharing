@@ -41,7 +41,7 @@ class User extends React.Component {
   }
 
   updateBio(newBio) {
-    fetch(`http://localhost:5000/userdata/${this.state.header.username}`, {method: 'GET'})
+    fetch(`/userdata/${this.state.header.username}`, {method: 'GET'})
     .then(res => res.json())
     .then(res => {
       this.setState({
@@ -175,7 +175,7 @@ class User extends React.Component {
 
     const username = this.props.match.params.username;
 
-    fetch(`http://localhost:5000/user/${username}`, {method: 'GET'})
+    fetch(`/user/${username}`, {method: 'GET'})
     .then(res => res.json())
     .then(res => this.handleUserData(res))
     .catch(err => this.props.history.push('/browse'))

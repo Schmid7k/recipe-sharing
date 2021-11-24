@@ -386,7 +386,7 @@ class FilteringMenu extends React.Component {
   }
 
   componentDidMount(){
-    fetch('http://localhost:5000/filters', {method: 'GET'})
+    fetch('/filters', {method: 'GET'})
     .then(res => res.json())
     .then(res => this.handleFetchingFilters(res));
   }

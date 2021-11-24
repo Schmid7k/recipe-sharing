@@ -100,10 +100,6 @@
     border-radius: 30px;
 }
 
-.popup-tag:hover {
-    cursor: pointer;
-}
-
 .ingredients-instructions-container {
     display: flex;
     flex-direction: row;

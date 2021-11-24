@@ -21,6 +21,7 @@
     "server": "cd .. && cd server && nodemon index.js",
     "client": "npm start"
   },
+  "proxy": "http://localhost:5000",
   "eslintConfig": {
     "extends": [
       "react-app",

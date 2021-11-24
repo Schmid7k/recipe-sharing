@@ -23,7 +23,7 @@ class About extends React.Component {
 
   componentDidMount() {
     // fetch some recommended recipes
-    fetch(`http://localhost:5000/recommendations`, {
+    fetch(`/recommendations`, {
                 method: 'GET',
                 credentials: 'include',
             })

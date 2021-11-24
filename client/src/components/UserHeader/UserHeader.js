@@ -39,7 +39,7 @@ class UserInfo extends React.Component {
     formData.append('bio', this.state.editBio);
     formData.append('image', this.state.file);
   
-    fetch('http://localhost:5000/userdata', {
+    fetch('/userdata', {
         method: 'POST',
         credentials: 'include',
         // contentType: 'multipart/form-data',

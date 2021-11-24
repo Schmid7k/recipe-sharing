@@ -41,7 +41,6 @@ const PopupIngredient = ({ingredientName, quantity}) => {
 }
 
 const PopupTag = ({tagText}) => {
-    // TODO: selecting a tag should redirect to a search with tag as the only filter
     return(
         <Fragment>
             <div className="popup-tag">{tagText}</div>
@@ -115,7 +114,7 @@ class SearchPopup extends React.Component {
     updateData(id){
         if(this.state.id === id) return;
 
-        fetch(`http://localhost:5000/recipes/${id}`, {method: 'GET', credentials: 'include'})
+        fetch(`/recipes/${id}`, {method: 'GET', credentials: 'include'})
        .then(res => res.json())
        .then(data => {
             data.main = data.main.replace(/\\\\/g, '\\');

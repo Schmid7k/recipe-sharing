@@ -949,7 +949,7 @@ class RecipeForm extends React.Component {
       formData.append('images', this.state.image);
       Object.keys(this.state.stepImages).forEach( key => formData.append('images', this.state.stepImages[key]) );
       
-      fetch('http://localhost:5000/recipes', {
+      fetch('/recipes', {
           method: 'POST',
           credentials: 'include',
           body: formData,

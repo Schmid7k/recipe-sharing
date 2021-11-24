@@ -75,7 +75,7 @@ class RegistrationForm extends React.Component {
         if (errors.length === 0) {
             const user = { username: this.state.username, password: this.state.password };
             
-            fetch('http://localhost:5000/register', {
+            fetch('/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
