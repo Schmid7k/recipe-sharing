@@ -1,3 +1,4 @@
+/* Styling for the registration container */
 .registration-container {
     text-align: center;
     padding: 5em 1em;
@@ -6,20 +7,24 @@
     min-width: 20em;
 }
 
+/* Styling to ensure headers are rendered with bold font weight */
 h1, .registration-container h5 {
     font-weight: bold;
 }
 
+/* Styling for the custom buttons in the registration container */
 .registration-container .btn-custom {
     background-color: #DF7861;
     border-color: #DF7861;
     font-weight: bold;
 }
 
+/* Styling for the registration tip shown below the registration form */
 .registration-tip {
     margin-top: 1rem;
 }
 
+/* Styling for the links in the registration tip shown below the login form */
 .registration-tip a {
     text-decoration: none;
     font-weight: bold;

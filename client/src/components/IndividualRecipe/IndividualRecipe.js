@@ -59,8 +59,12 @@ class RecipeHeader extends React.Component {
     }
 
     handleBookmarkClick() {
+        // check the user is logged in
         if (this.props.loggedIn) {
+            // check whether the user has already bookmarked the recipe and proceed accordingly to
+            // either add it to bookmarks or delete it from bookmarks
             if (this.props.bookmarked) {
+                // already bookmarked --> delete from bookmarks
                 let url = `/recipes/${this.props.recipeid}/save`;
                 fetch(url, {
                     method: 'DELETE',
@@ -78,6 +82,7 @@ class RecipeHeader extends React.Component {
                     console.error(error);
                 });
             } else {
+                // add to bookmarks
                 let url = `/recipes/${this.props.recipeid}/save`;
                 fetch(url, {
                     method: 'POST',
@@ -104,7 +109,9 @@ class RecipeHeader extends React.Component {
 
     handleStarSubmit(e) {
         e.preventDefault();
+        // check the user is logged in
         if (this.props.loggedIn) {
+            // check whether the current user has already rated the recipe and only proceed if not
             if (!this.props.rated) {
                 const rating = { rating: this.state.userRating };
                 let url = `/recipes/${this.props.recipeid}/rate`;
@@ -318,7 +325,7 @@ RecipeIngredientList.propTypes = {
 
 /**
  * Component for rendering a list of ingredient groups.
- * @param {Array[Object]} ingredient Array of ingredient groups where every element inside it should have the format of
+ * @param {Array[Object]} ingredients Array of ingredient groups where every element inside it should have the format of
  *                                   { name: 'Group name', ingredients: [ name: 'Ingredient name', amount: 'Ingredient amount'] }
  * @returns A .recipe-element div element containing a header and a .recipe-ingredients div.
  *          .recipe-ingredients div contains RecipeIngredientList elements.
@@ -481,6 +488,7 @@ RecipeComment.propTypes = {
 
     handleSubmit(e) {
         e.preventDefault();
+        // check that comment is within bounds
         if (this.state.newComment.length > 0 && this.state.newComment.length <= 1024) {
             this.props.handleCommentSubmit(this.state.newComment);
             this.setState({ newComment: "", error: "" });
@@ -601,13 +609,16 @@ class IndividualRecipe extends React.Component {
     }
 
     componentDidMount(){
+        // set overflow-y to auto to negate recipe popup's 'hidden'
         document.body.style.overflowY = 'auto';
 
+        // check logged in status for comments input rendering
         let cookie =  document.cookie.split(";").map(cookie => cookie.split("=")[0]);
         for( let i = 0; i < cookie.length; i++)
             cookie[i] = cookie[i].trim();
         this.setState({loggedIn: cookie.includes("authentication")});
 
+        // fetch recipe according to id
         const recipe_id = this.props.match.params.id;
         fetch(`/recipes/${recipe_id}`, {
                 method: 'GET',
@@ -617,6 +628,8 @@ class IndividualRecipe extends React.Component {
             .then(res => this.handleSettingRecipeData(res))
             .catch(err => this.props.history.push('/browse')
         );
+
+        // scroll to the top of the page upon load
         window.scrollTo(0, 0);
     }
 

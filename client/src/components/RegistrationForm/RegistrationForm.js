@@ -2,12 +2,17 @@ import React, { Fragment } from "react";
 import { Redirect } from "react-router-dom";
 import "./RegistrationForm.css";
 
+/**
+ * Component used for validating user's username input.
+ * @param {string} value  Value entered in the username field 
+ * @returns An error message in string format if value doesn't validate, null otherwise.
+ */
 const usernameValidation = (value) => {
     if (value.trim().length < 1) {
-      return "Username is required";
+        return "Username is required";
     } 
     if (value.trim().length < 2) {
-      return "Username has to contain at least 2 characters";
+        return "Username has to contain at least 2 characters";
     }
     if (value.trim().length > 32) {
         return "Username has to contain less than 32 characters";
@@ -15,16 +20,26 @@ const usernameValidation = (value) => {
     return null;
 };
 
+/**
+ * Component used for validating user's password input.
+ * @param {string} value  Value entered in the password field 
+ * @returns An error message in string format if value doesn't validate, null otherwise.
+ */
 const passwordValidation = (value) => {
     if (value.trim().length < 1) {
-      return "Password is required";
+        return "Password is required";
     } 
     if (value.trim().length < 8) {
-      return "Password has to contain at least 8 characters";
+        return "Password has to contain at least 8 characters";
     }
     return null;
 };
 
+/**
+ * Component for rendering a list of errors to the user.
+ * @param {Array} errors An array of errors to be shown
+ * @returns A <Fragment> element with a red alert div that contains the errors in a list inside it.
+ */
 const ErrorAlert = ({ errors }) => {
     return (
         <Fragment>
@@ -37,6 +52,10 @@ const ErrorAlert = ({ errors }) => {
     );
 }
 
+/**
+ * Component for rendering a registration form. Renders red alerts under the registration 
+ * header if there are errors with inputs when submitted.
+ */
 class RegistrationForm extends React.Component {
     constructor() {
         super();
@@ -62,6 +81,8 @@ class RegistrationForm extends React.Component {
         e.preventDefault();
 
         let redirect = false;
+
+        // validate inputs
         let errors = [];
         let usernameVal = usernameValidation(this.state.username);
         let passwordVal = passwordValidation(this.state.password);
@@ -72,7 +93,9 @@ class RegistrationForm extends React.Component {
             errors: errors
         })
 
+        // check if all input was validated
         if (errors.length === 0) {
+            // inputs OK, sending data to server
             const user = { username: this.state.username, password: this.state.password };
             
             fetch('/register', {
@@ -84,6 +107,7 @@ class RegistrationForm extends React.Component {
             })
             .then(response => { 
                 if (response.ok) { 
+                    // registration OK, set to redirect to '/login'
                     redirect = true;
                     this.setState({ redirect: redirect });
                     return response;
@@ -91,6 +115,7 @@ class RegistrationForm extends React.Component {
                 throw new Error('Something went wrong...');
             })
             .catch((error) => {
+                // registration failed
                 console.error(error);
                 errors.push("Can't create an account with these credentials");
                 this.setState({ errors: errors });
@@ -127,8 +152,8 @@ class RegistrationForm extends React.Component {
                         <button type="submit" className="btn btn-primary btn-custom mt-3">Submit</button>
                     </form>
                     <div className="registration-tip">
-                    <span>Already registered?</span><br />
-                    <a href="/login">Login</a>
+                        <span>Already registered?</span><br />
+                        <a href="/login">Login</a>
                     </div>
                 </div>
             </Fragment>

@@ -1,3 +1,4 @@
+/* Styling for the login container */
 .login-container {
     text-align: center;
     padding: 5em 1em;
@@ -6,20 +7,24 @@
     min-width: 20em;
 }
 
+/* Styling to ensure headers are rendered with bold font weight */
 h1, .login-container h5 {
     font-weight: bold;
 }
 
+/* Styling for the custom buttons in the login container */
 .login-container .btn-custom {
     background-color: #DF7861;
     border-color: #DF7861;
     font-weight: bold;
 }
 
+/* Styling for the login tip shown below the login form */
 .login-tip {
     margin-top: 1rem;
 }
 
+/* Styling for the links in the login tip shown below the login form */
 .login-tip a {
     text-decoration: none;
     font-weight: bold;

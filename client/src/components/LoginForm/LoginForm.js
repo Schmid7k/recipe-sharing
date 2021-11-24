@@ -2,6 +2,11 @@ import React, { Fragment } from "react";
 import { Redirect } from "react-router-dom";
 import "./LoginForm.css";
 
+/**
+ * Component used for validating user's username input.
+ * @param {string} value  Value entered in the username field 
+ * @returns An error message in string format if value doesn't validate, null otherwise.
+ */
 const usernameValidation = (value) => {
   if (value.trim().length < 1) {
     return "You must input a username";
@@ -9,6 +14,11 @@ const usernameValidation = (value) => {
   return null;
 };
 
+/**
+ * Component used for validating user's password input.
+ * @param {string} value  Value entered in the password field 
+ * @returns An error message in string format if value doesn't validate, null otherwise.
+ */
 const passwordValidation = (value) => {
   if (value.trim().length < 1) {
     return "You must input a password";
@@ -16,18 +26,28 @@ const passwordValidation = (value) => {
   return null;
 };
 
+/**
+ * Component for rendering a list of errors to the user.
+ * @param {Array} errors An array of errors to be shown
+ * @returns A <Fragment> element with a red alert div that contains the errors in a list inside it.
+ */
 const ErrorAlert = ({ errors }) => {
   return (
-      <Fragment>
-          <div className="m-2" role="alert">
-              <ul className="list-group">
-                  {errors.map( (error, idx) => <li className="list-group-item list-group-item-danger" key={idx}>{error}</li>)}
-              </ul>
-          </div>
-      </Fragment>
+    <Fragment>
+      <div className="m-2" role="alert">
+        <ul className="list-group">
+          {errors.map( (error, idx) => <li className="list-group-item list-group-item-danger" key={idx}>{error}</li>)}
+        </ul>
+      </div>
+    </Fragment>
   );
 }
 
+/**
+ * Component for rendering a login form. Renders a green alert telling the user an account has been created 
+ * if the user has been redirected from '/registration' after a succesful account creation. Renders red alerts
+ * under the login header if there are errors with inputs when submitted.
+ */
 class LoginForm extends React.Component {
   constructor() {
     super();
@@ -52,6 +72,7 @@ class LoginForm extends React.Component {
   handleSubmit(e) {
     e.preventDefault();
 
+    // validate inputs
     let errors = [];
     let usernameVal = usernameValidation(this.state.username);
     let passwordVal = passwordValidation(this.state.password);
@@ -62,7 +83,9 @@ class LoginForm extends React.Component {
       errors: errors
     })
 
+    // check if all input was validated
     if (errors.length === 0) {
+      // inputs OK, sending data to server
       const user = { username: this.state.username, password: this.state.password };
       fetch('/login', {
             method: 'POST',
@@ -74,6 +97,7 @@ class LoginForm extends React.Component {
         })
         .then(response => { 
             if (response.ok) { 
+              // login OK
               let userData = {
                 username: this.state.username,
               }
@@ -84,6 +108,7 @@ class LoginForm extends React.Component {
             throw new Error('Something went wrong...');
         })
         .catch((error) => {
+            // login failed
             console.error(error);
             errors.push("Incorrect username and/or password");
             this.setState({ errors: errors });

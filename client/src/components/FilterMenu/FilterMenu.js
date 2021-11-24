@@ -2,8 +2,13 @@ import React, { Fragment } from "react";
 import "./FilterMenu.css";
 import {ReactComponent as StarIcon} from "../../images/star_icon.svg";
 
-/* Creates a dropdown select menu for the categories. "Select a category" is shown as a placeholder
-  but is hidden in the actual dropdown menu and can't be chosen. */
+/**
+ * Component for rendering a 'Category' header and a select with different categories as options.
+ * A placeholder option with the text 'Select a category' is chosen by default but is hidden whe
+ * a new category option is chosen.
+ * @param {Array} categories  Array of categories to be displayed as options in the select
+ * @returns A <Fragment> element with a <h5> header and a select component
+ */
 const CategorySelection = ({categories}) => {
   let catOptions = [];
   categories.forEach(cat => {
@@ -21,6 +26,14 @@ const CategorySelection = ({categories}) => {
   );
 }
 
+/**
+ * Component for rendering a single checkbox and its label. It keeps track of whether it is checked
+ * or not in its state.
+ * @param {string}  this.props.checklistName  Name of the checklist where this checkbox is included
+ * @param {string}  this.props.value  Value for the checkbox
+ * @param {string}  this.props.name Name for the checkbox value that is shown on its label
+ * @returns A <Fragment> element with a .form-check div with a checkbox input and label inside it.
+ */
 class ChecklistCheckbox extends React.Component {
   constructor(){
     super();
@@ -45,7 +58,12 @@ class ChecklistCheckbox extends React.Component {
   }
 }
 
-const Checklist = ({items}) => {
+/**
+ * Component for rendering a list of <ChecklistCheckbox> elements.
+ * @param {Array}  items  An array of <ChecklistCheckbox> elements to be displayed
+ * @returns A <Fragment> element with <ChecklistCheckbox> elements inside it.
+ */
+const Checklist = ({ items }) => {
   return (
     <Fragment>
       {items}
@@ -53,8 +71,19 @@ const Checklist = ({items}) => {
   );
 }
 
-/* Dropdown title "Ingredients" with a spinning arrow to indicate whether pressing it expands or collapses the thing.*/
-const IngredientSelection = ({include, exclude, ingredients, callbackExlude, callbackInclude, customExcludeIngredients, customIncludeIngredients}) => {
+/**
+ * Component for rendering a dropdown title 'Ingredients' with a spinning arrow to indicate
+ * whether pressing it expands or collapses the thing and the dropdown contents.
+ * @param {Array}  include  An array of popular ingredients to render under 'Popular' in 'Include'
+ * @param {Array}  exclude  An array of popular ingredients to render under 'Popular' in 'Exclude'
+ * @param {Array}  ingredients  An array of all ingredients in the database
+ * @param {Function}  callbackExlude  A callback function for dealing with ingredient exclusion
+ * @param {Function}  callbackInclude  A callback function for dealing with ingredient inclusion
+ * @param {Array}  customExcludeIngredients  An array of custom ingredients to render under 'Custom' in 'Exclude'
+ * @param {Array}  customIncludeIngredients  An array of custom ingredients to render under 'Custom' in 'Include'
+ * @returns A <Fragment> element with a button and a collapsible div containing <FilterSearch> and <Checklist> elements
+ */
+const IngredientSelection = ({ include, exclude, ingredients, callbackExlude, callbackInclude, customExcludeIngredients, customIncludeIngredients }) => {
   return (
     <Fragment>
       <h5>
@@ -86,7 +115,16 @@ const IngredientSelection = ({include, exclude, ingredients, callbackExlude, cal
   );
 }
 
-const TagSelection = ({topTags, tags, callback, customTags}) => {
+/**
+ * Component for rendering a dropdown title 'Tags' with a spinning arrow to indicate
+ * whether pressing it expands or collapses the thing and the dropdown contents.
+ * @param {Array}  topTags  An array of popular tags to render under 'Popular'
+ * @param {Array}  tags  An array of custom tags to render under 'Custom'
+ * @param {Function}  callback  A callback function for dealing with tag inclusion
+ * @param {Array}  customTags  An array of custom tags to render under 'Custom'
+ * @returns A <Fragment> element with a button and a collapsible div containing <FilterSearch> and <Checklist> elements
+ */
+const TagSelection = ({ topTags, tags, callback, customTags }) => {
   return (
     <Fragment>
       <h5>
@@ -108,6 +146,18 @@ const TagSelection = ({topTags, tags, callback, customTags}) => {
   );
 }
 
+/**
+ * Component for rendering a input field with a datalist for new items and a list showing items created 
+ * based on the user's inputs.
+ * @param {String}  this.props.id  A ID for this FilterSearch
+ * @param {String}  this.props.placeholder  A placeholder to show in the input field in string format
+ * @param {Array}  this.props.items  An array of items to display in the input datalist
+ * @param {Function}  this.props.callback  A callback function for dealing with added items
+ * @param {Array}  this.props.customSet  A set of items to be shown under 'Custom'
+ * @param {String}  this.props.checklistName  The name to be given to the created checklists
+ * @returns A <Fragment> element with a .search-container div that contains divs for element inputting
+ *          and showing a list of elements based on the inputted values
+ */
 class FilterSearch extends React.Component {
   constructor() {
     super();
@@ -119,12 +169,16 @@ class FilterSearch extends React.Component {
 
   handleAddingItems(e) {
     e.preventDefault();
+    // get value from input field
     let value = document.getElementById(this.props.id).value.toLowerCase().trim();
 
-    if (value === '') return; // TODO: check against silly/malicious input
+    // check that the value isn't empty
+    if (value === '') return;
 
     let items = this.props.customSet;
+    // check for duplicates
     if (!items.includes(value)) {
+      // add item
       items.push(value);
       document.getElementById(this.props.id).value = '';
       this.props.callback(items);
@@ -166,9 +220,10 @@ class FilterSearch extends React.Component {
   }
 }
 
-/* Input (type radio) with stars as labels. Inputs are hidden so you choose by clicking the label (the star icon). 
-  The order should now be so that when you click the last star on the page, it clicks the star with value 5.
-  The clicked and previous stars are filled with black using CSS (.star-rating, .star-rating input etc. in FilterMenu.css) */
+/**
+ * Component for rendering a 'Minimum rating' header and a radio-type input for minimum star rating input.
+ * @returns A <Fragment> element with a <h5> header and a div containing inputs and labels for the stars.
+ */
 const RatingSelection = () => {
   return (
     <Fragment>
@@ -189,8 +244,21 @@ const RatingSelection = () => {
   );
 }
 
-// TODO: data handling here is pretty bad due to passing data long multiple components
-// code also badly needs refactoring because a lot of things are being repeated - I was tracking one bug down
+/**
+ * Component for rendering filtering menu contents.
+ * @param {Array}  this.props.categories  An array of all categories in the database
+ * @param {Function}  this.props.filteringCallback  A callback function for dealing with filtering functionality
+ * @param {Array}  this.props.topTags  An array of <ChecklistCheckbox> elements of most popular tags
+ * @param {Array}  this.props.topIngredientsInclude  An array of <ChecklistCheckbox> elements of most popular 
+ *                                                   ingredients to be listed under 'Include'
+ * @param {Array}  this.props.topIngredientsExclude  An array of <ChecklistCheckbox> elements of most popular 
+ *                                                   ingredients to be listed under 'Exclude'
+ * @param {Array}  this.props.allIngredients  An array of all ingredients in the database
+ * @param {Array}  this.props.allTags  An array of all tags in the database
+ * @param {Array}  this.props.popIngredientNames  An array of popular ingredients in the database
+ * @param {Array}  this.props.popTagNames  An array of popular tags in the database
+ * @returns A <Fragment> element with a <h3> header and a <form> element.
+ */
 class FilteringMenuContents extends React.Component {
   constructor(){
     super();
@@ -237,18 +305,24 @@ class FilteringMenuContents extends React.Component {
   }
 
   constructFilters() {
+    // get selected category
     let selectedCategory = document.getElementById('categories-select').value;
 
+    // get selected minimum rating
     let minRating = 0;
     for(let i = 1; i <= 5; i++){
       if(document.getElementById(`star-${i}`).checked)
         minRating = i;
     }
 
+    // get checked custom ingredients
     let checkedCustomIncludeIngredients = this.getCheckedElements(this.state.customIncludeIngredients, 'include');
     let checkedCustomExcludeIngredients = this.getCheckedElements(this.state.customExcludeIngredients, 'exclude');
+    // get checked custom tags
     let checkedCustomTags = this.getCheckedElements(this.state.customTags, 'tag-list');
+    // get checked popular tags
     let checkedTopTags = this.getCheckedElements(this.props.popTagNames, 'top-tag-list');
+    // get checked popular ingredients
     let checkedTopIngredientsInclude = this.getCheckedElements(this.props.popIngredientNames, 'top-ingredient-include-list')
     let checkedTopIngredientsExclude = this.getCheckedElements(this.props.popIngredientNames, 'top-ingredient-exclude-list')
 
@@ -258,13 +332,12 @@ class FilteringMenuContents extends React.Component {
       customTags: checkedCustomTags
 
     }, () => {
-      // BUG: removing unchecked item turns the following item into unchecked too
-      // setting it to checked manually (still gets correct set state)
       this.checkAll(this.state.customIncludeIngredients, 'include');
       this.checkAll(this.state.customExcludeIngredients, 'exclude');
       this.checkAll(this.state.customTags, 'tag-list');
     });
 
+    // construct filter
     let filter = {
       inIngredients: checkedTopIngredientsInclude.concat(this.state.customIncludeIngredients),
       outIngredients: checkedTopIngredientsExclude.concat(this.state.customExcludeIngredients),
@@ -317,6 +390,10 @@ class FilteringMenuContents extends React.Component {
   }
 }
 
+/**
+ * Component for rendering the filtering menu.
+ * @returns A <Fragment> element with a collapsable <nav> element inside it.
+ */
 class FilteringMenu extends React.Component {
   constructor() {
     super();
@@ -336,6 +413,7 @@ class FilteringMenu extends React.Component {
   }
 
   handleFetchingFilters(data) {
+    // populate the filtering menu with fetched filters data
     let topIngredientListInclude = [];
     let topIngredientListExclude = [];
     data.popIngredients.forEach(ingredient => {
@@ -371,6 +449,7 @@ class FilteringMenu extends React.Component {
   }
 
   componentDidMount(){
+    // fetch filters to be used in the filtering menu
     fetch('/filters', {method: 'GET'})
     .then(res => res.json())
     .then(res => this.handleFetchingFilters(res));
@@ -400,4 +479,4 @@ class FilteringMenu extends React.Component {
   }
 }
 
-  export default FilteringMenu;
+export default FilteringMenu;
