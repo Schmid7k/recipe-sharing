@@ -10,6 +10,9 @@ import filterSvg from "../../images/filter_svg.svg";
 import recipeSvg from "../../images/recipe_svg.svg";
 import dummyIcon from "../../images/dummy_icon.svg";
 
+/**
+ * Component for displaying the web service logo and title.
+ */
 const NavBrand = () => {
   return (
     <Fragment>
@@ -21,6 +24,9 @@ const NavBrand = () => {
   )
 }
 
+/**
+ * Component for toggling the search bar on small screens.
+ */
 const NavToggler = () => {
   return (
     <Fragment>
@@ -31,6 +37,14 @@ const NavToggler = () => {
   )
 }
 
+/**
+ * Component for displaying a single navigation item.
+ * @param {String} text Text to be shown on the button
+ * @param {String}  href  The URL where this navigation item should lead 
+ * @param {String}  source  Source for the icon image for this navigation item
+ * @returns A <Fragment> element with a <li> element inside it that contains both
+ *          an icon and the text link that are rendered based on screen size.
+ */
 const NavItem = ({ text, href, source }) => {
   return (
     <Fragment>
@@ -52,6 +66,15 @@ NavItem.propTypes = {
   source: PropTypes.node.isRequired,
 }
 
+/**
+ * Component for toggling the filtering menu. Looks interactive on pages where
+ * the filtering menu can be opened and is otherwise rendered in a way that makes
+ * it clear it is disabled and non-functional.
+ * @param {String} text Text to be shown on the button
+ * @param {String}  source  Source for the icon image for the filter toggler
+ * @returns A <Fragment> element with a <li> element inside it that contains both
+ *          an icon and the text link that are rendered based on screen size.
+ */
 class FilterToggler extends React.Component {
   constructor() {
     super();
@@ -95,12 +118,19 @@ class FilterToggler extends React.Component {
   }
 };
 
-const NavItems = ({loggedIn}) => {
+/**
+ * Component for rendering navigation items. Logged in users can see the link for recipe
+ * adding page while for others it's hidden.
+ * @param {Boolean} loggedIn A boolean indicating whether the user is logged in or not
+ * @returns A <Fragment> element with a <ul> element inside it that contains <NavItem> 
+ *          elements and a <FilterToggler> element.
+ */
+const NavItems = ({ loggedIn }) => {
   return (
     <Fragment>
       <ul className="navbar-nav mr-auto">
         <NavItem text="Browse" href="/browse" source={gridSvg} />
-        <FilterToggler text="Filter" href="/browse" source={filterSvg} />
+        <FilterToggler text="Filter" source={filterSvg} />
         { loggedIn
           && window.localStorage.getItem('user') !== null 
           ? <NavItem text="Add a recipe" href="/addrecipe" source={recipeSvg} /> : null}
@@ -109,6 +139,12 @@ const NavItems = ({loggedIn}) => {
   );
 };
 
+/**
+ * Component for the search bar and search button.
+ * @param {Function} handleSearchChange A callback function for handling search phrase changes
+ * @returns A <Fragment> element with a <form> element inside it that contains an input field and
+ *          a submit button.
+ */
 class SearchForm extends React.Component {
   constructor() {
     super();
@@ -153,6 +189,14 @@ class SearchForm extends React.Component {
   }
 };
 
+/**
+ * Component for rendering the user information in the navigation bar or showing a link
+ * to the login page depending on whether the user is logged in.
+ * @param {Boolean} loggedIn A boolean indicating whether the user is logged in or not
+ * @param {String} userIcon A path to the user icon if it exists or to a dummy icon
+ * @returns A <Fragment> element with a <ul> element inside it that either contains the user's
+ *          icon and username as links to the user page or a link to the login page.
+ */
 const NavUserInfo = ({ loggedIn, userIcon }) => {
   if (loggedIn) {
     let username = JSON.parse(window.localStorage.getItem('user')).username;
@@ -189,6 +233,9 @@ NavUserInfo.propTypes = {
   userIcon: PropTypes.string.isRequired,
 };
 
+/**
+ * Component for rendering the navigation bar.
+ */
 class NavigationBar extends React.Component {
   constructor() {
     super();
@@ -204,6 +251,7 @@ class NavigationBar extends React.Component {
   }
 
   componentDidMount() {
+    // check whether the user is logged in
     let cookie =  document.cookie.split(";").map(cookie => cookie.split("=")[0]);
 
     for( let i = 0; i < cookie.length; i++)
@@ -211,6 +259,7 @@ class NavigationBar extends React.Component {
 
     this.setState({loggedIn: cookie.includes("authentication")});
     
+    // if logged in, fetch user icon and store it in state
     if (cookie.includes("authentication")) {
       let username = JSON.parse(window.localStorage.getItem('user')).username;
       fetch(`/userdata/${username}`, {
@@ -236,11 +285,14 @@ class NavigationBar extends React.Component {
 
   handleSearchChange(searchTerm) {
     this.setState({ searchTerm: searchTerm });
+    // if the user is searching while in the browse view
     if (window.location.pathname === "/browse") {
       let filterMenuFilters = this.props.filterSearch.current.constructFilters();
       filterMenuFilters.searchPhrase = searchTerm;
       this.props.contentSearch.current.filteringHandler(filterMenuFilters);
-    } else {
+    } 
+    // otherwise the user must be redirected to browse view in order to display results
+    else {
       this.setState({ searchRedirect: true });
     }
   }

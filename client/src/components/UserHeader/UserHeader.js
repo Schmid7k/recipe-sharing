@@ -4,6 +4,15 @@ import "./UserHeader.css";
 import editIcons from '../../images/edit-icon.svg'
 import uploadIcon from '../../images/upload-icon.svg'
 
+/**
+ * Component for rendering user info in the user header. The component either shows the current
+ * user data or the user can choose to edit the data if its their own user page.
+ * @param {String} username The username of the user
+ * @param {String} icon A path to the user's icon image
+ * @param {String} bio A string containing the user's bio
+ * @param {Function} updateBio A callback function to fetch an updated user bio
+ * @returns A <Fragment> element with a .user-info-container div inside it.
+ */
 class UserInfo extends React.Component {
   constructor(){
     super();
@@ -40,9 +49,8 @@ class UserInfo extends React.Component {
     formData.append('image', this.state.file);
   
     fetch('/userdata', {
-        method: 'POST',
+        method: 'PUT',
         credentials: 'include',
-        // contentType: 'multipart/form-data',
         body: formData,
     })
     .then(response => {
@@ -64,13 +72,13 @@ class UserInfo extends React.Component {
   }
 
   handleFileChange(e) {
-    this.setState({ file: e.target.files[0]});
+    this.setState({ file: e.target.files[0] });
   }
 
   render(){
     let loggedIn = false;
-      if(window.localStorage.getItem('user') !== null )
-        loggedIn = JSON.parse(window.localStorage.getItem('user')).username === this.props.username;
+    if(window.localStorage.getItem('user') !== null )
+      loggedIn = JSON.parse(window.localStorage.getItem('user')).username === this.props.username;
 
     return (
       <Fragment>
@@ -109,6 +117,14 @@ class UserInfo extends React.Component {
   }
 };
 
+/**
+ * Component for rendering a single user header tab button.
+ * @param {String} text The text to be displayed on the tab button
+ * @param {Boolean} active A boolean indicating whether the current tab button is the active one
+ * @param {Function} handleClick A callback function for handling clicks
+ * @param {String} id A ID for the tab button
+ * @returns A <Fragment> element with a button inside it.
+ */
 const UserHeaderButton = ({ text, active, handleClick, id }) => {
   return (
     <Fragment>
@@ -122,6 +138,12 @@ UserHeaderButton.propTypes = {
   active: PropTypes.bool.isRequired,
 };
 
+/**
+ * Component for rendering the recipe tab buttons on user page.
+ * @param {Function} callback A callback function
+ * @returns A <Fragment> element containing a .user-button-container div 
+ *          consisting of <UserHeaderButton> elements.
+ */
 class UserHeaderButtons extends React.Component {
   constructor() {
     super();
@@ -135,7 +157,7 @@ class UserHeaderButtons extends React.Component {
 
   handleClick(e) {
     this.props.callback(e.target.id)
-    this.setState({ active: e.target.outerText});
+    this.setState({ active: e.target.outerText });
   }
 
   render() {
@@ -152,7 +174,15 @@ class UserHeaderButtons extends React.Component {
   }    
 };
 
-const UserHeader = ({data, callback, updateBio}) => {
+/**
+ * Component for rendering the user header.
+ * @param {Object} data Object containing user data
+ * @param {Function} callback A callback function
+ * @param {Function} updateBio A callback function for new updated user bio fetching
+ * @returns A <Fragment> element containing a .user-header-container div consisting of 
+ *          a <UserInfo> and <UserHeaderButtons> elements.
+ */
+const UserHeader = ({ data, callback, updateBio }) => {
   return (
     <Fragment>
       <div className="user-header-container" style={{marginBottom: '50px'}}>

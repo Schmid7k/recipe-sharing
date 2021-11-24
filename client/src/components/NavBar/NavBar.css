@@ -1,3 +1,4 @@
+/* Styling for the navigation bar as a whole */
 .navbar-custom {
     background-color: #DF7861;
     padding: 0.5rem 1rem;
@@ -5,6 +6,7 @@
     max-width: 100%;
 }
 
+/* Styling for the flex content of the navigation bar */
 .navbar-flex {
     display: flex!important;
     flex-basis: auto;
@@ -12,6 +14,7 @@
     align-items: center;
 }
 
+/* Styling for the navigation items in the navigation bar */
 .navbar-nav-items {
     display: flex!important;
     flex-basis: auto;
@@ -19,6 +22,7 @@
     justify-content: space-between;
 }
 
+/* Styling for the ul elements in the navigation items */
 .navbar-nav-items ul {
     width: max-content;
     flex-direction: row;
@@ -26,6 +30,7 @@
     justify-content: space-evenly;
 }
 
+/* Styling for the search bar toggler */
 .navbar-toggler {
     font-size: 1rem;
     padding: 0;
@@ -36,79 +41,100 @@
     transition: none;
 }
 
+/* Focus styling for the search bar toggler */
 .navbar-toggler:focus {
     -webkit-box-shadow: 0rem -0.1rem #FFFFFF inset;
     -moz-box-shadow: 0rem -0.1rem #FFFFFF inset;
     box-shadow: 0rem -0.1rem #FFFFFF inset;
 }
   
+/* Font color styling for navigation bar titles and link texts */
 .navbar-custom .navbar-brand,
 .navbar-custom .navbar-text,
 .navbar-custom .nav-link {
     color: white;
 }
 
+/* Styling for the web service logo */
+#logo-img {
+    height: 2.2em;
+    margin: -0.8em 0.2em -0.5em -0.5rem;
+}
+
+/* Styling for a single navigation bar item */
 .nav-item {
     margin: 0px 0.5rem;
     cursor: pointer;
 }
 
+/* Styling for active navigation bar items */
 .nav-item.active, #username-link.active {
     -webkit-box-shadow: 0rem -0.1rem #FFFFFF inset;
     -moz-box-shadow: 0rem -0.1rem #FFFFFF inset;
     box-shadow: 0rem -0.1rem #FFFFFF inset;
 }
 
+/* Hover styling for navigation items */
 .nav-item:hover, #username-link:hover {
     -webkit-box-shadow: 0rem -0.1rem #FFFFFF inset;
     -moz-box-shadow: 0rem -0.1rem #FFFFFF inset;
     box-shadow: 0rem -0.1rem #FFFFFF inset;
 }
 
+/* Styling for disabled navigation items */
 .nav-item.disabled div {
     opacity: 0.5;
     cursor: default;
 }
 
+/* Active styling for disabled navigation items */
 .nav-item.disabled.active {
     -webkit-box-shadow: none;
     -moz-box-shadow: none;
     box-shadow: none;
 }
 
+/* Hover styling for disabled navigation items */
 .nav-item.disabled:hover {
     -webkit-box-shadow: none;
     -moz-box-shadow: none;
     box-shadow: none;
 }
 
+/* Input group styling for navigation bar */
 .input-group {
     align-items: flex-start;
 }
 
+/* Styling for the navigation bar's search bar */
 .search-bar {
     border-color: #ECB390;
 }
 
+/* Focus styling for the navigation bar's search bar and search button */
 .search-bar:focus, .btn-search:focus {
     box-shadow: 0 0 0 0.25rem rgba(71, 67, 60, 0.5);
 }
 
+/* Styling for the search bar's search button */
 .btn-search {
     background-color: #ECDFC8;
     border-color: #ECB390;
     padding: 0.375rem;
 }
 
+/* Styling for navigation icons */
 .nav-icon {
     width: 1.4em;
     height: 1.4em;
 }
 
+/* Styling for the float-end part (user information) of the navigation bar */
 .navbar .float-end {
     max-width: 20%;
 }
 
+/* Styling for user information and icon navigation items */
 #user-info, .nav-icon-item {
     display: flex;
     overflow: hidden;
@@ -116,6 +142,7 @@
     align-items: center;
 }
 
+/* Styling for the user icon */
 #user-icon {
     width: 2.3em;
     height: 2.3em;
@@ -123,13 +150,9 @@
     margin: 0rem 0.5rem;
 }
 
+/* Styling for the links in the user information */
 #user-info a {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-}
-
-#logo-img {
-    height: 2.2em;
-    margin: -0.8em 0.2em -0.5em -0.5rem;
 }

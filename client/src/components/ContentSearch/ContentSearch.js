@@ -6,6 +6,9 @@ import ContentGrid from "../ContentGrid/ContentGrid";
 import SearchPopup from "../SearchPopup/SearchPopup";
 import ContentGridCard from "../ContentGridCard/ContentGridCard";
 
+/**
+ * Component containing the recipe grid (ContentGrid), the recipe popup (SearchPopup) and the filtering menu (FilteringMenu).
+ */
 class ContentSearch extends React.Component {
     constructor(){
         super();
@@ -79,6 +82,7 @@ class ContentSearch extends React.Component {
     }
 
     filteringHandler(filters) {
+        // base url to build upon
         let url = '/recipes?';
 
         // search phrase is included in filters
@@ -86,21 +90,30 @@ class ContentSearch extends React.Component {
             this.setState({ searchPhrase: filters.searchPhrase });
         } 
         // new search phrase not included but previous search had a search phrase (= filtering search phrase results)
+        // so include it in the filters
         else if (!filters.searchPhrase && this.state.searchPhrase !== '') {
             url = url.concat(`searchPhrase=${this.state.searchPhrase}&`);
         }
 
+        // add filter values to the url
         Object.keys(filters).forEach(key => {
+            // add non-array format filters that aren't placeholder values
             if (!Array.isArray(filters[key]) && filters[key] !== "placeholder") {
                 url = url.concat(`${key}=${filters[key]}&`);
-            } else if (Array.isArray(filters[key]) && filters[key].length > 0) {
+            } 
+            // add array format filters
+            else if (Array.isArray(filters[key]) && filters[key].length > 0) {
                 let values = '';
                 filters[key].forEach(value => values = values.concat(`%22${value.toLowerCase()}%22,`));
                 values = values.slice(0, -1);
                 url = url.concat(`${key}=[${values}]&`);
             }
         });
+
+        // get rid of the last '&' and replace spaces with '+'
         url = url.slice(0, -1).replace(' ', '+');
+
+        // get recipes with filters
         fetch(url, {
           method: 'GET',
         })
@@ -146,7 +159,7 @@ class ContentSearch extends React.Component {
         gridResizeObserver.observe(document.getElementById('grid-container'));
 
         //initial data, fetching with no filters
-        fetch('/recipes', {method: 'GET'}).then(res => res.json()).then(res => { this.buildCards(res); });
+        fetch('/recipes', { method: 'GET' }).then(res => res.json()).then(res => { this.buildCards(res); });
     }
 
     render(){

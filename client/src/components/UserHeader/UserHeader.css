@@ -1,3 +1,4 @@
+/* Styling for the container where all user info is */
 .user-info-container {
     width: 50%;
     min-width: 23rem;
@@ -8,6 +9,7 @@
     padding: 1.0rem;
 }
 
+/* Styling for the user icon in the user info container */
 .user-info-container .user-icon {
     width: 7rem;
     height: 7rem;
@@ -15,6 +17,7 @@
     margin-right: 1.0rem;
 }
 
+/* Styling for the icon uploader container in the user info container */
 .user-info-container .upload-icon-container {
     width: 7rem;
     height: 7rem;
@@ -27,29 +30,32 @@
     position: relative;
 }
 
+/* Styling for the icon uploader in the user info container */
 .user-info-container .upload-icon {
     width: 3.5rem;
     height: 3.5rem;
     cursor: pointer;
-    filter: invert();
+    filter: invert(1);
     position: absolute;
     top: calc(50% - 1.75rem);
     left: calc(50% - 1.75rem);
 }
 
+/* Styling for the text section in the user info container */
 .user-info-text {
     display: flex;
     flex-direction: column;
     justify-content: center;
     padding: 1rem;
-    /* min-width: 23rem; */
-    /* max-width: 30rem;*/
     width: 100%; 
 }
 
+/* Styling to ensure h5 headers in the text section in the user info container have bold font weight */
 .user-info-text h5 {
     font-weight: bold;
 }
+
+/* Styling for the custom button in the container for user tab buttons */
 .user-button-container .btn-custom {
     background-color: transparent;
     color: #DF7861;
@@ -57,39 +63,46 @@
     font-weight: bold;
 }
 
+/* Styling for active custom button in the container for user tab buttons */
 .user-button-container .btn-custom.active {
     background-color: #DF7861;
     color: #FFFFFF;
     border-color: #DF7861;
 }
 
+/* Box shadow styling for the custom button in the container for user tab buttons */
 .user-button-container .btn-custom:focus {
     box-shadow: 0 0 0 0.25rem rgba(223, 120, 97, 0.5);
 }
 
+/* Hover styling for the custom button in the container for user tab buttons */
 .user-button-container .btn-custom:hover {
     background-color: #DF7861;
     color: #FFFFFF;
     border-color: #DF7861;
 }
 
+/* Styling for the editing icon for the editable user data */
 .edit-icon {
     width: 30px;
     margin-left: 10px;
     opacity: .3;
 }
 
+/* Hover styling for the editing icon for the editable user data */
 .edit-icon:hover {
     cursor: pointer;
     opacity: 1;
 }
 
+/* Styling for the container containing the username of the user and the editing icon */
 .bio-header-container {
     display: flex;
     flex-direction: row;
     align-items: center;
 }
 
+/* Styling for the submit button for the edited user data */
 .bio-submit-button {
     width: 100px;
     background-color: #DF7861;
@@ -98,9 +111,4 @@
     border-radius: 5px;
     margin-top: 10px;
     margin-left: auto;
-}
-
-#bio-textarea {
-    /* width: 100%; */
-    /* width: 200px; */
 }
