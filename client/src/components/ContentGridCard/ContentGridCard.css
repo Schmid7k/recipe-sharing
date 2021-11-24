@@ -1,18 +1,20 @@
+/* Styling for content grid cards when the user hovers over them */
 .content-grid-card-container:hover {
   cursor: pointer;
-  /* TODO: maybe add some nice hover effects */
 }
 
+/* Styling for content grid card images */
 .content-grid-card-img {
-    border-radius: 15px;
-    width: 100%;
+  border-radius: 15px;
+  width: 100%;
 }
 
+/* Styling for the content grid card titles shown under the images */
 .content-grid-card-title{
-    width: 100%;
-    text-align: center;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-    font-weight: bold;
+  width: 100%;
+  text-align: center;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  font-weight: bold;
 }

@@ -1,38 +1,69 @@
+/* Styling for the container containing an individual recipe */
 .recipe-container {
     display: flex;
     flex-direction: row;
     margin-bottom: 3rem;
 }
 
+/* Ensure h3 and h5 headers are bolded for individual recipes and add a bottom border to them */
 .recipe-container h3, .recipe-container h5 {
     font-weight: bold;
     border-bottom: 1px solid #ECDFC8;
 }
 
+/* Styling for custom buttons in .recipe-container */
+.recipe-container .btn-custom {
+    background-color: #DF7861;
+    border-color: #DF7861;
+    font-weight: bold;
+}
+
+/* Styling for the left column in the recipe container */
 .recipe-column-left {
     flex-basis: 30%;
     max-width: 30%;
 }
 
+/* Styling for the left column in the recipe container */
 .recipe-column-right {
     flex-basis: 70%;
     padding-left: 1.0rem;
 }
 
+/* Styling to make all recipe elements (ingredients, instructions..) spaced out from either other */
+.recipe-element {
+    margin-top: 1.0rem;
+}
+
+/* Styling for the recipe image in the left column in the recipe container */
 .recipe-image {
     width: 100%;
     border-radius: 10%;
 }
 
+/* Styling for the header contents in the right column in the recipe container */
 .recipe-title {
     display: flex;
     flex-direction: row;
 }
 
+/* Styling for the header recipe title, author and category in the right column in the recipe container */
 .recipe-title-text {
     flex-basis: 80%;
 }
 
+/* Styling for h1 headers in the recipe header */
+.recipe-title-text h1 {
+    margin-bottom: 0rem;
+}
+
+/* Styling for h4 headers in the recipe header */
+.recipe-title-text h4 {
+    color: #DF7861;
+    margin-bottom: 0rem;
+}
+
+/* Styling for bookmarking and star rating icons in the recipe header */
 .recipe-title-icons {
     flex-basis: 20%;
     text-align: right;
@@ -40,35 +71,20 @@
     flex-direction: column;
 }
 
+/* Styling for the icons in the recipe header */
+.recipe-title-icon {
+    height: 1.0em;
+    width: 1.0em;
+}
+
+/* Styling for the bookmark and average star rating */
 .recipe-title-icons-top {
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
 }
 
-.recipe-title-icons-bottom h6 {
-    font-weight: bold;
-    margin-bottom: 0;
-}
-
-.recipe-title-icons-bottom .star-rating {
-    display: flex;
-    flex-direction: row-reverse;
-    justify-content: flex-start;
-    cursor: pointer;
-}
-
-.recipe-title-icons-bottom label {
-    cursor: pointer;
-}
-
-.recipe-title-icons-bottom .btn-custom {
-    background-color: #DF7861;
-    border-color: #DF7861;
-    padding: 0.1rem 0.6rem;
-    margin-top: 0.2rem;
-}
-
+/* Styling for the h2 headers containing a count and icon for either bookmarks or stars */
 .recipe-title-icon-container h2 {
     font-weight: bold;
     display: flex;
@@ -76,6 +92,39 @@
     color: #DF7861;
 }
 
+/* Styling for the h6 headers in the container for star rating input */
+.recipe-title-icons-bottom h6 {
+    font-weight: bold;
+    margin-bottom: 0;
+}
+
+/* Styling for the stars in the star rating input */
+.recipe-title-icons-bottom .star-rating {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+    cursor: pointer;
+}
+
+/* Styling for filled out stars */
+.recipe-title-icons-bottom .star-rating-icon.filled path {
+    fill: #000000;
+}
+
+/* Styling to make the star rating input stars look clickable */
+.recipe-title-icons-bottom label {
+    cursor: pointer;
+}
+
+/* Styling for the 'Submit rating' button */
+.recipe-title-icons-bottom .btn-custom {
+    background-color: #DF7861;
+    border-color: #DF7861;
+    padding: 0.1rem 0.6rem;
+    margin-top: 0.2rem;
+}
+
+/* Styling for the tooltips shown when the user hovers over the bookmarking icon */
 #bookmark-tooltip {
     visibility: hidden;
     width: 120px;
@@ -91,33 +140,18 @@
     transition: opacity 0.3s;
 }
 
+/* Styling to make the tooltip visible when the user hovers over the bookmarking icon */
 #bookmark-btn:hover #bookmark-tooltip {
     visibility: visible;
     opacity: 0.8;
 }
 
-.recipe-title-icons-bottom .star-rating-icon.filled path {
-    fill: #000000;
-}
-
-.recipe-title-icon {
-    height: 1.0em;
-    width: 1.0em;
-}
-
-.recipe-title-text h1 {
-    margin-bottom: 0rem;
-}
-
-.recipe-title-text h4 {
-    color: #DF7861;
-    margin-bottom: 0rem;
-}
-
+/* Styling for the container containing all recipe tags */
 .recipe-tag-list {
     margin-top: 0.5rem;
 }
 
+/* Styling for the containers containing a single recipe tag */
 .recipe-tag {
     background-color: #ECB390;
     border-radius: 15px;
@@ -132,10 +166,18 @@
     text-overflow: ellipsis;
 }
 
+/* Styling for the container containing all recipe ingredients */
 .recipe-ingredients {
     padding: 0.5rem 1.0rem;
 }
 
+/* Styling for the ingredient subgroup headers */
+.recipe-ingredients h5 {
+    padding: 0.375rem 0rem;
+    margin-top: 1.0rem;
+}
+
+/* Styling for the containers for single ingredients */
 .recipe-ingredient {
     display: flex;
     flex-direction: row;
@@ -143,40 +185,30 @@
     padding: 0.375rem 0rem;
 }
 
-.recipe-ingredients h5 {
-    padding: 0.375rem 0rem;
-    margin-top: 1.0rem;
-}
-
+/* Styling for the ingredient names */
 .recipe-ingredient-name {
     flex-basis: 70%;
     text-align: left;
 }
 
+/* Styling for the ingredient amounts */
 .recipe-ingredient-amount {
     flex-basis: 30%;
     text-align: right;
 }
 
+/* Styling for the container containing all recipe instructions */
 .recipe-instructions-list {
     padding: 0.5rem 1.0rem;
 }
 
+/* Styling for the containers containing a single recipe instruction */
 .recipe-instruction {
     padding: 0.5rem 0rem;
 }
 
+/* Styling for the recipe instruction images for instructions steps */
 img.recipe-instruction-image{
     max-height: 15em;
     border-radius: 20px;
-}
-
-.recipe-element {
-    margin-top: 1.0rem;
-}
-
-.recipe-container .btn-custom {
-    background-color: #DF7861;
-    border-color: #DF7861;
-    font-weight: bold;
 }

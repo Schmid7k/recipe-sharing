@@ -53,12 +53,7 @@ const Checklist = ({items}) => {
   );
 }
 
-/* Dropdown title "Ingredients" with a spinning arrow to indicate whether pressing it expands or collapses the thing.
-  Has "Include" and "Exclude" headers and a list of checkboxes currently. To match the layout sketches, it still should have some
-  kind of "see more.." button for showing more ingredient checkboxes and limit the initial amount of ingredient checkboxes shown.
-  Since both the include and exclude lists just include a dummy checkbox list component currently, clicking on the exclude
-  checkbox labels fills in the include ones due to shared id's.*/
-// TODO: "see more" could be added if the lists are very long
+/* Dropdown title "Ingredients" with a spinning arrow to indicate whether pressing it expands or collapses the thing.*/
 const IngredientSelection = ({include, exclude, ingredients, callbackExlude, callbackInclude, customExcludeIngredients, customIncludeIngredients}) => {
   return (
     <Fragment>
@@ -212,12 +207,7 @@ class FilteringMenuContents extends React.Component {
     this.getCheckedElements = this.getCheckedElements.bind(this);
     this.checkAll = this.checkAll.bind(this);
     this.constructFilters = this.constructFilters.bind(this);
-    // this.test = this.test.bind(this);
   }
-
-  // test(){
-  //   console.log('smthsmth');
-  // }
 
   updateCustomExcludeIngredients(items) {
     this.setState({ customExcludeIngredients: items });
@@ -318,7 +308,6 @@ class FilteringMenuContents extends React.Component {
             <button id="apply-filters-btn" onClick={(e) => {
               e.preventDefault();
               let filters = this.constructFilters();
-              // console.log(filters);
               this.props.filteringCallback(filters);      
             }}>Apply filters</button>
           </div>
@@ -347,16 +336,12 @@ class FilteringMenu extends React.Component {
   }
 
   handleFetchingFilters(data) {
-    // console.log(data)
     let topIngredientListInclude = [];
     let topIngredientListExclude = [];
     data.popIngredients.forEach(ingredient => {
       topIngredientListInclude.push(<ChecklistCheckbox name={ingredient} value={ingredient} checklistName={'top-ingredient-include-list'} key={`${ingredient}-include`}/>);
       topIngredientListExclude.push(<ChecklistCheckbox name={ingredient} value={ingredient} checklistName={'top-ingredient-exclude-list'} key={`${ingredient}-exclude`}/>);
     });
-
-    // console.log(topIngredientListInclude);
-    // console.log(topIngredientListExclude)
 
     let ingredientOptions = [];
     data.allIngredients.forEach(item => {

@@ -518,6 +518,8 @@ RecipeComment.propTypes = {
 
 RecipeComments.propTypes = {
     comments: PropTypes.array.isRequired,
+    handleCommentSubmit: PropTypes.func.isRequired,
+    loggedIn: PropTypes.bool.isRequired,
 };
 
 /**

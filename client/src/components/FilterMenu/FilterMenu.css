@@ -1,8 +1,15 @@
+/* Styling for the collapsable #filtering-menu nav element */
 #filtering-menu {
     min-height: calc(100vh - 3.5rem);
     min-width: 20em;
 }
 
+/* Styling to ensure all headers inside #filtering-menu are bolded */
+#filtering-menu h1, #filtering-menu h2, #filtering-menu h3, #filtering-menu h4, #filtering-menu h5, #filtering-menu h6 {
+    font-weight: bold;
+}
+
+/* Styling for the container that contains all filtering menu contents */
 .filter-menu-container {
     background-color: #ECDFC8;
     padding: 0.5rem;
@@ -12,20 +19,20 @@
     position: fixed;
 }
 
-#filtering-menu h1, #filtering-menu h2, #filtering-menu h3, #filtering-menu h4, #filtering-menu h5, #filtering-menu h6 {
-    font-weight: bold;
-}
-
+/* Styling for the 'Filters' header in the filtering menu */
 #filtersHeader {
     padding-left: 0.5rem;
 }
 
+/* Styling for the filtering contents itself (container contents minus 'Filters' header and applying button)
+    to make it scrollable when the container contents exceed the viewport height */
 .filter-menu-contents {
     max-height: calc(85vh - 3.5rem);
     overflow-y: auto;
     padding: 0.5rem;
 }
 
+/* Styling for the dropdown menus for 'Ingredients' and 'Tags' headers */
 .drop-select-btn {
     background: none;
     border: none;
@@ -34,36 +41,89 @@
     margin-bottom: 0.5rem;
 }
 
+/* Styling to cause a drowndown arrow rotation when the dropdown content has been expanded */
 .dropdown-toggle[aria-expanded="true"]:after {
     transform: rotate(-180deg); 
 }
 
+/* Styling for dropdown arrow rotation transition */
 .dropdown-toggle:after { 
     transition: 0.7s; 
 }
 
+/* Styling for the 'Categories' header in the filtering menu */
 #categories-select {
     margin-bottom: 0.5rem;
 }
 
+/* Styling for the container containing dropdown search inputs and 'Add' buttons */
+.search-dropdown-container {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+}
+
+/* Styling for the div containing the dropdown search input with its datalist */
+.form-search-container {
+    width: 100%;
+    padding-right: 5px;
+}
+
+/* Styling for the dropdown search 'Add' buttons */
+.btn-checklist-add {
+    width: 50px;
+    border: none;
+    border-radius: 10px;
+    background-color: #DF7861;
+    color: white;
+    font-weight: bold;
+    height: 2em;
+}
+
+/* Styling for the containers containing the user-added custom ingredients and tags */
+.chosen-items-container {
+    display: flex;
+    flex-direction: column;
+    margin-left: 10px;
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+/* Styling for the containers containing the popular ingredients and tags */
+.popular-item-container {
+    margin-left: 10px;
+}
+
+/* Styling for checkboxes and their labels */
+.form-check {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+}
+
+/* Styling for checkbox label texts */
+.filter-checkbox-item {
+    margin-left: 10px;
+}
+
+/* Styling for the stars shown under the header 'Minimum rating' */
 .star-rating {
     display: flex;
     flex-direction: row-reverse;
     justify-content: flex-end;
 }
 
+/* Hide radio inputs for the stars so only the labels (stars) are shown */
 .star-rating input {
     display: none;
  }
 
+ /* Styling to fill the star svgs with #000000 when the stars are selected */
  .star-rating input:checked ~ label path {
     fill:#000000;
  }
 
-.star-rating-icon path {
-    background: none;
-}
-
+ /* Styling for the 'Apply filters' button */
 #apply-filters-btn {
     background-color: #DF7861;
     border-radius: 5px;
@@ -73,6 +133,7 @@
     padding: 0.2rem 2.0rem;
 }
 
+/* Additional styling for the above when the screen size is small */
 @media (max-width: 575px)
 {
     #filtering-menu {
@@ -94,52 +155,4 @@
     .star-rating {
         justify-content: center;
     }
-}
-
-.chosen-items-container {
-    display: flex;
-    flex-direction: column;
-    margin-left: 10px;
-    margin-bottom: 10px;
-    margin-top: 10px;
-}
-
-.popular-item-container {
-    margin-left: 10px;
-}
-
-.search-dropdown-container {
-    display: flex;
-    flex-direction: row;
-    align-items: baseline;
-}
-
-.form-search-container {
-    width: 100%;
-    padding-right: 5px;
-}
-
-.btn-checklist-add {
-    width: 50px;
-    border: none;
-    border-radius: 10px;
-    background-color: #DF7861;
-    color: white;
-    font-weight: bold;
-    height: 2em;
-}
-
-.form-check {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-}
-
-.filter-checkbox-item {
-    margin-left: 10px;
-}
-
-.form-check input:checked {
-    background-color: #DF7861;
-    border: none;
 }

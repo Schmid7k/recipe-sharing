@@ -1,8 +1,4 @@
-html {
-  /* overflow-x: hidden; */
-  /* overflow-y: hidden; */
-}
-
+/* General styling for the body for the whole web service */
 body {
   margin: 0;
   background-color: #FCF8E8;
@@ -17,25 +13,29 @@ code {
     monospace;
 }
 
-/* class for text that use the Dancing Script font */
+/* Styling for text that should use the Dancing Script font */
 .handwritten-text {
   font-family: 'Dancing Script', cursive;
   font-weight: bold;
 }
 
+/* Global styling for the containers using class .container-fluid */
 .container-fluid {
   padding: 3.5rem 0rem 0rem 0rem;
 }
 
+/* Styling for containers that should display as flexboxes */
 .container-flex {
   display: flex;
 }
 
+/* Styling to edit input and button box shadows to match the web service color scheme */
 .btn-custom:focus, input:focus, .form-select:focus, .form-control:focus, .form-check-input:focus {
   box-shadow: 0 0 0 0.25rem rgba(223, 120, 97, 0.5);
   border-color: #DF7861;
 }
 
+/* Styling for all checkboxes to use the web service color scheme */
 .form-check input:checked {
   background-color: #DF7861;
   border: none;
