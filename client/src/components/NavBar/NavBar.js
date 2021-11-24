@@ -153,7 +153,7 @@ class SearchForm extends React.Component {
   }
 };
 
-const NavUserInfo = ({ loggedIn }) => {
+const NavUserInfo = ({ loggedIn, userIcon }) => {
   if (loggedIn) {
     let username = JSON.parse(window.localStorage.getItem('user')).username;
     return (
@@ -161,7 +161,7 @@ const NavUserInfo = ({ loggedIn }) => {
       <ul className="navbar-nav mr-auto">
         <li id="user-info">
           <a href={`/user/${username}`}>
-            <img id="user-icon" src={dummyIcon} alt="User icon" />
+            <img id="user-icon" src={userIcon} alt="User icon" />
           </a>
           <a id="username-link" className={`nav-link d-none d-md-block ${window.location.pathname === `/user/${username}` ? "active" : ""}`} href={`/user/${username}`}>
             <span className="navbar-text">{username}</span>
@@ -186,6 +186,7 @@ const NavUserInfo = ({ loggedIn }) => {
 
 NavUserInfo.propTypes = {
   loggedIn: PropTypes.bool.isRequired,
+  userIcon: PropTypes.string.isRequired,
 };
 
 class NavigationBar extends React.Component {
@@ -195,7 +196,8 @@ class NavigationBar extends React.Component {
     this.state = {
       searchTerm: "",
       searchRedirect: false,
-      loggedIn: false
+      loggedIn: false,
+      userIcon: dummyIcon
     }
 
     this.handleSearchChange = this.handleSearchChange.bind(this);
@@ -208,12 +210,33 @@ class NavigationBar extends React.Component {
       cookie[i] = cookie[i].trim();
 
     this.setState({loggedIn: cookie.includes("authentication")});
+    
+    if (cookie.includes("authentication")) {
+      let username = JSON.parse(window.localStorage.getItem('user')).username;
+      fetch(`/userdata/${username}`, {
+        method: 'GET'
+      })
+      .then(result => {
+        if (result.ok) {
+          return result.json();
+        }
+        throw new Error('Something went wrong...');
+      })
+      .then(userData => {
+        if (userData.image) {
+          this.setState({ userIcon: `/${userData.image.replace(/\\/g, '/').replace('../client/public/', '')}` });
+        }
+      })
+      .catch((error) => {
+          console.error(error);
+      });
+    }
+
   }
 
   handleSearchChange(searchTerm) {
     this.setState({ searchTerm: searchTerm });
     if (window.location.pathname === "/browse") {
-      // let filter = { searchPhrase: searchTerm };
       let filterMenuFilters = this.props.filterSearch.current.constructFilters();
       filterMenuFilters.searchPhrase = searchTerm;
       this.props.contentSearch.current.filteringHandler(filterMenuFilters);
@@ -238,7 +261,7 @@ class NavigationBar extends React.Component {
             <SearchForm handleSearchChange={this.handleSearchChange} />
           </div>
           <div className="float-end">
-            <NavUserInfo loggedIn={this.state.loggedIn} />
+            <NavUserInfo loggedIn={this.state.loggedIn} userIcon={this.state.userIcon} />
           </div>
         </nav>
       </Fragment>
