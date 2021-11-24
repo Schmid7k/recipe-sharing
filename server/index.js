@@ -51,11 +51,15 @@ app.post("/register", async (req, res) => {
           "INSERT INTO users (Username, Pass) VALUES($1, $2) RETURNING *",
           [username, hash]
         ); // Add the new user to the database
-        
+
         // add default image and bio
         await pool.query(
           "INSERT INTO user_info (userid, imagepath, bio) VALUES ($1, $2, $3) RETURNING *",
-          [newUser.rows[0].userid, 'images/user_placeholder_icon.svg', 'This user has no bio.']
+          [
+            newUser.rows[0].userid,
+            "images/user_placeholder_icon.svg",
+            "This user has no bio.",
+          ]
         );
 
         res.status(201).send("Successfully created user account!");
@@ -241,9 +245,16 @@ app.get("/recipes", async (req, res) => {
       res.status(200).json(allRecipes.rows);
     } else {
       // The request contains query parameter
-      var { category, inIngredients, outIngredients, tags, searchPhrase } =
-        req.query; // Retrieve the query parameters from the request
+      var {
+        category,
+        inIngredients,
+        outIngredients,
+        tags,
+        rating,
+        searchPhrase,
+      } = req.query; // Retrieve the query parameters from the request
       var filteredRecipes;
+      console.log(rating);
       // This is the query template used to build the query that is sent to the database later
       var queryTemplate = {
         start: "SELECT DISTINCT recipes.* FROM recipes ",
@@ -290,6 +301,13 @@ app.get("/recipes", async (req, res) => {
           "LEFT JOIN recipe_tags ON recipe_tags.recipeid = recipes.recipeid LEFT JOIN tags ON tags.tagid = recipe_tags.tagid ";
         queryTemplate.end.push("tags.name IN ('" + tags.join("','") + "') ");
       }
+      // If the parameter rating is there
+      if (rating) {
+        queryTemplate.mid =
+          queryTemplate.mid +
+          "LEFT JOIN recipe_ratings ON recipe_ratings.recipeid = recipes.recipeid ";
+        queryTemplate.end.push(`recipe_ratings.rating >= ${rating} `);
+      }
       // If the parameter searchPhrase is there
       if (searchPhrase) {
         searchPhrase = searchPhrase.toLowerCase();
@@ -315,7 +333,7 @@ app.get("/recipes", async (req, res) => {
           "ORDER BY recipeid DESC";
       }
 
-      console.debug(finalQuery); // Uncomment for debug
+      // console.debug(finalQuery); // Uncomment for debug
 
       // Apply the query to the database
       filteredRecipes = await pool.query(finalQuery);
@@ -673,7 +691,7 @@ app.get("/user/:username", async (req, res) => {
       bio: userInfo.rows[0].bio,
       image: userInfo.rows[0].imagepath,
     };
-    
+
     // need searches to return recipes sorted as reviewed, saved, and uploaded, just filling in with all recipes for now
     const reviewedRecipes = await pool.query(
       "SELECT recipes.* FROM recipes WHERE recipes.recipeid IN (SELECT recipeid FROM recipe_ratings WHERE userid = $1) ORDER BY recipes.recipeid DESC",
@@ -722,22 +740,21 @@ app.post(
       const cookie = req.signedCookies.authentication;
       if (cookie) {
         let imagePath = null;
-        if(req.files.image)
-          imagePath = req.files.image[0].path;
+        if (req.files.image) imagePath = req.files.image[0].path;
 
         const user = await pool.query(
           "SELECT * FROM users WHERE users.Username = $1",
           [cookie]
         );
         let userid = user.rows[0].userid;
-        
+
         let userInfo = await pool.query(
           "SELECT * FROM user_info WHERE UserID = $1",
           [userid]
         );
 
-        if(userInfo.rows.length === 0){
-          if(imagePath){
+        if (userInfo.rows.length === 0) {
+          if (imagePath) {
             userInfo = await pool.query(
               "INSERT INTO user_info (userid, imagepath, bio) VALUES ($1, $2, $3) RETURNING *",
               [userid, imagePath, req.body.bio]
@@ -749,7 +766,7 @@ app.post(
             );
           }
         } else {
-          if(imagePath){
+          if (imagePath) {
             userInfo = await pool.query(
               "UPDATE user_info SET imagepath = $1, bio = $2 WHERE userid = $3",
               [imagePath, req.body.bio, userid]
@@ -782,9 +799,9 @@ app.get("/userdata/:username", async (req, res) => {
       "SELECT * FROM users WHERE users.Username = $1",
       [username]
     );
-    
+
     let userid = user.rows[0].userid;
-    
+
     let userInfo = await pool.query(
       "SELECT * FROM user_info WHERE UserID = $1",
       [userid]
@@ -829,7 +846,11 @@ app.post("/recipes/:id/comment", async (req, res) => {
         "INSERT INTO recipe_comments (RecipeID, UserID, Comment) VALUES ($1, $2, $3) RETURNING *",
         [id, user.rows[0].userid, comment]
       ); // Insert new comment into recipe_comments table
-      res.status(201).json({ commentid: newComment.rows[0].commentid, author: cookie, comment: newComment.rows[0].comment });
+      res.status(201).json({
+        commentid: newComment.rows[0].commentid,
+        author: cookie,
+        comment: newComment.rows[0].comment,
+      });
     } else {
       res.status(401).send("Please register!");
     }
