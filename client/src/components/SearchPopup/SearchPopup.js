@@ -1,12 +1,10 @@
 import React, {Fragment} from "react";
+import { Link } from 'react-router-dom'
 import "./SearchPopup.css";
 import closeBtnIcon from "../../images/close-round-btn.svg";
 import bookmarkIcon from "../../images/bookmark_svg.svg";
 import starIcon from "../../images/star_svg.svg";
 
-import { Link } from 'react-router-dom'
-
-// TODO: not sure if these should be functional to allow rating here or saving
 const PopupRating = ({number, icon, userHasDone}) => {
     return(
         <Fragment>
@@ -58,10 +56,14 @@ const IngredientList = ({title, items}) => {
 }
 
 const SearchPopupContent = ({callback, data}) => {
+
+    // prepare tags for display, extracting the text
     let tags = [];
     data.tags.forEach(t => {
         tags.push(<PopupTag tagText={t} key={t}/>);
     });
+
+    // format the image path for the main image of the popup
     let imagePath = data.image;
     if(imagePath && imagePath !== '/') ['/'].concat(imagePath);
 
@@ -108,12 +110,14 @@ class SearchPopup extends React.Component {
             author: '',
             tags: [],
             id: ''
-        }
+        };
     }
 
     updateData(id){
+        // do not update if would be fetching data that we already have
         if(this.state.id === id) return;
 
+        // fetch the data for this specific recipe
         fetch(`/recipes/${id}`, {method: 'GET', credentials: 'include'})
        .then(res => res.json())
        .then(data => {
@@ -125,9 +129,8 @@ class SearchPopup extends React.Component {
                 tags.push(element.name);
             });
 
-            // tags would never return null but current enpoint returns [null]
-            if(tags[0] === null)
-                tags = [];
+            // ensure we do not get a [null]
+            if(tags[0] === null) tags = [];
 
             // extract and format ingredient groups
             let dataGroups = [];
@@ -138,6 +141,7 @@ class SearchPopup extends React.Component {
                 });
             });
 
+            // build both the individual popup ingredient items and their containers
             let ingredientGroups =[];
             dataGroups.forEach(group => {
                 let ingredients = [];
@@ -152,12 +156,9 @@ class SearchPopup extends React.Component {
                 instructions.push(<PopupInstructionStep stepNumber={step.step} stepText={step.instruction} key={`instruction-${step.step}`}/>);
             });
 
-            // only show the first two steps of instructions/ingredients
-            if(instructions.length > 2)
-                instructions.length = 2
-
-            if(ingredientGroups.length > 2)
-                ingredientGroups.length = 2
+            // only show the first two steps of instructions and ingredients to keep the popup small
+            if(instructions.length > 2) instructions.length = 2
+            if(ingredientGroups.length > 2) ingredientGroups.length = 2
 
             this.setState({       
                 title: data.title,
@@ -168,6 +169,7 @@ class SearchPopup extends React.Component {
                 stars: Number(data.avgRating),
                 rated: Number(data.isRated),
          
+                // format the image in case the path is not a subpath of Public directory
                 image: `/${data.main.replace(/\\/g, '/').replace('../client/public/', '')}`, 
                 tags: tags,
                 ingredients: ingredientGroups,
@@ -178,6 +180,7 @@ class SearchPopup extends React.Component {
     }
 
     render() {
+        // control whether the popup should be display based on ContentSearch passed prop
         let display = this.props.display ? 'inline' : 'none';
         let callback = () => this.props.closeCallback();
 

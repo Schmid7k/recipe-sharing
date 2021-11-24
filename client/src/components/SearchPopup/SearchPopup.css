@@ -1,7 +1,8 @@
+/* container style for the entire popup, styled to cover the page, position controlled externally */
 .search-popup-container {
     max-width: 850px;
     width: 100%;
- 
+
     position: absolute;
     top: 60px;
     left: 50%;
@@ -14,6 +15,7 @@
     padding: 10px;
 }
 
+/* popup background style to darken out the page the popup covers and contain the popup */
 .search-popup-container-bg {
     width: 100%;
     height: 100vh;
@@ -30,6 +32,7 @@
     flex-direction: column;
 }
 
+/* main image style of the popup */
 .search-popup-img {
     width: 100%;
     height: 100%;
@@ -37,6 +40,7 @@
     border-radius: 20px 20px 0 0;
 }
 
+/* popup body style that contains the ingredients and instruction - everything but the image */
 .popup-body {
     background-color: #ECDFC8;
     margin-bottom: 100px;
@@ -49,9 +53,9 @@
 
 .popup-close-btn {
     position: absolute;
-    top: 0px;
-    right: 0px;
-    filter: invert();
+    top: 0;
+    right: 0;
+    filter: invert(100%);
     width: 40px;
     height: 40px;
     margin: 20px;
@@ -63,6 +67,7 @@
     cursor: pointer;
 }
 
+/* header style containing the recipe title, user data and bookmark/rating information */
 .popup-header-container {
     display: flex;
     flex-direction: row;
@@ -75,64 +80,55 @@
     flex-direction: column;
 }
 
-.popup-rating-and-bookmark-container {
-
-}
-
 .popup-tags-container {
     width: 100%;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    margin: 10px 20px 0px 20px;
+    margin: 10px 20px 0;
 }
 
 .popup-tag {
     background-color: #DF7861;
     height: 1.5rem;
     text-align: center;
-    
+
     padding-left: 20px;
     padding-right: 20px;
     margin: 5px;
-   
+
     color: white;
     border-radius: 30px;
 }
 
-.ingredients-instructions-container {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-}
-
-/* TODO: fix wrapping */
+/* style for the inner body text of the popup */
 .ingredients-instructions-container {
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
     align-items: stretch;
     flex-wrap: wrap;
+    width: 100%;
 }
 
+/* styles for the ingredient and instruction step columns */
 .ingredients-container {
     margin: 30px;
     min-width: 200px;
-    /* max-width: 300px; */
     flex-grow: 0;
-   flex-shrink: 0;
-   flex-basis: 30%;
+    flex-shrink: 0;
+    flex-basis: 30%;
 }
 
 .instructions-container {
     margin: 30px;
     min-width: 200px;
-    /* max-width: 415px; */
     flex-grow: 0;
     flex-shrink: 0;
     flex-basis: 50%;
 }
 
+/* media queries to improve how instruction and ingredient columns break on mobile */
 @media only screen and (max-width: 771px) {
     .ingredients-container {
         margin: 30px;
@@ -143,7 +139,7 @@
         padding-left: 20px;
         padding-right: 20px;
     }
-    
+
     .instructions-container {
         margin: 30px;
         min-width: 200px;
@@ -155,6 +151,7 @@
     }
 }
 
+/* style for button redirecting to individual recipe page */
 .popup-more-btn {
     background-color: #DF7861;
     color: white;
@@ -168,11 +165,11 @@
     height: 2rem;
     text-decoration: none;
     text-align: center;
-    text-justify: center;
     padding-top: 3px;
     font-weight: bold;
 }
 
+/* styles for the inner elements of the two columns - steps and ingredients */
 .popup-ingredient-item-container {
     display: flex;
     flex-direction: row;
@@ -181,14 +178,14 @@
     margin-top: 5px;
 }
 
-.popup-step-container{
+.popup-step-container {
     margin-left: 20px;
     margin-bottom: 10px;
     margin-top: 10px;
 }
 
 .popup-title {
-    margin: 10px 0 0px 20px;
+    margin: 10px 0 0 20px;
 }
 
 .popup-username {
@@ -229,5 +226,5 @@
 
 .popup-more-btn:hover {
     text-decoration: none;
-    color:white;
+    color: white;
 }
