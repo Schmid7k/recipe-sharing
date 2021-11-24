@@ -47,10 +47,16 @@ app.post("/register", async (req, res) => {
         // username does not exist
         const salt = await crypt.genSalt(); // Generate a random salt for every new password
         const hash = await crypt.hash(password, salt); // Hash the password with the generated salt
-        await pool.query(
+        let newUser = await pool.query(
           "INSERT INTO users (Username, Pass) VALUES($1, $2) RETURNING *",
           [username, hash]
         ); // Add the new user to the database
+        
+        // add default image and bio
+        await pool.query(
+          "INSERT INTO user_info (userid, imagepath, bio) VALUES ($1, $2, $3) RETURNING *",
+          [newUser.rows[0].userid, 'images/user_placeholder_icon.svg', 'This user has no bio.']
+        );
 
         res.status(201).send("Successfully created user account!");
       }
@@ -658,14 +664,16 @@ app.get("/user/:username", async (req, res) => {
     ]);
     const id = user.rows[0].userid;
 
-    // we don't have a way for editing bio and uploading an image yet, but maybe we could still store some dummy data
-    // for the client to look good and show this off
-    // something like [uid, user_id, image_path, bio] table that we could fill in with dummy data directly on the backend
-    let headerData = {
-      bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc ut sapien vel nisl fermentum malesuada. From server.",
-      image: "/images/user_placeholder_icon.svg",
-    };
+    let userInfo = await pool.query(
+      "SELECT * FROM user_info WHERE UserID = $1",
+      [id]
+    );
 
+    let headerData = {
+      bio: userInfo.rows[0].bio,
+      image: userInfo.rows[0].imagepath,
+    };
+    
     // need searches to return recipes sorted as reviewed, saved, and uploaded, just filling in with all recipes for now
     const reviewedRecipes = await pool.query(
       "SELECT recipes.* FROM recipes WHERE recipes.recipeid IN (SELECT recipeid FROM recipe_ratings WHERE userid = $1) ORDER BY recipes.recipeid DESC",
@@ -702,7 +710,7 @@ app.get("/user/:username", async (req, res) => {
 });
 
 // POST request to update user bio + pfp
-// TODO: need store the bio and image in user_info
+
 app.post(
   "/userdata",
   upload.fields([
@@ -713,10 +721,46 @@ app.post(
     try {
       const cookie = req.signedCookies.authentication;
       if (cookie) {
-        console.log(cookie);
-        // console.log(req.body)
-        // console.log(req.files)
-        console.log(req.files.image[0].path);
+        let imagePath = null;
+        if(req.files.image)
+          imagePath = req.files.image[0].path;
+
+        const user = await pool.query(
+          "SELECT * FROM users WHERE users.Username = $1",
+          [cookie]
+        );
+        let userid = user.rows[0].userid;
+        
+        let userInfo = await pool.query(
+          "SELECT * FROM user_info WHERE UserID = $1",
+          [userid]
+        );
+
+        if(userInfo.rows.length === 0){
+          if(imagePath){
+            userInfo = await pool.query(
+              "INSERT INTO user_info (userid, imagepath, bio) VALUES ($1, $2, $3) RETURNING *",
+              [userid, imagePath, req.body.bio]
+            );
+          } else {
+            userInfo = await pool.query(
+              "INSERT INTO user_info (userid, bio) VALUES ($1, $2) RETURNING *",
+              [userid, req.body.bio]
+            );
+          }
+        } else {
+          if(imagePath){
+            userInfo = await pool.query(
+              "UPDATE user_info SET imagepath = $1, bio = $2 WHERE userid = $3",
+              [imagePath, req.body.bio, userid]
+            );
+          } else {
+            userInfo = await pool.query(
+              "UPDATE user_info SET bio = $1 WHERE userid = $2",
+              [req.body.bio, userid]
+            );
+          }
+        }
 
         res.status(201).send("Bio updated!");
       } else {
@@ -729,15 +773,33 @@ app.post(
   }
 );
 
-// TODO: Get request to fetch user data *after* it's been updated by the user
+//GET request to fetch user data *after* it's been updated by the user
 
 app.get("/userdata/:username", async (req, res) => {
-  let headerData = {
-    bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc ut sapien vel nisl fermentum malesuada. From server v2.",
-    image: "/images/user_placeholder_icon.svg",
-  };
+  try {
+    const { username } = req.params;
+    const user = await pool.query(
+      "SELECT * FROM users WHERE users.Username = $1",
+      [username]
+    );
+    
+    let userid = user.rows[0].userid;
+    
+    let userInfo = await pool.query(
+      "SELECT * FROM user_info WHERE UserID = $1",
+      [userid]
+    );
 
-  res.json(headerData);
+    let headerData = {
+      bio: userInfo.rows[0].bio,
+      image: userInfo.rows[0].imagepath,
+    };
+
+    res.json(headerData);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Something went wrong!");
+  }
 });
 
 // GET request for fetching 3 recipe recommendations based on bookmark count
