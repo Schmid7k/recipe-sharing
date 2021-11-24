@@ -48,6 +48,7 @@ class UserInfo extends React.Component {
     formData.append('bio', this.state.editBio);
     formData.append('image', this.state.file);
   
+    // send the new user bio and image to the server
     fetch('/userdata', {
         method: 'PUT',
         credentials: 'include',
@@ -60,6 +61,7 @@ class UserInfo extends React.Component {
           editing: false
         });
 
+        // after new data is sent, update the bio to fetch the sent image and bio text to keep correct state with the server
         this.props.updateBio(this.state.editBio);
 
         return response; 
@@ -76,6 +78,7 @@ class UserInfo extends React.Component {
   }
 
   render(){
+    // check if locked in - used to display the bio editing option for users on their own user pages
     let loggedIn = false;
     if(window.localStorage.getItem('user') !== null )
       loggedIn = JSON.parse(window.localStorage.getItem('user')).username === this.props.username;
@@ -150,12 +153,13 @@ class UserHeaderButtons extends React.Component {
 
     this.state = {
       active: "All"
-    }
+    };
 
     this.handleClick = this.handleClick.bind(this);
   }
 
   handleClick(e) {
+    // return the selected UserHeaderButton to control which set of recipes is displayed
     this.props.callback(e.target.id)
     this.setState({ active: e.target.outerText });
   }

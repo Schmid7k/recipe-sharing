@@ -18,8 +18,8 @@ class User extends React.Component {
       currentOption: 'all', // 0 - All, 1 - Reviewed, 2 - Saved, 3 - Uploaded
       header : {
         username: 'author',
-        bio: 'lorem pispum dolor sit amet, consectetur adipiscing elit, Nunc ut sapien vel nisl fermentum malesuada.',
-        img: '/some/path'
+        bio: 'This user has no bio.',
+        img: '/images/user_placeholder_icon.svg'
       },
       recipes: {
         all: [],
@@ -34,13 +34,13 @@ class User extends React.Component {
     this.handleUserData = this.handleUserData.bind(this);
     this.tabHandler = this.tabHandler.bind(this);
     this.popupToggleHandler = this.popupToggleHandler.bind(this);
-    // this.filteringHandler = this.filteringHandler.bind(this);
     this.handleResize = this.handleResize.bind(this);
     this.buildCards = this.buildCards.bind(this);
     this.updateBio = this.updateBio.bind(this);
   }
 
-  updateBio(newBio) {
+  updateBio() {
+    // get the user bio information - profile picture and bio text
     fetch(`/userdata/${this.state.header.username}`, {method: 'GET'})
     .then(res => res.json())
     .then(res => {
@@ -52,16 +52,16 @@ class User extends React.Component {
         }
       });
     })
-    .catch(err => this.props.history.push('/browse')); 
+    .catch(() => this.props.history.push('/browse')); 
   }
 
   handleResize() {
-    let gridContainer = document.getElementById('grid-container');
+    let userPageBody = document.getElementById('userpage-body');
     let popup = document.getElementById('search-popup-container-bg');
 
-    // position the popup to start at the top left corner of the grid
-    if(gridContainer && popup) {
-        let rect = document.getElementById('grid-container').getBoundingClientRect();
+    // position the popup to start at the top left corner of the site
+    if(userPageBody && popup) {
+        let rect = document.getElementById('userpage-body').getBoundingClientRect();
         
         popup.style.left = `${rect.left}px`;  
         popup.style.width = `${rect.width + this.state.scrollbarWidth}px`; 
@@ -75,13 +75,13 @@ class User extends React.Component {
   }
 
   popupToggleHandler(id){ 
-    let gridContainer = document.getElementById('grid-container');
+    let userPageBody = document.getElementById('userpage-body');
     let navbar = document.getElementById('main-navbar');
     let popup = document.getElementById('search-popup-container-bg');
 
-    if (!gridContainer || !navbar || !popup) return;
+    if (!userPageBody || !navbar || !popup) return;
 
-    let rect = gridContainer.getBoundingClientRect();
+    let rect = userPageBody.getBoundingClientRect();
     let scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
 
     if(!this.state.popupDisplay){
@@ -96,7 +96,7 @@ class User extends React.Component {
         popup.style.width = `${rect.width + scrollbarWidth}px`;  
         popup.style.display = 'inline';
 
-        gridContainer.scrollTop = 0;
+        userPageBody.scrollTop = 0;
 
         this.popup.current.updateData(id);
     } else { // return to default state      
@@ -116,12 +116,14 @@ class User extends React.Component {
     let ids = [];
     let all = [];
 
+    // construct cards for the different tabs
+    // we use ids to track which of the cards we have already added to all
     let reviewed = [];
     data.recipes.reviewed.forEach((recipe) => {
       reviewed.push(<ContentGridCard title={recipe.title} img={`/${recipe.mainimage}`} key={`reviewed-${recipe.recipeid}`} cardCallback={this.popupToggleHandler} id={recipe.recipeid}/>);
       if(!ids.includes(recipe.recipeid)){
         ids.push(recipe.recipeid);
-        all.push(<ContentGridCard title={recipe.title} img={`/${recipe.mainimage}`} key={`reviewed-${recipe.recipeid}`} cardCallback={this.popupToggleHandler} id={recipe.recipeid}/>);
+        all.push(<ContentGridCard title={recipe.title} img={`/${recipe.mainimage}`} key={`all-${recipe.recipeid}`} cardCallback={this.popupToggleHandler} id={recipe.recipeid}/>);
       }
     });
 
@@ -130,7 +132,7 @@ class User extends React.Component {
       saved.push(<ContentGridCard title={recipe.title} img={`/${recipe.mainimage}`} key={`saved-${recipe.recipeid}`} cardCallback={this.popupToggleHandler} id={recipe.recipeid}/>);
       if(!ids.includes(recipe.recipeid)){
         ids.push(recipe.recipeid);
-        all.push(<ContentGridCard title={recipe.title} img={`/${recipe.mainimage}`} key={`reviewed-${recipe.recipeid}`} cardCallback={this.popupToggleHandler} id={recipe.recipeid}/>);
+        all.push(<ContentGridCard title={recipe.title} img={`/${recipe.mainimage}`} key={`all-${recipe.recipeid}`} cardCallback={this.popupToggleHandler} id={recipe.recipeid}/>);
       }
     });
 
@@ -139,7 +141,7 @@ class User extends React.Component {
       uploaded.push(<ContentGridCard title={recipe.title} img={`/${recipe.mainimage}`} key={`uploaded-${recipe.recipeid}`} cardCallback={this.popupToggleHandler} id={recipe.recipeid}/>);
       if(!ids.includes(recipe.recipeid)){
         ids.push(recipe.recipeid);
-        all.push(<ContentGridCard title={recipe.title} img={`/${recipe.mainimage}`} key={`reviewed-${recipe.recipeid}`} cardCallback={this.popupToggleHandler} id={recipe.recipeid}/>);
+        all.push(<ContentGridCard title={recipe.title} img={`/${recipe.mainimage}`} key={`all-${recipe.recipeid}`} cardCallback={this.popupToggleHandler} id={recipe.recipeid}/>);
       }
     });
 
@@ -153,9 +155,7 @@ class User extends React.Component {
     });
   }
 
-  handleUserData(data){
-    console.log(data);
-
+  handleUserData(data) {
     this.setState({
       header: {
         username: this.props.match.params.username,
@@ -167,25 +167,27 @@ class User extends React.Component {
     })
   }
 
-  componentDidMount(){
+  componentDidMount() {
+    // resize the popup on window change or userpage component change
     window.addEventListener('resize', () => this.handleResize());
       
-    let gridResizeObserver = new ResizeObserver(() => this.handleResize());
-    gridResizeObserver.observe(document.getElementById('grid-container'));
+    let userResizeObserver = new ResizeObserver(() => this.handleResize());
+    userResizeObserver.observe(document.getElementById('userpage-body'));
 
     const username = this.props.match.params.username;
 
+    // get the user bio data when the page loads
     fetch(`/user/${username}`, {method: 'GET'})
     .then(res => res.json())
     .then(res => this.handleUserData(res))
-    .catch(err => this.props.history.push('/browse'))
+    .catch(() => this.props.history.push('/browse'))
   }
 
   render(){
     return (
       <Fragment>
         <NavigationBar />
-        <div className="container-fluid" id='grid-container'>
+        <div className="container-fluid" id='userpage-body'>
           <div className="container pt-3">        
               <UserHeader data={this.state.header} callback={this.tabHandler} updateBio={this.updateBio}/>
               <SearchPopup display={this.state.popupDisplay} closeCallback={this.popupToggleHandler} ref={this.popup}/>
