@@ -36,6 +36,19 @@ const passwordValidation = (value) => {
 };
 
 /**
+ * Component used for validating that the user's password inputs match.
+ * @param {string} firstValue  Value entered in the first password field 
+ * @param {string} secondValue  Value entered in the second password field 
+ * @returns An error message in string format if values don't validate, null otherwise.
+ */
+ const passwordsMatchValidation = (firstValue, secondValue) => {
+    if (firstValue !== secondValue) {
+        return "Entered passwords must match";
+    } 
+    return null;
+};
+
+/**
  * Component for rendering a list of errors to the user.
  * @param {Array} errors An array of errors to be shown
  * @returns A <Fragment> element with a red alert div that contains the errors in a list inside it.
@@ -63,6 +76,7 @@ class RegistrationForm extends React.Component {
         this.state = {
             username: "",
             password: "",
+            passwordRepeat: "",
             errors: [],
             redirect: false
         }
@@ -86,8 +100,10 @@ class RegistrationForm extends React.Component {
         let errors = [];
         let usernameVal = usernameValidation(this.state.username);
         let passwordVal = passwordValidation(this.state.password);
+        let passwordsMatchVal = passwordsMatchValidation(this.state.password, this.state.passwordRepeat);
         if (usernameVal) errors.push(usernameVal);
         if (passwordVal) errors.push(passwordVal);
+        if (passwordsMatchVal) errors.push(passwordsMatchVal);
 
         this.setState({
             errors: errors
@@ -136,7 +152,7 @@ class RegistrationForm extends React.Component {
                             <div className="input-group">
                                 <span className="input-group-text" id="registration-basic-addon1">@</span>
                                 <input type="text" className="form-control" id="registrationUsernameInput" 
-                                        placeholder="Username" aria-label="Username" aria-describedby="registration-basic-addon1 usernameHelp" 
+                                        placeholder="Enter a username..." aria-label="Username" aria-describedby="registration-basic-addon1 usernameHelp" 
                                         name="username" value={this.state.username} onChange={this.handleInputChange} 
                                         minLength="2" maxLength="32" required />
                             </div>
@@ -145,9 +161,13 @@ class RegistrationForm extends React.Component {
                         <div className="form-group">
                             <label htmlFor="registrationPasswordInput"><h5>Password</h5></label>
                             <input type="password" className="form-control" id="registrationPasswordInput" aria-describedby="passwordHelp" 
-                                    placeholder="Password" name="password" value={this.state.password} onChange={this.handleInputChange} 
+                                    placeholder="Enter a password..." name="password" value={this.state.password} onChange={this.handleInputChange} 
                                     minLength="8" required />
                             <small id="passwordHelp" className="form-text text-muted">The password should be at least 8 characters in length.</small>
+                            <input type="password" className="form-control" id="registrationPasswordInput2" aria-describedby="passwordHelp2" 
+                                    placeholder="Enter the above password again..." name="passwordRepeat" value={this.state.passwordRepeat} onChange={this.handleInputChange} 
+                                    minLength="8" required />
+                            <small id="passwordHelp2" className="form-text text-muted">Enter the same password you entered to the last field.</small>
                         </div>
                         <button type="submit" className="btn btn-primary btn-custom mt-3">Submit</button>
                     </form>
