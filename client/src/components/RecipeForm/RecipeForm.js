@@ -981,8 +981,8 @@ class RecipeForm extends React.Component {
     return (
       <Fragment>
         { !cookie.includes("authentication") 
-          || window.localStorage.getItem('user') === null ? <Redirect push to="/browse" /> : null }
-        { this.state.createdID !== 0 ? <Redirect push to={`/recipes/${this.state.createdID}`} /> : null }
+          || window.localStorage.getItem('user') === null ? <Redirect push to="/browse/" /> : null }
+        { this.state.createdID !== 0 ? <Redirect push to={`/recipes/${this.state.createdID}/`} /> : null }
         <div className="recipe-form-container text-center">
           <h1>Add a new recipe</h1>
           <form onSubmit={this.handleSubmit}>

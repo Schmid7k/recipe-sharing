@@ -94,7 +94,7 @@ class FilterToggler extends React.Component {
   render() {
     return (
       <Fragment>
-        {window.location.pathname === "/browse" ? 
+        {window.location.pathname === "/browse/" ? 
           <li className={`nav-item nav-icon-item ${this.state.filterActive ? "active" : ""}`}>
             <div className="d-md-none" data-bs-toggle="collapse" data-bs-target="#filtering-menu" aria-expanded="false" aria-controls="filtering-menu" id='filter-button-icon' onClick={this.handleClick}>
               <img className="nav-icon" src={this.props.source} alt={`${this.props.text} icon`} />
@@ -129,7 +129,7 @@ const NavItems = ({ loggedIn }) => {
   return (
     <Fragment>
       <ul className="navbar-nav mr-auto">
-        <NavItem text="Browse" href="/browse" source={gridSvg} />
+        <NavItem text="Browse" href="/browse/" source={gridSvg} />
         <FilterToggler text="Filter" source={filterSvg} />
         { loggedIn
           && window.localStorage.getItem('user') !== null 
@@ -257,10 +257,10 @@ class NavigationBar extends React.Component {
     for( let i = 0; i < cookie.length; i++)
       cookie[i] = cookie[i].trim();
 
-    this.setState({loggedIn: cookie.includes("authentication")});
+    this.setState({ loggedIn: (cookie.includes("authentication") && window.localStorage.getItem('user') !== null) });
     
     // if logged in, fetch user icon and store it in state
-    if (cookie.includes("authentication")) {
+    if (cookie.includes("authentication") && window.localStorage.getItem('user') !== null) {
       let username = JSON.parse(window.localStorage.getItem('user')).username;
       fetch(`/api/userdata/${username}`, {
         method: 'GET'
@@ -273,7 +273,7 @@ class NavigationBar extends React.Component {
       })
       .then(userData => {
         if (userData.image) {
-          this.setState({ userIcon: `/${userData.image.replace(/\\/g, '/').replace('../client/public/', '')}` });
+          this.setState({ userIcon: `/${userData.image.replace(/\\/g, '/').replace('../client/public/', '').replace('client/public/', '').replace('client/build/', '')}` });
         }
       })
       .catch((error) => {
@@ -286,7 +286,7 @@ class NavigationBar extends React.Component {
   handleSearchChange(searchTerm) {
     this.setState({ searchTerm: searchTerm });
     // if the user is searching while in the browse view
-    if (window.location.pathname === "/browse") {
+    if (window.location.pathname === "/browse/") {
       let filterMenuFilters = this.props.filterSearch.current.constructFilters();
       filterMenuFilters.searchPhrase = searchTerm;
       this.props.contentSearch.current.filteringHandler(filterMenuFilters);
@@ -301,7 +301,7 @@ class NavigationBar extends React.Component {
     return (
       <Fragment>
         {this.state.searchRedirect ? 
-          <Redirect to={{ pathname: "/browse", state: { searchTerm: this.state.searchTerm }, }} /> 
+          <Redirect to={{ pathname: "/browse/", state: { searchTerm: this.state.searchTerm }, }} /> 
           : null}
         <nav className="navbar fixed-top navbar-expand-sm navbar-custom" id="main-navbar">
           <NavBrand />

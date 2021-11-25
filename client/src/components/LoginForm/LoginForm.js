@@ -122,7 +122,7 @@ class LoginForm extends React.Component {
     const params = new URLSearchParams(windowUrl);
     return (
       <Fragment>
-        { this.state.redirect ? <Redirect push to="/browse"/> : null }
+        { this.state.redirect ? <Redirect push to="/browse/"/> : null }
         <div className="login-container">
           <form onSubmit={this.handleSubmit}>
               <h1>Log in</h1>

@@ -142,7 +142,7 @@ class RegistrationForm extends React.Component {
     render() {
         return (
             <Fragment>
-                {this.state.redirect ? <Redirect push to="/login?regRedirect=true" /> : null}
+                {this.state.redirect ? <Redirect push to="/login?regRedirect=true/" /> : null}
                 <div className="registration-container">
                     <form onSubmit={this.handleSubmit}>
                         <h1>Register</h1>

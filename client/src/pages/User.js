@@ -52,7 +52,7 @@ class User extends React.Component {
         }
       });
     })
-    .catch(() => this.props.history.push('/browse')); 
+    .catch(() => this.props.history.push('/browse/')); 
   }
 
   handleResize() {
@@ -120,28 +120,28 @@ class User extends React.Component {
     // we use ids to track which of the cards we have already added to all
     let reviewed = [];
     data.recipes.reviewed.forEach((recipe) => {
-      reviewed.push(<ContentGridCard title={recipe.title} img={`/${recipe.mainimage}`} key={`reviewed-${recipe.recipeid}`} cardCallback={this.popupToggleHandler} id={recipe.recipeid}/>);
+      reviewed.push(<ContentGridCard title={recipe.title} img={recipe.mainimage} key={`reviewed-${recipe.recipeid}`} cardCallback={this.popupToggleHandler} id={recipe.recipeid}/>);
       if(!ids.includes(recipe.recipeid)){
         ids.push(recipe.recipeid);
-        all.push(<ContentGridCard title={recipe.title} img={`/${recipe.mainimage}`} key={`all-${recipe.recipeid}`} cardCallback={this.popupToggleHandler} id={recipe.recipeid}/>);
+        all.push(<ContentGridCard title={recipe.title} img={recipe.mainimage} key={`all-${recipe.recipeid}`} cardCallback={this.popupToggleHandler} id={recipe.recipeid}/>);
       }
     });
 
     let saved = [];
     data.recipes.saved.forEach((recipe) => {
-      saved.push(<ContentGridCard title={recipe.title} img={`/${recipe.mainimage}`} key={`saved-${recipe.recipeid}`} cardCallback={this.popupToggleHandler} id={recipe.recipeid}/>);
+      saved.push(<ContentGridCard title={recipe.title} img={recipe.mainimage} key={`saved-${recipe.recipeid}`} cardCallback={this.popupToggleHandler} id={recipe.recipeid}/>);
       if(!ids.includes(recipe.recipeid)){
         ids.push(recipe.recipeid);
-        all.push(<ContentGridCard title={recipe.title} img={`/${recipe.mainimage}`} key={`all-${recipe.recipeid}`} cardCallback={this.popupToggleHandler} id={recipe.recipeid}/>);
+        all.push(<ContentGridCard title={recipe.title} img={recipe.mainimage} key={`all-${recipe.recipeid}`} cardCallback={this.popupToggleHandler} id={recipe.recipeid}/>);
       }
     });
 
     let uploaded = [];
     data.recipes.uploaded.forEach((recipe) => {
-      uploaded.push(<ContentGridCard title={recipe.title} img={`/${recipe.mainimage}`} key={`uploaded-${recipe.recipeid}`} cardCallback={this.popupToggleHandler} id={recipe.recipeid}/>);
+      uploaded.push(<ContentGridCard title={recipe.title} img={recipe.mainimage} key={`uploaded-${recipe.recipeid}`} cardCallback={this.popupToggleHandler} id={recipe.recipeid}/>);
       if(!ids.includes(recipe.recipeid)){
         ids.push(recipe.recipeid);
-        all.push(<ContentGridCard title={recipe.title} img={`/${recipe.mainimage}`} key={`all-${recipe.recipeid}`} cardCallback={this.popupToggleHandler} id={recipe.recipeid}/>);
+        all.push(<ContentGridCard title={recipe.title} img={recipe.mainimage} key={`all-${recipe.recipeid}`} cardCallback={this.popupToggleHandler} id={recipe.recipeid}/>);
       }
     });
 
@@ -180,7 +180,7 @@ class User extends React.Component {
     fetch(`/api/user/${username}`, {method: 'GET'})
     .then(res => res.json())
     .then(res => this.handleUserData(res))
-    .catch(() => this.props.history.push('/browse'))
+    .catch(() => this.props.history.push('/browse/'))
   }
 
   render(){

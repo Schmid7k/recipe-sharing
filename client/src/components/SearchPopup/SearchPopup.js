@@ -170,7 +170,7 @@ class SearchPopup extends React.Component {
                 rated: Number(data.isRated),
          
                 // format the image in case the path is not a subpath of Public directory
-                image: `/${data.main.replace(/\\/g, '/').replace('../client/public/', '')}`, 
+                image: `/${data.main.replace(/\\/g, '/').replace('../client/public/', '').replace('client/public/', '').replace('client/build/', '')}`, 
                 tags: tags,
                 ingredients: ingredientGroups,
                 instructions: instructions,
