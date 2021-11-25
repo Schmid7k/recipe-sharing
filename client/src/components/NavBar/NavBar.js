@@ -273,7 +273,7 @@ class NavigationBar extends React.Component {
       })
       .then(userData => {
         if (userData.image) {
-          this.setState({ userIcon: `/${userData.image.replace(/\\/g, '/').replace('../client/public/', '').replace('client/public/', '').replace('client/build/', '')}` });
+          this.setState({ userIcon: userData.image });
         }
       })
       .catch((error) => {

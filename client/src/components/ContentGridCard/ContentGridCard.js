@@ -17,7 +17,7 @@ const ContentGridCard = ({ title, img, cardCallback, id }) => {
     return (
        <Fragment>
             <div className="content-grid-card-container" onClick={() => cardCallback(id)}>
-                <img className="content-grid-card-img" src={`/${img.replace(/\\/g, '/').replace('../client/public/', '').replace('client/public/', '').replace('client/build/', '')}`} alt={title} />
+                <img className="content-grid-card-img" src={img} alt={title} />
                 <div className="content-grid-card-title">{title}</div>
             </div>
       </Fragment>
