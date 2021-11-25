@@ -39,7 +39,7 @@ class About extends React.Component {
   }
 
   handleRedirect(destination) {
-    let url = `/recipes/${destination}`;
+    let url = `/recipes/${destination}/`;
     this.props.history.push(url);
   }
 

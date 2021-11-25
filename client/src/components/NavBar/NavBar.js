@@ -301,7 +301,7 @@ class NavigationBar extends React.Component {
     return (
       <Fragment>
         {this.state.searchRedirect ? 
-          <Redirect to={{ pathname: "/browse", state: { searchTerm: this.state.searchTerm }, }} /> 
+          <Redirect to={{ pathname: "/browse/", state: { searchTerm: this.state.searchTerm }, }} /> 
           : null}
         <nav className="navbar fixed-top navbar-expand-sm navbar-custom" id="main-navbar">
           <NavBrand />
