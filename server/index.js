@@ -9,6 +9,7 @@ const crypt = require("bcrypt");
 const fs = require("fs");
 const cookie_parser = require("cookie-parser");
 const path = require("path");
+const env = process.env.NODE_ENV || "development";
 
 // Here we define the storage location for images that are uploaded to the server
 var storage = multer.diskStorage({
