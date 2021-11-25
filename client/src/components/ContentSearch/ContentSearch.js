@@ -83,7 +83,7 @@ class ContentSearch extends React.Component {
 
     filteringHandler(filters) {
         // base url to build upon
-        let url = '/recipes?';
+        let url = '/api/recipes?';
 
         // search phrase is included in filters
         if (filters.searchPhrase) {
@@ -159,7 +159,7 @@ class ContentSearch extends React.Component {
         gridResizeObserver.observe(document.getElementById('grid-container'));
 
         //initial data, fetching with no filters
-        fetch('/recipes', { method: 'GET' }).then(res => res.json()).then(res => { this.buildCards(res); });
+        fetch('/api/recipes', { method: 'GET' }).then(res => res.json()).then(res => { this.buildCards(res); });
     }
 
     render(){

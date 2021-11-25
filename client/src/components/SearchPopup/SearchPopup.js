@@ -118,7 +118,7 @@ class SearchPopup extends React.Component {
         if(this.state.id === id) return;
 
         // fetch the data for this specific recipe
-        fetch(`/recipes/${id}`, {method: 'GET', credentials: 'include'})
+        fetch(`/api/recipes/${id}`, {method: 'GET', credentials: 'include'})
        .then(res => res.json())
        .then(data => {
             data.main = data.main.replace(/\\\\/g, '\\');

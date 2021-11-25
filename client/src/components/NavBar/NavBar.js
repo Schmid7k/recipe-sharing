@@ -262,7 +262,7 @@ class NavigationBar extends React.Component {
     // if logged in, fetch user icon and store it in state
     if (cookie.includes("authentication")) {
       let username = JSON.parse(window.localStorage.getItem('user')).username;
-      fetch(`/userdata/${username}`, {
+      fetch(`/api/userdata/${username}`, {
         method: 'GET'
       })
       .then(result => {

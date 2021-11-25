@@ -114,7 +114,7 @@ class RegistrationForm extends React.Component {
             // inputs OK, sending data to server
             const user = { username: this.state.username, password: this.state.password };
             
-            fetch('/register', {
+            fetch('/api/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

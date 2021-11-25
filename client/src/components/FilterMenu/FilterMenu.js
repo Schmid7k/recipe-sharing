@@ -450,7 +450,7 @@ class FilteringMenu extends React.Component {
 
   componentDidMount(){
     // fetch filters to be used in the filtering menu
-    fetch('/filters', {method: 'GET'})
+    fetch('/api/filters', {method: 'GET'})
     .then(res => res.json())
     .then(res => this.handleFetchingFilters(res));
   }

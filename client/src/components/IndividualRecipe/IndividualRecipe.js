@@ -65,7 +65,7 @@ class RecipeHeader extends React.Component {
             // either add it to bookmarks or delete it from bookmarks
             if (this.props.bookmarked) {
                 // already bookmarked --> delete from bookmarks
-                let url = `/recipes/${this.props.recipeid}/save`;
+                let url = `/api/recipes/${this.props.recipeid}/save`;
                 fetch(url, {
                     method: 'DELETE',
                     credentials: 'include',
@@ -83,7 +83,7 @@ class RecipeHeader extends React.Component {
                 });
             } else {
                 // add to bookmarks
-                let url = `/recipes/${this.props.recipeid}/save`;
+                let url = `/api/recipes/${this.props.recipeid}/save`;
                 fetch(url, {
                     method: 'POST',
                     credentials: 'include',
@@ -114,7 +114,7 @@ class RecipeHeader extends React.Component {
             // check whether the current user has already rated the recipe and only proceed if not
             if (!this.props.rated) {
                 const rating = { rating: this.state.userRating };
-                let url = `/recipes/${this.props.recipeid}/rate`;
+                let url = `/api/recipes/${this.props.recipeid}/rate`;
                 fetch(url, {
                     method: 'POST',
                     headers: {
@@ -620,7 +620,7 @@ class IndividualRecipe extends React.Component {
 
         // fetch recipe according to id
         const recipe_id = this.props.match.params.id;
-        fetch(`/recipes/${recipe_id}`, {
+        fetch(`/api/recipes/${recipe_id}`, {
                 method: 'GET',
                 credentials: 'include',
             })
@@ -643,7 +643,7 @@ class IndividualRecipe extends React.Component {
 
     handleCommentSubmit(newComment) {
         const recipe_id = this.props.match.params.id;
-        let url = `/recipes/${recipe_id}/comment`;
+        let url = `/api/recipes/${recipe_id}/comment`;
         let comment = { comment: newComment };
         fetch(url, {
             method: 'POST',

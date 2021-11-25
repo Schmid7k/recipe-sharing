@@ -41,7 +41,7 @@ class User extends React.Component {
 
   updateBio() {
     // get the user bio information - profile picture and bio text
-    fetch(`/userdata/${this.state.header.username}`, {method: 'GET'})
+    fetch(`/api/userdata/${this.state.header.username}`, {method: 'GET'})
     .then(res => res.json())
     .then(res => {
       this.setState({
@@ -177,7 +177,7 @@ class User extends React.Component {
     const username = this.props.match.params.username;
 
     // get the user bio data when the page loads
-    fetch(`/user/${username}`, {method: 'GET'})
+    fetch(`/api/user/${username}`, {method: 'GET'})
     .then(res => res.json())
     .then(res => this.handleUserData(res))
     .catch(() => this.props.history.push('/browse'))
