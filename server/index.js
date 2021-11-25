@@ -22,14 +22,13 @@ var storage = multer.diskStorage({
 var upload = multer({ storage: storage });
 
 // middleware
-/*
 if (env == "production") {
   app.use(express.static(path.join(__dirname, "../client/build")));
   app.use((req, res) => {
     res.sendFile(path.join(__dirname, "../client/build/index.html"));
   });
 }
-*/
+
 app.use(
   cors({
     origin: "http://localhost:3000", // Requests will come in from localhost:3000; that's where the frontend resides

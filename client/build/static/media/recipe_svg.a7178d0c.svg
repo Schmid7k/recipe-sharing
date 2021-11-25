@@ -1,0 +1,18 @@
+<svg width="600" height="600" xmlns="http://www.w3.org/2000/svg">
+ <g>
+  <title>Recipe</title>
+  <rect stroke="#FFFFFF" id="svg_3" height="29.51297" width="170.18079" y="89.02289" x="18.39873" stroke-width="22" fill="#FFFFFF"/>
+  <rect stroke="#FFFFFF" transform="matrix(0 1.19495 -1.16562 0 270.756 -60.5263)" id="svg_9" height="24.69807" width="146" y="130.15096" x="67.5" stroke-width="22" fill="#FFFFFF"/>
+  <path stroke="#FFFFFF" id="svg_13" d="m204.21521,36.74266l74.5998,-7.64768l72.26855,0l101.4091,13.14445l69.93731,26.28891l55.94985,28.67881l-26.8093,86.03643l-25.64368,92.01118l-18.64995,86.03643l-10.4906,88.42633l-9.32497,129.05465l-75.76542,-13.14445l-78.09666,-13.14445l-67.60607,-7.1697l-54.78423,1.19495l-54.78423,7.1697l-30.30617,8.36465l9.32497,-151.75871l11.65622,-101.57079l12.82184,-103.96069l19.81557,-96.79099l24.47806,-71.21905z" opacity="NaN" stroke-width="36" fill="none"/>
+  <path stroke="#FFFFFF" id="svg_14" d="m243.94655,111.78555l43.12801,-1.43394l46.62487,7.1697l50.12174,5.97475l71.10293,15.53436l30.30617,11.9495" opacity="NaN" stroke-width="42" fill="none"/>
+  <path stroke="#FFFFFF" id="svg_19" d="m235.7872,161.97347l-16.31871,49.94893l-6.99373,46.60307l82.75915,5.97475l11.65622,0l15.15308,-64.52732l4.66249,-21.50911l-11.65622,-7.1697l-79.26228,-9.32061z" opacity="NaN" stroke-width="36" fill="#FFFFFF"/>
+  <path stroke="#FFFFFF" id="svg_20" d="m374.49619,189.45733l88.58726,20.07517l-88.58726,-20.07517z" opacity="NaN" stroke-width="20" fill="none"/>
+  <path stroke="#FFFFFF" id="svg_21" d="m354.58042,234.79457l95.58099,18.88022l-95.58099,-18.88022z" opacity="NaN" stroke-width="20" fill="none"/>
+  <path stroke="#FFFFFF" id="svg_22" d="m348.85251,286.24832l93.24975,9.32061l-93.24975,-9.32061z" opacity="NaN" stroke-width="20" fill="none"/>
+  <path stroke="#FFFFFF" id="svg_23" d="m206.64665,320.90188l102.57472,0.95596l131.71527,17.92426" opacity="NaN" stroke-width="20" fill="none"/>
+  <path stroke="#FFFFFF" id="svg_24" d="m201.98416,367.50495l102.57472,0.95596l131.71527,17.92426" opacity="NaN" stroke-width="20" fill="none"/>
+  <path stroke="#FFFFFF" id="svg_25" d="m196.15606,411.71811l102.57472,0.95596l131.71527,17.92426" opacity="NaN" stroke-width="20" fill="none"/>
+  <path stroke="#FFFFFF" id="svg_26" d="m190.32795,464.29593l102.57472,0.95596l131.71527,17.92426" opacity="NaN" stroke-width="20" fill="none"/>
+ </g>
+
+</svg>

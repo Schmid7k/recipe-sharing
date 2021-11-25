@@ -1,0 +1,9 @@
+<svg width="600" height="600" xmlns="http://www.w3.org/2000/svg">
+ <g>
+  <title>Grid</title>
+  <rect y="56.788" width="203.441" height="203.441" fill="none" style="stroke-linecap: round; stroke-linejoin: round; stroke-width: 40px; stroke: rgb(255, 255, 255);" x="55.968"></rect>
+  <rect x="339.621" y="56.788" width="203.441" height="203.441" fill="none" style="stroke-linecap: round; stroke-linejoin: round; stroke-width: 40px; stroke: rgb(255, 255, 255);"></rect>
+  <rect y="336.399" width="203.441" height="203.441" fill="none" style="stroke-linecap: round; stroke-linejoin: round; stroke-width: 40px; stroke: rgb(255, 255, 255);" x="55.968"></rect>
+  <rect x="339.621" y="336.399" width="203.441" height="203.441" fill="none" style="stroke-linecap: round; stroke-linejoin: round; stroke-width: 40px; stroke: rgb(255, 255, 255);"></rect>
+ </g>
+</svg>
