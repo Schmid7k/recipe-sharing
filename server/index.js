@@ -855,9 +855,10 @@ app.put(
 
         if (imagePath) {
           // Request contains a new profile image
+          const result = await s3.uploadFile(req.files.image[0]);
           userInfo = await pool.query(
             "UPDATE user_info SET imagepath = $1, bio = $2 WHERE userid = $3",
-            [imagePath, req.body.bio, userid]
+            [result.Location, req.body.bio, userid]
           ); // Update user info in the database
         } else {
           // Requests contains no new profile image
