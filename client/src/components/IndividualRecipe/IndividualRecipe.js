@@ -17,7 +17,7 @@ import { Link } from 'react-router-dom'
 const RecipeImage = ({ source, alternative }) => {
     return (
         <Fragment>
-            <img className="recipe-image" src={`/${source.replace(/\\/g, '/').replace('../client/public/', '').replace('client/public/', '').replace('client/build/', '')}`} alt={alternative} />
+            <img className="recipe-image" src={source} alt={alternative} />
         </Fragment>
     );
 }
@@ -377,7 +377,7 @@ const RecipeInstruction = ({ step, description, img }) => {
             <div className="recipe-instruction-description mb-3">
                 {description}
             </div>
-            <img    className="recipe-instruction-image" src={`/${img.replace(/\\/g, '/').replace('../client/public/', '').replace('client/public/', '').replace('client/build/', '')}`} 
+            <img    className="recipe-instruction-image" src={img} 
                     alt={`Step ${step} instruction`} onError={(e) => e.target.style.display = 'none'} />
         </div>
       </Fragment>
