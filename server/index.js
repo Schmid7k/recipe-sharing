@@ -23,13 +23,6 @@ var upload = multer({ storage: storage });
 
 // middleware
 app.use(express.static(path.join(__dirname, "../client/build")));
-/*if (env == "production") {
-  app.use(express.static(path.join(__dirname, "../client/build")));
-  app.use((req, res) => {
-    res.sendFile(path.join(__dirname, "../client/build/index.html"));
-  });
-}*/
-
 app.use(
   cors({
     origin: "http://localhost:3000", // Requests will come in from localhost:3000; that's where the frontend resides
@@ -964,7 +957,7 @@ app.post("/api/recipes/:id/comment", async (req, res) => {
   }
 });
 
-app.use('/*', express.static(path.join(__dirname, "../client/build")));
+app.use("/*", express.static(path.join(__dirname, "../client/build")));
 
 app.listen(port, () => {
   console.log(`server has started on port ${port}`);
