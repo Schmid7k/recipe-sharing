@@ -6,7 +6,7 @@ const SSL = process.env.NODE_ENV === "production";
 
 const pool = new Pool({
   connectionString: CONNECTION_STRING,
-  ssl: SSL,
+  ssl: { rejectUnauthorized: false },
 });
 
 module.exports = pool;
