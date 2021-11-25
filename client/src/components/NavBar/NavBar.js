@@ -257,10 +257,10 @@ class NavigationBar extends React.Component {
     for( let i = 0; i < cookie.length; i++)
       cookie[i] = cookie[i].trim();
 
-    this.setState({loggedIn: cookie.includes("authentication")});
+    this.setState({ loggedIn: (cookie.includes("authentication") && window.localStorage.getItem('user') !== null) });
     
     // if logged in, fetch user icon and store it in state
-    if (cookie.includes("authentication")) {
+    if (cookie.includes("authentication") && window.localStorage.getItem('user') !== null) {
       let username = JSON.parse(window.localStorage.getItem('user')).username;
       fetch(`/api/userdata/${username}`, {
         method: 'GET'
@@ -273,7 +273,7 @@ class NavigationBar extends React.Component {
       })
       .then(userData => {
         if (userData.image) {
-          this.setState({ userIcon: `/${userData.image.replace(/\\/g, '/').replace('../client/public/', '')}` });
+          this.setState({ userIcon: `/${userData.image.replace(/\\/g, '/').replace('../client/public/', '').replace('client/public/', '').replace('client/build/', '')}` });
         }
       })
       .catch((error) => {

@@ -88,7 +88,7 @@ class UserInfo extends React.Component {
         <div className="user-info-container">
           {
             !this.state.editing ?
-              <img className="user-icon" src={`/${this.props.icon.replace(/\\/g, '/').replace('../client/public/', '')}`} alt="User icon"/>
+              <img className="user-icon" src={`/${this.props.icon.replace(/\\/g, '/').replace('../client/public/', '').replace('client/public/', '').replace('client/build/', '')}`} alt="User icon"/>
             :
               <Fragment>
               <input  type="file" className="form-control-file" id="pfp-input" accept="image/*" style={{display: 'none'}} onChange={this.handleFileChange} required />

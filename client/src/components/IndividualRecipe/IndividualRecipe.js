@@ -17,7 +17,7 @@ import { Link } from 'react-router-dom'
 const RecipeImage = ({ source, alternative }) => {
     return (
         <Fragment>
-            <img className="recipe-image" src={`/${source.replace(/\\/g, '/').replace('../client/public/', '')}`} alt={alternative} />
+            <img className="recipe-image" src={`/${source.replace(/\\/g, '/').replace('../client/public/', '').replace('client/public/', '').replace('client/build/', '')}`} alt={alternative} />
         </Fragment>
     );
 }
@@ -377,7 +377,7 @@ const RecipeInstruction = ({ step, description, img }) => {
             <div className="recipe-instruction-description mb-3">
                 {description}
             </div>
-            <img    className="recipe-instruction-image" src={`/${img.replace(/\\/g, '/').replace('../client/public/', '')}`} 
+            <img    className="recipe-instruction-image" src={`/${img.replace(/\\/g, '/').replace('../client/public/', '').replace('client/public/', '').replace('client/build/', '')}`} 
                     alt={`Step ${step} instruction`} onError={(e) => e.target.style.display = 'none'} />
         </div>
       </Fragment>
@@ -616,7 +616,7 @@ class IndividualRecipe extends React.Component {
         let cookie =  document.cookie.split(";").map(cookie => cookie.split("=")[0]);
         for( let i = 0; i < cookie.length; i++)
             cookie[i] = cookie[i].trim();
-        this.setState({loggedIn: cookie.includes("authentication")});
+        this.setState({ loggedIn: (cookie.includes("authentication") && window.localStorage.getItem('user') !== null) });
 
         // fetch recipe according to id
         const recipe_id = this.props.match.params.id;
