@@ -12,7 +12,6 @@ async function saveInstructions(instructions, images, stepImages, recipeID) {
       if (stepImages[step]) {
         const result = await s3.uploadFile(images[counter]);
         imagePath = result.Location;
-        console.log(result, imagePath);
 
         counter += 1;
       }
