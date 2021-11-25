@@ -9,6 +9,7 @@ const crypt = require("bcrypt");
 const fs = require("fs");
 const cookie_parser = require("cookie-parser");
 const path = require("path");
+const s3 = require("./s3");
 const env = process.env.NODE_ENV || "development";
 const port = process.env.PORT || 5000;
 
@@ -155,6 +156,10 @@ app.post("/api/recipes", upload.array("images", 100), async (req, res) => {
         stepImages,
       } = content;
 
+      const result = await s3.uploadFile(main);
+
+      const location = result.Location;
+
       const userID = await pool.query(
         "SELECT * FROM users WHERE Username = $1",
         [cookie]
@@ -162,7 +167,7 @@ app.post("/api/recipes", upload.array("images", 100), async (req, res) => {
 
       const newRecipe = await pool.query(
         "INSERT INTO recipes (UserID, MainImage, Title, AdditionalInstructions) VALUES($1, $2, $3, $4) RETURNING *",
-        [userID.rows[0].userid, main.path, title, addInstructions]
+        [userID.rows[0].userid, location, title, addInstructions]
       ); // Add the new recipe to the database
 
       // Get the recipeid of the newly created recipe

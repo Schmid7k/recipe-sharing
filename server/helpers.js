@@ -1,4 +1,5 @@
 const pool = require("./db");
+const s3 = require("./s3");
 
 // Helper function that saves instructions to the instruction database
 
@@ -9,7 +10,10 @@ async function saveInstructions(instructions, images, stepImages, recipeID) {
       const [step, description] = instruction;
       var imagePath = "";
       if (stepImages[step]) {
-        imagePath = images[counter].path;
+        const result = await s3.uploadFile(images[counter]);
+        imagePath = result.Location;
+        console.log(result, imagePath);
+
         counter += 1;
       }
       await pool.query(
