@@ -1,6 +1,5 @@
 const dotenv = require("dotenv").config();
 const Pool = require("pg").Pool;
-
 const env = process.env.NODE_ENV || "development";
 
 let connectionString = {
@@ -11,9 +10,7 @@ let connectionString = {
   database: process.env.DB_DATABASE,
 };
 
-if (env === "development") {
-  connectionString.database = process.env.DB_DATABASE;
-} else {
+if (env === "production") {
   connectionString = {
     connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false },

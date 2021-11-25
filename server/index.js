@@ -10,6 +10,7 @@ const fs = require("fs");
 const cookie_parser = require("cookie-parser");
 const path = require("path");
 const env = process.env.NODE_ENV || "development";
+const port = process.env.PORT || 5000;
 
 // Here we define the storage location for images that are uploaded to the server
 var storage = multer.diskStorage({
@@ -21,6 +22,14 @@ var storage = multer.diskStorage({
 var upload = multer({ storage: storage });
 
 // middleware
+
+if (env == "production") {
+  app.use(express.static(path.join(__dirname, "../client/build")));
+  app.use((req, res) => {
+    res.sendFile(path.join(__dirname, "../client/build/index.html"));
+  });
+}
+
 app.use(
   cors({
     origin: "http://localhost:3000", // Requests will come in from localhost:3000; that's where the frontend resides
@@ -955,10 +964,6 @@ app.post("/recipes/:id/comment", async (req, res) => {
   }
 });
 
-app.listen(process.env.PORT || 5000, () => {
-  if (process.env.PORT) {
-    console.log(`server has started on port ${process.env.PORT}`);
-  } else {
-    console.log("server has stared on port 5000");
-  }
+app.listen(port, () => {
+  console.log(`server has started on port ${port}`);
 });
