@@ -67,7 +67,7 @@ app.post("/api/register", async (req, res) => {
           "INSERT INTO user_info (userid, imagepath, bio) VALUES ($1, $2, $3) RETURNING *",
           [
             newUser.rows[0].userid,
-            "images/user_placeholder_icon.svg",
+            "https://recipesharingheroku.s3.eu-central-1.amazonaws.com/user_placeholder_icon.svg",
             "This user has no bio.",
           ]
         );
