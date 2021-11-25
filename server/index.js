@@ -265,7 +265,6 @@ app.get("/filters", async (req, res) => {
  */
 app.get("/recipes", async (req, res) => {
   try {
-    console.log(req);
     // If the request contains no query parameters
     if (Object.keys(req.query).length == 0) {
       const allRecipes = await pool.query(
@@ -964,12 +963,6 @@ app.post("/recipes/:id/comment", async (req, res) => {
   }
 });
 
-app.listen(port, async () => {
+app.listen(port, () => {
   console.log(`server has started on port ${port}`);
-  const now = await pool.query("SELECT NOW()");
-  if (now.rows[0]) {
-    console.log(`PostgreSQL connected: ${now.rows[0].now}.`);
-  } else {
-    return console.log("Unable to connect to PostgreSQL database.");
-  }
 });
