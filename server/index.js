@@ -156,8 +156,9 @@ app.post("/api/recipes", upload.array("images", 100), async (req, res) => {
         stepImages,
       } = content;
 
+      // Upload file to AWS and get the response
       const result = await s3.uploadFile(main);
-
+      // retrieve file location from AWS response
       const location = result.Location;
 
       const userID = await pool.query(
