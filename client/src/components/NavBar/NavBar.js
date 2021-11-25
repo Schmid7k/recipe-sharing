@@ -94,7 +94,7 @@ class FilterToggler extends React.Component {
   render() {
     return (
       <Fragment>
-        {window.location.pathname === "/browse" ? 
+        {window.location.pathname === "/browse/" ? 
           <li className={`nav-item nav-icon-item ${this.state.filterActive ? "active" : ""}`}>
             <div className="d-md-none" data-bs-toggle="collapse" data-bs-target="#filtering-menu" aria-expanded="false" aria-controls="filtering-menu" id='filter-button-icon' onClick={this.handleClick}>
               <img className="nav-icon" src={this.props.source} alt={`${this.props.text} icon`} />
@@ -129,7 +129,7 @@ const NavItems = ({ loggedIn }) => {
   return (
     <Fragment>
       <ul className="navbar-nav mr-auto">
-        <NavItem text="Browse" href="/browse" source={gridSvg} />
+        <NavItem text="Browse" href="/browse/" source={gridSvg} />
         <FilterToggler text="Filter" source={filterSvg} />
         { loggedIn
           && window.localStorage.getItem('user') !== null 
@@ -286,7 +286,7 @@ class NavigationBar extends React.Component {
   handleSearchChange(searchTerm) {
     this.setState({ searchTerm: searchTerm });
     // if the user is searching while in the browse view
-    if (window.location.pathname === "/browse") {
+    if (window.location.pathname === "/browse/") {
       let filterMenuFilters = this.props.filterSearch.current.constructFilters();
       filterMenuFilters.searchPhrase = searchTerm;
       this.props.contentSearch.current.filteringHandler(filterMenuFilters);

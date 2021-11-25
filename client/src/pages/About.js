@@ -79,7 +79,7 @@ class About extends React.Component {
                 </p>
               </div>
               <div className="text-center mt-4">
-                <a href="/browse" 
+                <a href="/browse/" 
                   style={{ 
                     fontWeight: 'bold', 
                     backgroundColor: '#DF7861', 

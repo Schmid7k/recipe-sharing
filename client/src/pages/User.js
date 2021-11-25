@@ -52,7 +52,7 @@ class User extends React.Component {
         }
       });
     })
-    .catch(() => this.props.history.push('/browse')); 
+    .catch(() => this.props.history.push('/browse/')); 
   }
 
   handleResize() {
@@ -180,7 +180,7 @@ class User extends React.Component {
     fetch(`/api/user/${username}`, {method: 'GET'})
     .then(res => res.json())
     .then(res => this.handleUserData(res))
-    .catch(() => this.props.history.push('/browse'))
+    .catch(() => this.props.history.push('/browse/'))
   }
 
   render(){

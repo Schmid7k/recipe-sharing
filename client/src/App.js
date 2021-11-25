@@ -23,7 +23,7 @@ class App extends React.Component {
       let filter = { searchPhrase: this.props.location.state.searchTerm };
       this.contentSearch.current.filteringHandler(filter);
       this.setState({ searchTerm: this.props.location.state.searchTerm })
-      this.props.history.replace({'pathname': '/browse', state: {}})
+      this.props.history.replace({'pathname': '/browse/', state: {}})
     }
   }
 

@@ -626,7 +626,7 @@ class IndividualRecipe extends React.Component {
             })
             .then(res => res.json())
             .then(res => this.handleSettingRecipeData(res))
-            .catch(err => this.props.history.push('/browse')
+            .catch(err => this.props.history.push('/browse/')
         );
 
         // scroll to the top of the page upon load
