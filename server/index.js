@@ -265,6 +265,7 @@ app.get("/filters", async (req, res) => {
  */
 app.get("/recipes", async (req, res) => {
   try {
+    console.log(req);
     // If the request contains no query parameters
     if (Object.keys(req.query).length == 0) {
       const allRecipes = await pool.query(
