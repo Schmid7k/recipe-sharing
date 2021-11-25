@@ -15,8 +15,13 @@ const port = process.env.PORT || 5000;
 // Here we define the storage location for images that are uploaded to the server
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    const correctPath = path.normalize("../client/public/images/");
-    cb(null, correctPath);
+    if (env == "production") {
+      const correctPath = path.normalize("./client/public/images");
+      cb(null, correctPath);
+    } else {
+      const correctPath = path.normalize("./client/build/images");
+      cb(null, correctPath);
+    }
   },
 });
 var upload = multer({ storage: storage });
