@@ -1,24 +1,12 @@
 const dotenv = require("dotenv").config();
 const Pool = require("pg").Pool;
-const env = process.env.NODE_ENV || "development";
 
-let connectionString = {
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  host: process.env.DEV_IP,
-  port: process.env.DEV_PORT,
-  database: process.env.DB_DATABASE,
-};
+const CONNECTION_STRING = process.env.DATABASE_URL || process.env.DEV_URL;
+const SSL = process.env.NODE_ENV === "production";
 
-if (env === "production") {
-  connectionString = {
-    connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false },
-  };
-}
-
-console.log(connectionString);
-
-const pool = new Pool(connectionString);
+const pool = new Pool({
+  connectionString: CONNECTION_STRING,
+  ssl: SSL,
+});
 
 module.exports = pool;

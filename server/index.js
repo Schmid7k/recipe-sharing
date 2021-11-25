@@ -964,6 +964,12 @@ app.post("/recipes/:id/comment", async (req, res) => {
   }
 });
 
-app.listen(port, () => {
+app.listen(port, async () => {
   console.log(`server has started on port ${port}`);
+  const now = await pool.query("SELECT NOW()");
+  if (now.rows[0]) {
+    console.log(`PostgreSQL connected: ${now.rows[0].now}.`);
+  } else {
+    return console.log("Unable to connect to PostgreSQL database.");
+  }
 });
