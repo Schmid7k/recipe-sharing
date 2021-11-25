@@ -75,7 +75,7 @@ const SearchPopupContent = ({callback, data}) => {
                 <div className="popup-header-container">
                     <div className="popup-title-and-username-container">
                         <h1 className="popup-title">{data.title}</h1>
-                        <Link className="popup-username" to={`users/${data.author}`}>@{data.author}</Link>
+                        <Link className="popup-username" to={`/user/${data.author}`}>@{data.author}</Link>
                     </div>
                     <div className="popup-rating-and-bookmark-container">
                         <PopupRating number={data.bookmarks} icon={bookmarkIcon} userHasDone={data.bookmarked} />
