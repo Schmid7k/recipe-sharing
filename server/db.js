@@ -17,6 +17,8 @@ if (env === "production") {
   };
 }
 
+console.log(connectionString);
+
 const pool = new Pool(connectionString);
 
 module.exports = pool;
