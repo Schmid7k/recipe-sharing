@@ -25,27 +25,27 @@ ReactDOM.render(
           <About />
         </Route>
 
-        <Route exact path="/browse">
+        <Route exact path="/browse/">
           <App />
         </Route>
 
-        <Route exact path="/login">
+        <Route exact path="/login/">
           <Login />
         </Route>
 
-        <Route exact path="/registration">
+        <Route exact path="/registration/">
           <Registration />
         </Route>
 
-        <Route path="/user/:username">
+        <Route path="/user/:username/">
           <User />
         </Route>
 
-        <Route path="/addrecipe">
+        <Route path="/addrecipe/">
           <AddRecipe />
         </Route>
 
-        <Route path="/recipes/:id">
+        <Route path="/recipes/:id/">
           <Recipe />
         </Route>
 

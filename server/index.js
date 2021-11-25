@@ -22,12 +22,13 @@ var storage = multer.diskStorage({
 var upload = multer({ storage: storage });
 
 // middleware
-if (env == "production") {
+app.use(express.static(path.join(__dirname, "../client/build")));
+/*if (env == "production") {
   app.use(express.static(path.join(__dirname, "../client/build")));
   app.use((req, res) => {
     res.sendFile(path.join(__dirname, "../client/build/index.html"));
   });
-}
+}*/
 
 app.use(
   cors({
@@ -46,7 +47,7 @@ app.use(cookie_parser(process.env.COOKIE_SECRET)); // Cookie setting middleware 
  * Responds either with 400er error codes in case something doesn't work out with the given request or with 201 if the user account was created
  */
 
-app.post("/register", async (req, res) => {
+app.post("/api/register", async (req, res) => {
   try {
     const { username, password } = req.body; // Get the username and password from the request body
     // Check if username already exists
@@ -96,7 +97,7 @@ app.post("/register", async (req, res) => {
  * Responds with status code 200 and a signed cookie for future authentication if the provided login information is correct
  */
 
-app.post("/login", async (req, res) => {
+app.post("/api/login", async (req, res) => {
   try {
     const { username, password } = req.body; // Get the username and password from the request body
 
@@ -143,7 +144,7 @@ app.post("/login", async (req, res) => {
  * Responds with status code 201 and the newly created recipe if the provided information is correct
  */
 
-app.post("/recipes", upload.array("images", 100), async (req, res) => {
+app.post("/api/recipes", upload.array("images", 100), async (req, res) => {
   try {
     const cookie = req.signedCookies.authentication; // retrieve authentication cookie from request
     if (cookie) {
@@ -204,7 +205,7 @@ app.post("/recipes", upload.array("images", 100), async (req, res) => {
  * Request body is empty
  * Responds with status code 200 and all tags, ingredients, categories and the top 5 popular tags/ingredients
  */
-app.get("/filters", async (req, res) => {
+app.get("/api/filters", async (req, res) => {
   try {
     let filters = {}; // Response template
 
@@ -263,7 +264,7 @@ app.get("/filters", async (req, res) => {
  * Can filter by: "category", inIngredients (ingredients that should be included), outIngredients (ingredients that should be excluded), tags, minimum rating and search phrase
  * Responds with status code 200 either all recipes or all recipes filtered by the given query parameters
  */
-app.get("/recipes", async (req, res) => {
+app.get("/api/recipes", async (req, res) => {
   try {
     // If the request contains no query parameters
     if (Object.keys(req.query).length == 0) {
@@ -380,7 +381,7 @@ app.get("/recipes", async (req, res) => {
  * Responds with status code 401 if originator could not be authenticated
  * Responds with status code 201 and the new average rating if recipe was rated successfully
  */
-app.post("/recipes/:id/rate", async (req, res) => {
+app.post("/api/recipes/:id/rate", async (req, res) => {
   try {
     const cookie = req.signedCookies.authentication; // retrieve authentication cookie from request
     if (cookie) {
@@ -416,7 +417,7 @@ app.post("/recipes/:id/rate", async (req, res) => {
  * Responds with status code 401 if originator could not be authenticated
  * Responds with status code 200 and the new average rating if recipe rating was updated successfully
  */
-app.put("/recipes/:id/rate", async (req, res) => {
+app.put("/api/recipes/:id/rate", async (req, res) => {
   try {
     const cookie = req.signedCookies.authentication; // retrieve authentication cookie from request
     if (cookie) {
@@ -453,7 +454,7 @@ app.put("/recipes/:id/rate", async (req, res) => {
  * Responds with status code 401 if originator could not be authenticated
  * Responds with status code 200 and the new average rating if recipe rating was deleted successfully
  */
-app.delete("/recipes/:id/rate", async (req, res) => {
+app.delete("/api/recipes/:id/rate", async (req, res) => {
   try {
     const cookie = req.signedCookies.authentication; // retrieve authentication cookie from request
     if (cookie) {
@@ -489,7 +490,7 @@ app.delete("/recipes/:id/rate", async (req, res) => {
  * Responds with status code 401 if originator could not be authenticated
  * Responds with status code 201 if recipe was bookmarked successfully
  */
-app.post("/recipes/:id/save", async (req, res) => {
+app.post("/api/recipes/:id/save", async (req, res) => {
   try {
     const cookie = req.signedCookies.authentication; // retrieve authentication cookie from request
     if (cookie) {
@@ -519,7 +520,7 @@ app.post("/recipes/:id/save", async (req, res) => {
  * Responds with status code 401 if originator could not be authenticated
  * Responds with status code 200 if bookmark was deleted successfully
  */
-app.delete("/recipes/:id/save", async (req, res) => {
+app.delete("/api/recipes/:id/save", async (req, res) => {
   try {
     const cookie = req.signedCookies.authentication; // retrieve authentication cookie from request
     if (cookie) {
@@ -550,7 +551,7 @@ app.delete("/recipes/:id/save", async (req, res) => {
  * Responds with status code 200 and the requested recipe if retrieval was successful
  */
 
-app.get("/recipes/:id", async (req, res) => {
+app.get("/api/recipes/:id", async (req, res) => {
   try {
     const { id } = req.params; // Get the URL parameter
     const base = await pool.query("SELECT * FROM recipes WHERE RecipeID = $1", [
@@ -699,7 +700,7 @@ app.get("/recipes/:id", async (req, res) => {
  * Responds with status code 404 if the requested recipe could not be found or 401 if user could not be authenticated
  * Responds with status code 200 if the removal was successful
  */
-app.delete("/recipes/:id", async (req, res) => {
+app.delete("/api/recipes/:id", async (req, res) => {
   try {
     const cookie = req.signedCookies.authentication; // retrieve authentication cookie from request
     if (cookie) {
@@ -757,7 +758,7 @@ app.delete("/recipes/:id", async (req, res) => {
  * Responds with status code 404 if the user does not exist
  * Responds with status code 200 and the user information otherwise
  */
-app.get("/user/:username", async (req, res) => {
+app.get("/api/user/:username", async (req, res) => {
   try {
     const { username } = req.params; // for use later to grab the user_id, then all the other related user details
 
@@ -829,7 +830,7 @@ app.get("/user/:username", async (req, res) => {
  */
 
 app.put(
-  "/userdata",
+  "/api/userdata",
   upload.fields([
     { name: "bio", maxCount: 1 },
     { name: "image", maxCount: 1 },
@@ -884,7 +885,7 @@ app.put(
  * Responds with status code 200 and the related user data
  */
 
-app.get("/userdata/:username", async (req, res) => {
+app.get("/api/userdata/:username", async (req, res) => {
   try {
     const { username } = req.params;
     const user = await pool.query(
@@ -916,7 +917,7 @@ app.get("/userdata/:username", async (req, res) => {
  * Request body is empty;
  * Responds with status code 200 and the recommended recipes
  */
-app.get("/recommendations", async (req, res) => {
+app.get("/api/recommendations", async (req, res) => {
   try {
     const recommendedRecipes = await pool.query(
       "SELECT recipe_bookmarks.recipeid, recipes.title, recipes.mainimage, COUNT(recipe_bookmarks.recipeid) AS bookmark_count FROM recipe_bookmarks INNER JOIN recipes ON recipe_bookmarks.recipeid=recipes.recipeid GROUP BY recipe_bookmarks.recipeid, recipes.title, recipes.mainimage ORDER BY bookmark_count DESC LIMIT 3"
@@ -934,7 +935,7 @@ app.get("/recommendations", async (req, res) => {
  * Responds with status code 401 if user could not be authenticated
  * Responds with status code 201 and the newly created comment, if creation was successful
  */
-app.post("/recipes/:id/comment", async (req, res) => {
+app.post("/api/recipes/:id/comment", async (req, res) => {
   try {
     const cookie = req.signedCookies.authentication; // retrieve authentication cookie from request
     if (cookie) {
@@ -962,6 +963,8 @@ app.post("/recipes/:id/comment", async (req, res) => {
     res.status(500).send("Something went wrong!");
   }
 });
+
+app.use('/*', express.static(path.join(__dirname, "../client/build")));
 
 app.listen(port, () => {
   console.log(`server has started on port ${port}`);

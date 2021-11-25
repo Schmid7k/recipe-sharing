@@ -49,7 +49,7 @@ class UserInfo extends React.Component {
     formData.append('image', this.state.file);
   
     // send the new user bio and image to the server
-    fetch('/userdata', {
+    fetch('/api/userdata', {
         method: 'PUT',
         credentials: 'include',
         body: formData,
