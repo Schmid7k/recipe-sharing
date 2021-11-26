@@ -10,15 +10,22 @@ async function saveInstructions(instructions, images, stepImages, recipeID) {
       const [step, description] = instruction;
       var imagePath = "";
       if (stepImages[step]) {
-        const result = await s3.uploadFile(images[counter]);
+        const image = images[counter];
+        counter += 1;
+        console.log("Uploading:" + image);
+        const result = await s3.uploadFile(image);
         imagePath = result.Location;
 
-        counter += 1;
+        await pool.query(
+          "INSERT INTO recipe_instructions (RecipeID, Step, Instruction, Instruction_Image) VALUES($1, $2, $3, $4) RETURNING *",
+          [recipeID, step, description, imagePath]
+        );
+      } else {
+        await pool.query(
+          "INSERT INTO recipe_instructions (RecipeID, Step, Instruction, Instruction_Image) VALUES($1, $2, $3, $4) RETURNING *",
+          [recipeID, step, description, ""]
+        );
       }
-      await pool.query(
-        "INSERT INTO recipe_instructions (RecipeID, Step, Instruction, Instruction_Image) VALUES($1, $2, $3, $4) RETURNING *",
-        [recipeID, step, description, imagePath]
-      );
     });
     return true;
   } catch (error) {

@@ -640,7 +640,7 @@ app.get("/api/recipes/:id", async (req, res) => {
       recipe.tags = JSON.parse(JSON.stringify(tags.rows));
       // Get instructions
       const instructions = await pool.query(
-        "SELECT recipe_instructions.step, recipe_instructions.instruction, recipe_instructions.instruction_image FROM recipes LEFT JOIN recipe_instructions ON recipe_instructions.recipeid = recipes.recipeid WHERE recipes.recipeid = $1",
+        "SELECT recipe_instructions.step, recipe_instructions.instruction, recipe_instructions.instruction_image FROM recipes LEFT JOIN recipe_instructions ON recipe_instructions.recipeid = recipes.recipeid WHERE recipes.recipeid = $1 ORDER BY step ASC",
         [id]
       );
       // Add instructions to template
@@ -680,7 +680,7 @@ app.get("/api/recipes/:id", async (req, res) => {
           );
         }
       }
-      // console.debug(recipe); Uncomment for debug
+      console.debug(recipe); // Uncomment for debug
       // Send response
       res.status(200).json(recipe);
     } else {
