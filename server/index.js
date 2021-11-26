@@ -330,7 +330,7 @@ app.get("/api/recipes", async (req, res) => {
         queryTemplate.end.push("tags.name IN ('" + tags.join("','") + "') ");
       }
       // If the parameter rating is there
-      if (rating) {
+      if (rating > 0) {
         queryTemplate.mid =
           queryTemplate.mid +
           "LEFT JOIN recipe_ratings ON recipe_ratings.recipeid = recipes.recipeid ";
